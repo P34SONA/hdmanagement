@@ -2,761 +2,789 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daily Task Manager</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TaskFlow — Team Task Manager</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #161820;
+    --surface2: #1e2028;
+    --border: #2a2d3a;
+    --accent: #e8c547;
+    --accent2: #4fd1c5;
+    --text: #eef0f6;
+    --muted: #7a7f94;
+    --red: #f87171;
+    --green: #4ade80;
+    --radius: 12px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+  
+  /* LOGIN */
+  #loginScreen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(ellipse at 30% 50%, #1a1f2e 0%, #0d0f14 70%);
+    position: relative;
+  }
+  #loginScreen::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(232,197,71,0.02) 40px, rgba(232,197,71,0.02) 41px),
+                repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(232,197,71,0.02) 40px, rgba(232,197,71,0.02) 41px);
+  }
+  .login-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 48px 40px;
+    width: 100%;
+    max-width: 420px;
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.5);
+  }
+  .login-logo {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+  .login-sub { color: var(--muted); font-size: 14px; margin-bottom: 36px; }
+  .form-group { margin-bottom: 20px; }
+  label { display: block; font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+  input[type=text], input[type=password], select, textarea {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    padding: 12px 16px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  input:focus, select:focus, textarea:focus { border-color: var(--accent); }
+  select option { background: var(--surface2); }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border-radius: var(--radius);
+    border: none;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-primary { background: var(--accent); color: #0d0f14; }
+  .btn-primary:hover { background: #f0d060; transform: translateY(-1px); }
+  .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+  .btn-secondary:hover { border-color: var(--accent); }
+  .btn-danger { background: rgba(248,113,113,0.15); color: var(--red); border: 1px solid rgba(248,113,113,0.3); }
+  .btn-danger:hover { background: rgba(248,113,113,0.25); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+  .btn-full { width: 100%; justify-content: center; }
+  .error-msg { color: var(--red); font-size: 13px; margin-top: 8px; display: none; }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
+  /* APP */
+  #app { display: none; }
+  .topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .topbar-logo { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--accent); }
+  .topbar-right { display: flex; align-items: center; gap: 16px; }
+  .user-badge {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 6px 14px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .user-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
+  .tabs {
+    display: flex;
+    gap: 2px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 32px;
+  }
+  .tab {
+    padding: 14px 20px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    background: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .tab:disabled { opacity: 0.3; cursor: not-allowed; }
+  .main { padding: 32px; max-width: 1200px; margin: 0 auto; }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+  /* ADMIN */
+  .section-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    margin-bottom: 24px;
+    color: var(--text);
+  }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 32px; }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+  }
+  .card-title { font-size: 13px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; }
+  .tag-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .tag {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-family: 'DM Mono', monospace;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .tag .remove { cursor: pointer; color: var(--red); font-size: 14px; line-height: 1; }
+  .input-row { display: flex; gap: 8px; }
+  .input-row input { flex: 1; }
 
-        .login-container {
-            background: white;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-            max-width: 400px;
-            margin: 100px auto;
-        }
+  /* ASSIGN SECTION */
+  .assign-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 24px;
+  }
+  .assign-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  .employee-checkboxes { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+  .emp-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 8px 14px;
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .emp-checkbox:hover { border-color: var(--accent); }
+  .emp-checkbox.selected { background: rgba(232,197,71,0.1); border-color: var(--accent); }
+  .emp-checkbox.disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
+  .emp-checkbox input[type=checkbox] { display: none; }
+  .check-icon { width: 16px; height: 16px; border-radius: 4px; border: 1px solid var(--border); background: var(--bg); display: flex; align-items: center; justify-content: center; font-size: 10px; transition: all 0.15s; }
+  .emp-checkbox.selected .check-icon { background: var(--accent); border-color: var(--accent); color: #0d0f14; }
 
-        .login-container h1 {
-            color: #333;
-            margin-bottom: 30px;
-            text-align: center;
-        }
+  /* TASK TABLE */
+  .table-wrap { overflow-x: auto; border-radius: 16px; border: 1px solid var(--border); }
+  table { width: 100%; border-collapse: collapse; }
+  th {
+    background: var(--surface2);
+    padding: 14px 20px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 14px 20px;
+    font-size: 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+  .emp-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+  .emp-pill {
+    background: rgba(79,209,197,0.1);
+    border: 1px solid rgba(79,209,197,0.3);
+    border-radius: 100px;
+    padding: 3px 10px;
+    font-size: 12px;
+    color: var(--accent2);
+    font-family: 'DM Mono', monospace;
+  }
+  .date-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+  }
 
-        .form-group {
-            margin-bottom: 20px;
-        }
+  /* EMPLOYEE VIEW - CARDS */
+  #empView { display: none; }
+  .emp-header { margin-bottom: 32px; }
+  .emp-header h2 { font-family: 'DM Serif Display', serif; font-size: 28px; margin-bottom: 4px; }
+  .emp-header p { color: var(--muted); font-size: 14px; }
+  .tasks-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+  .task-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+  }
+  .task-card:hover { transform: translateY(-3px); box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+  .task-card-header {
+    background: var(--surface2);
+    padding: 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+  .task-card-name { font-weight: 600; font-size: 16px; margin-bottom: 4px; }
+  .task-card-date { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); }
+  .task-card-body { padding: 20px; }
+  .assigned-label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+  .assigned-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+  .assigned-name {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 5px 12px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .assigned-name.is-me {
+    background: rgba(232,197,71,0.1);
+    border-color: rgba(232,197,71,0.4);
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .me-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+  .task-type-badge {
+    font-size: 11px;
+    font-weight: 600;
+    font-family: 'DM Mono', monospace;
+    padding: 4px 10px;
+    border-radius: 100px;
+    background: rgba(232,197,71,0.1);
+    border: 1px solid rgba(232,197,71,0.3);
+    color: var(--accent);
+  }
+  .empty-state { text-align: center; padding: 60px 20px; color: var(--muted); }
+  .empty-state .icon { font-size: 48px; margin-bottom: 16px; }
+  .empty-state h3 { font-size: 18px; color: var(--text); margin-bottom: 8px; }
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 20px;
+    font-size: 14px;
+    z-index: 9999;
+    animation: slideIn 0.3s ease;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  }
+  @keyframes slideIn { from { transform: translateX(100px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+  .separator { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+  .duty-date-note { font-size: 12px; color: var(--muted); margin-top: 6px; }
+  .future-badge {
+    background: rgba(79,209,197,0.1);
+    border: 1px solid rgba(79,209,197,0.3);
+    color: var(--accent2);
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    padding: 3px 8px;
+    border-radius: 100px;
+    margin-left: 6px;
+  }
 
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: #555;
-            font-weight: 500;
-        }
-
-        input[type="text"],
-        input[type="password"],
-        select,
-        textarea {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 6px;
-            font-size: 14px;
-            transition: border-color 0.3s;
-        }
-
-        input[type="text"]:focus,
-        input[type="password"]:focus,
-        select:focus,
-        textarea:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-
-        .btn {
-            width: 100%;
-            padding: 12px;
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        .btn:hover {
-            background: #5568d3;
-        }
-
-        .btn-secondary {
-            background: #6c757d;
-            margin-top: 10px;
-        }
-
-        .btn-secondary:hover {
-            background: #5a6268;
-        }
-
-        .btn-danger {
-            background: #dc3545;
-            width: auto;
-            padding: 8px 16px;
-            font-size: 14px;
-        }
-
-        .btn-danger:hover {
-            background: #c82333;
-        }
-
-        .header {
-            background: white;
-            padding: 20px 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            margin-bottom: 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .header h1 {
-            color: #333;
-            font-size: 24px;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .live-indicator {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            background: #d4edda;
-            color: #155724;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .live-dot {
-            width: 8px;
-            height: 8px;
-            background: #28a745;
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% {
-                opacity: 1;
-            }
-            50% {
-                opacity: 0.5;
-            }
-        }
-
-        .role-badge {
-            background: #667eea;
-            color: white;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .content {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        .task-form {
-            background: #f8f9fa;
-            padding: 25px;
-            border-radius: 8px;
-            margin-bottom: 30px;
-        }
-
-        .task-form h2 {
-            color: #333;
-            margin-bottom: 20px;
-        }
-
-        .tasks-list {
-            margin-top: 20px;
-        }
-
-        .tasks-list h2 {
-            color: #333;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #e0e0e0;
-        }
-
-        .task-card {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            border-left: 4px solid #667eea;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .task-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        .task-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: start;
-            margin-bottom: 10px;
-        }
-
-        .task-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 8px;
-        }
-
-        .task-description {
-            color: #666;
-            line-height: 1.6;
-            margin-bottom: 12px;
-        }
-
-        .task-meta {
-            display: flex;
-            gap: 15px;
-            font-size: 14px;
-            color: #888;
-        }
-
-        .task-meta span {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .employee-badge {
-            display: inline-block;
-            background: #e7e7ff;
-            color: #667eea;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 500;
-        }
-
-        .date-badge {
-            background: #fff3cd;
-            color: #856404;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 500;
-        }
-
-        .type-badge {
-            padding: 6px 14px;
-            border-radius: 12px;
-            font-size: 13px;
-            font-weight: 600;
-        }
-
-        .type-gcash {
-            background: #0066cc;
-            color: white;
-        }
-
-        .type-eload {
-            background: #ff6b00;
-            color: white;
-        }
-
-        .type-sdp {
-            background: #28a745;
-            color: white;
-        }
-
-        .type-delta {
-            background: #6f42c1;
-            color: white;
-        }
-
-        .week-badge {
-            background: #e2e3e5;
-            color: #383d41;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 500;
-        }
-
-        .no-tasks {
-            text-align: center;
-            padding: 40px;
-            color: #999;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        .error {
-            color: #dc3545;
-            font-size: 14px;
-            margin-top: 5px;
-        }
-
-        @media (max-width: 768px) {
-            .header {
-                flex-direction: column;
-                gap: 15px;
-            }
-
-            .task-header {
-                flex-direction: column;
-            }
-
-            .task-meta {
-                flex-direction: column;
-                gap: 8px;
-            }
-        }
-    </style>
+  @media (max-width: 768px) {
+    .grid-2 { grid-template-columns: 1fr; }
+    .assign-grid { grid-template-columns: 1fr; }
+    .main { padding: 20px; }
+    .tabs { padding: 0 16px; overflow-x: auto; }
+    .topbar { padding: 12px 16px; }
+  }
+</style>
 </head>
 <body>
-    <!-- Login Screen -->
-    <div id="loginScreen" class="login-container">
-        <h1>📋 Daily Task Manager</h1>
-        <form id="loginForm">
-            <div class="form-group">
-                <label for="username">Username</label>
-                <input type="text" id="username" required>
-            </div>
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" required>
-            </div>
-            <div class="form-group">
-                <label for="role">Login as</label>
-                <select id="role" required>
-                    <option value="">Select role...</option>
-                    <option value="admin">Admin</option>
-                    <option value="employee">Employee</option>
-                </select>
-            </div>
-            <button type="submit" class="btn">Login</button>
-        </form>
-        <div style="margin-top: 20px; padding: 15px; background: #e7f3ff; border-radius: 6px; font-size: 14px;">
-            <strong>Demo Credentials:</strong><br>
-            Admin: admin / admin123<br>
-            Employee: person / person123<br><br>
-            <strong>✨ Real-time Updates:</strong><br>
-            Assign multiple GCash/Eload/SDP/Delta tasks to employees per day. Changes sync instantly!
+
+<!-- LOGIN SCREEN -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">TaskFlow</div>
+    <div class="login-sub">Enter your name to continue</div>
+    <div class="form-group">
+      <label>Your Name</label>
+      <input type="text" id="loginName" placeholder="e.g. Juan dela Cruz" autocomplete="off">
+      <div class="error-msg" id="loginError">Name not found. Please contact your admin.</div>
+    </div>
+    <button class="btn btn-primary btn-full" onclick="doLogin()">Sign In</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="topbar">
+    <div class="topbar-logo">TaskFlow</div>
+    <div class="topbar-right">
+      <div class="user-badge">
+        <div class="user-dot"></div>
+        <span id="currentUserDisplay">—</span>
+      </div>
+      <button class="btn btn-secondary" onclick="logout()">Sign Out</button>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab" id="tabAdmin" onclick="switchTab('admin')">Admin</button>
+    <button class="tab active" id="tabEmployee" onclick="switchTab('employee')">Employee View</button>
+  </div>
+
+  <!-- ADMIN TAB -->
+  <div id="adminView" class="main" style="display:none;">
+    <div class="grid-2">
+      <!-- Add Employees -->
+      <div class="card">
+        <div class="card-title">👤 Manage Employees</div>
+        <div class="input-row">
+          <input type="text" id="empInput" placeholder="Employee name..." onkeydown="if(event.key==='Enter')addEmployee()">
+          <button class="btn btn-primary" onclick="addEmployee()">Add</button>
         </div>
+        <div class="tag-list" id="empList"></div>
+      </div>
+      <!-- Add Tasks -->
+      <div class="card">
+        <div class="card-title">📋 Manage Tasks</div>
+        <div class="input-row">
+          <input type="text" id="taskInput" placeholder="Task name (e.g. SDP, Delta)..." onkeydown="if(event.key==='Enter')addTask()">
+          <button class="btn btn-primary" onclick="addTask()">Add</button>
+        </div>
+        <div class="tag-list" id="taskList"></div>
+      </div>
     </div>
 
-    <!-- Admin Dashboard -->
-    <div id="adminDashboard" class="container hidden">
-        <div class="header">
-            <h1>📋 Admin Dashboard</h1>
-            <div class="user-info">
-                <div class="live-indicator">
-                    <span class="live-dot"></span>
-                    LIVE
-                </div>
-                <span class="role-badge">ADMIN</span>
-                <span id="adminUsername"></span>
-                <button class="btn btn-secondary" onclick="logout()" style="width: auto; padding: 8px 20px;">Logout</button>
-            </div>
-        </div>
+    <hr class="separator">
 
-        <div class="content">
-            <div class="task-form">
-                <h2>Assign Task</h2>
-                <form id="taskForm">
-                    <div class="form-group">
-                        <label for="taskType">Task Type *</label>
-                        <select id="taskType" required>
-                            <option value="">Select task type...</option>
-                            <option value="GCash">GCash</option>
-                            <option value="Eload">Eload</option>
-                            <option value="SDP">SDP</option>
-                            <option value="Delta">Delta</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="assignedTo">Assign to Employee *</label>
-                        <select id="assignedTo" required>
-                            <option value="">Select employee...</option>
-                            <option value="person">Jan Person Garcia</option>
-                            <option value="rose">April Rose Bayer</option>
-                            <option value="divine">Divine Silva</option>
-                            <option value="liza">Liza Abregana</option>
-                            <option value="justine">Justine Querubin</option>
-                            <option value="ezra">Ezra Xamel Tujan</option>
-                            <option value="claire">Claire Cabiluna</option>
-                            <option value="jenny">Jenny Matarong</option>
-                            <option value="chrystal">Chrystal Damiles</option>
-                            <option value="wendy">Wendy Blue Hinlong</option>
-                            <option value="lalaine">Lalaine Unabia</option>
-                            <option value="danica">Danica Caballero</option>
-                            <option value="marco">Marco Reubal</option>
-                            <option value="ana">Ana Lhoryn Valente</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="taskDate">Date Assigned *</label>
-                        <input type="date" id="taskDate" required>
-                    </div>
-                    <button type="submit" class="btn">Assign Task</button>
-                </form>
-            </div>
-
-            <div class="tasks-list">
-                <h2>All Tasks</h2>
-                <div id="adminTasksList"></div>
-            </div>
+    <!-- Assign Tasks -->
+    <div class="assign-card">
+      <h3 class="section-title" style="margin-bottom:20px;">Assign Task to Employees</h3>
+      <div class="assign-grid">
+        <div>
+          <label>Select Task</label>
+          <select id="assignTask" style="margin-top:8px;">
+            <option value="">— Choose task —</option>
+          </select>
         </div>
+        <div>
+          <label>Date of Duty</label>
+          <input type="date" id="assignDate" style="margin-top:8px;">
+        </div>
+        <div style="display:flex;align-items:flex-end;">
+          <button class="btn btn-primary" onclick="assignTask()" style="margin-top:8px;width:100%;justify-content:center;">Assign</button>
+        </div>
+      </div>
+      <label>Select Employees</label>
+      <div class="employee-checkboxes" id="empCheckboxes" style="margin-top:8px;"></div>
     </div>
 
-    <!-- Employee Dashboard -->
-    <div id="employeeDashboard" class="container hidden">
-        <div class="header">
-            <h1>📋 My Tasks</h1>
-            <div class="user-info">
-                <div class="live-indicator">
-                    <span class="live-dot"></span>
-                    LIVE
-                </div>
-                <span class="role-badge">EMPLOYEE</span>
-                <span id="employeeUsername"></span>
-                <button class="btn btn-secondary" onclick="logout()" style="width: auto; padding: 8px 20px;">Logout</button>
-            </div>
-        </div>
+    <hr class="separator">
 
-        <div class="content">
-            <div class="tasks-list">
-                <h2>Tasks Assigned to Me</h2>
-                <div id="employeeTasksList"></div>
-            </div>
-        </div>
+    <!-- Assignment Table -->
+    <h3 class="section-title">Current Assignments</h3>
+    <div class="table-wrap">
+      <table id="assignTable">
+        <thead>
+          <tr>
+            <th>Task</th>
+            <th>Date of Duty</th>
+            <th>Date Assigned</th>
+            <th>Assigned Employees</th>
+          </tr>
+        </thead>
+        <tbody id="assignTableBody"></tbody>
+      </table>
     </div>
+  </div>
 
-    <script>
-        // Sample data structure
-        let tasks = [];
-        let currentUser = null;
-        let pollInterval = null;
+  <!-- EMPLOYEE TAB -->
+  <div id="empView" class="main">
+    <div class="emp-header">
+      <h2 id="empGreeting">Hello!</h2>
+      <p>Here are all current task assignments across the team.</p>
+    </div>
+    <div class="tasks-grid" id="empTaskCards"></div>
+  </div>
+</div>
 
-        // Demo users
-        const users = {
-            admin: { username: 'admin', password: 'admin123', role: 'admin', name: 'Admin User' },
-            person: { username: 'person', password: 'person123', role: 'employee', name: 'Jan Person Garcia' },
-            rose: { username: 'rose', password: 'rose123', role: 'employee', name: 'April Rose Bayer' },
-            divine: { username: 'divine', password: 'divine123', role: 'employee', name: 'Divine Silva' },
-            liza: { username: 'liza', password: 'liza123', role: 'employee', name: 'Liza Abregana' },
-            justine: { username: 'justine', password: 'justine123', role: 'employee', name: 'Justine Querubin' },
-            ezra: { username: 'ezra', password: 'ezra123', role: 'employee', name: 'Ezra Xamel Tujan' },
-            claire: { username: 'claire', password: 'claire123', role: 'employee', name: 'Claire Cabiluna' },
-            jenny: { username: 'jenny', password: 'jenny123', role: 'employee', name: 'Jenny Matarong' },
-            chrystal: { username: 'chrystal', password: 'chrystal123', role: 'employee', name: 'Chrystal Damiles' },
-            wendy: { username: 'wendy', password: 'wendy123', role: 'employee', name: 'Wendy Blue Hinlong' },
-            lalaine: { username: 'lalaine', password: 'lalaine123', role: 'employee', name: 'Lalaine Unabia' },
-            danica: { username: 'danica', password: 'danica123', role: 'employee', name: 'Danica Caballero' },
-            marco: { username: 'marco', password: 'marco123', role: 'employee', name: 'Marco Reubal' },
-            ana: { username: 'ana', password: 'ana123', role: 'employee', name: 'Ana Lhoryn Valente' }
-        };
+<script>
+// ─── STORAGE ───────────────────────────────────────────────────────────────
+const STORAGE_KEY = 'taskflow_data_v3';
 
-        // Load tasks from shared storage
-        async function loadTasks() {
-            try {
-                const result = await window.storage.get('shared-tasks', true);
-                if (result && result.value) {
-                    tasks = JSON.parse(result.value);
-                } else {
-                    tasks = [];
-                }
-            } catch (error) {
-                console.log('No existing tasks found or storage error, starting fresh');
-                tasks = [];
-            }
-        }
+function loadData() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  return { employees: [], tasks: [], assignments: [] };
+}
 
-        // Save tasks to shared storage with retry
-        async function saveTasks() {
-            let retries = 3;
-            while (retries > 0) {
-                try {
-                    await window.storage.set('shared-tasks', JSON.stringify(tasks), true);
-                    return true;
-                } catch (error) {
-                    console.error('Error saving tasks (attempt ' + (4 - retries) + '):', error);
-                    retries--;
-                    if (retries > 0) {
-                        // Wait before retrying
-                        await new Promise(resolve => setTimeout(resolve, 500));
-                    }
-                }
-            }
-            // If all retries failed, show error to user
-            alert('Failed to save task. Please try again.');
-            return false;
-        }
+function saveData() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
 
-        // Start polling for updates
-        function startPolling() {
-            // Poll every 2 seconds for updates
-            pollInterval = setInterval(async () => {
-                await loadTasks();
-                if (currentUser) {
-                    if (currentUser.role === 'admin') {
-                        displayAdminTasks();
-                    } else {
-                        displayEmployeeTasks();
-                    }
-                }
-            }, 2000);
-        }
+// Sync across tabs in real time
+window.addEventListener('storage', (e) => {
+  if (e.key === STORAGE_KEY) {
+    const fresh = loadData();
+    state.employees = fresh.employees;
+    state.tasks = fresh.tasks;
+    state.assignments = fresh.assignments;
+    renderAll();
+  }
+});
 
-        // Stop polling
-        function stopPolling() {
-            if (pollInterval) {
-                clearInterval(pollInterval);
-                pollInterval = null;
-            }
-        }
+// ─── STATE ─────────────────────────────────────────────────────────────────
+let state = loadData();
+let currentUser = null;
+let isAdmin = false;
+let currentTab = 'employee';
 
-        // Login form handler
-        document.getElementById('loginForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            const role = document.getElementById('role').value;
+// ─── LOGIN ─────────────────────────────────────────────────────────────────
+const ADMIN_NAMES = ['admin', 'Admin', 'ADMIN'];
 
-            const user = users[username];
+function doLogin() {
+  const name = document.getElementById('loginName').value.trim();
+  if (!name) return;
 
-            if (user && user.password === password && user.role === role) {
-                currentUser = user;
-                await loadTasks();
-                showDashboard(role);
-                startPolling(); // Start real-time updates
-            } else {
-                alert('Invalid credentials or role selection!');
-            }
-        });
+  if (ADMIN_NAMES.includes(name.toLowerCase())) {
+    // Admin bypass — allow if admin keyword
+    currentUser = 'Admin';
+    isAdmin = true;
+    startApp();
+    return;
+  }
 
-        // Show appropriate dashboard
-        function showDashboard(role) {
-            document.getElementById('loginScreen').classList.add('hidden');
-            
-            if (role === 'admin') {
-                document.getElementById('adminDashboard').classList.remove('hidden');
-                document.getElementById('adminUsername').textContent = currentUser.name;
-                displayAdminTasks();
-            } else {
-                document.getElementById('employeeDashboard').classList.remove('hidden');
-                document.getElementById('employeeUsername').textContent = currentUser.name;
-                displayEmployeeTasks();
-            }
-        }
+  const found = state.employees.find(e => e.toLowerCase() === name.toLowerCase());
+  if (!found) {
+    document.getElementById('loginError').style.display = 'block';
+    return;
+  }
+  currentUser = found;
+  isAdmin = false;
+  startApp();
+}
 
-        // Logout
-        function logout() {
-            stopPolling(); // Stop real-time updates
-            currentUser = null;
-            document.getElementById('adminDashboard').classList.add('hidden');
-            document.getElementById('employeeDashboard').classList.add('hidden');
-            document.getElementById('loginScreen').classList.remove('hidden');
-            document.getElementById('loginForm').reset();
-        }
+document.getElementById('loginName').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
 
-        // Task form handler
-        document.getElementById('taskForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
+function startApp() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  document.getElementById('currentUserDisplay').textContent = currentUser;
 
-            const task = {
-                id: Date.now(),
-                type: document.getElementById('taskType').value,
-                assignedTo: document.getElementById('assignedTo').value,
-                date: document.getElementById('taskDate').value,
-                createdBy: currentUser.username,
-                createdAt: new Date().toISOString()
-            };
+  if (isAdmin) {
+    document.getElementById('tabAdmin').disabled = false;
+    document.getElementById('tabAdmin').style.opacity = '1';
+    switchTab('admin');
+  } else {
+    document.getElementById('tabAdmin').disabled = true;
+    document.getElementById('tabAdmin').style.opacity = '0.3';
+    document.getElementById('tabAdmin').style.cursor = 'not-allowed';
+    switchTab('employee');
+  }
 
-            tasks.push(task);
-            const saved = await saveTasks();
-            
-            if (saved) {
-                displayAdminTasks();
-                // Reset form
-                document.getElementById('taskForm').reset();
-                alert('Task assigned successfully!');
-            } else {
-                // Remove the task from array if save failed
-                tasks.pop();
-            }
-        });
+  // Set today's date as default
+  document.getElementById('assignDate').value = new Date().toISOString().split('T')[0];
 
-        // Display all tasks for admin
-        function displayAdminTasks() {
-            const tasksList = document.getElementById('adminTasksList');
-            
-            if (tasks.length === 0) {
-                tasksList.innerHTML = '<div class="no-tasks">No tasks assigned yet. Assign your first task above!</div>';
-                return;
-            }
+  renderAll();
+}
 
-            const employeeNames = {
-                person: 'Jan Person Garcia',
-                rose: 'April Rose Bayer',
-                divine: 'Divine Silva',
-                liza: 'Liza Abregana',
-                justine: 'Justine Querubin',
-                ezra: 'Ezra Xamel Tujan',
-                claire: 'Claire Cabiluna',
-                jenny: 'Jenny Matarong',
-                chrystal: 'Chrystal Damiles',
-                wendy: 'Wendy Blue Hinlong',
-                lalaine: 'Lalaine Unabia',
-                danica: 'Danica Caballero',
-                marco: 'Marco Reubal',
-                ana: 'Ana Lhoryn Valente'
-            };
+function logout() {
+  currentUser = null;
+  isAdmin = false;
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('loginName').value = '';
+  document.getElementById('loginError').style.display = 'none';
+}
 
-            // Group tasks by date and employee
-            const groupedTasks = {};
-            tasks.forEach(task => {
-                const key = `${task.date}_${task.assignedTo}`;
-                if (!groupedTasks[key]) {
-                    groupedTasks[key] = {
-                        date: task.date,
-                        employee: task.assignedTo,
-                        tasks: []
-                    };
-                }
-                groupedTasks[key].tasks.push(task);
-            });
+// ─── TABS ──────────────────────────────────────────────────────────────────
+function switchTab(tab) {
+  if (tab === 'admin' && !isAdmin) return;
+  currentTab = tab;
+  document.getElementById('tabAdmin').classList.toggle('active', tab === 'admin');
+  document.getElementById('tabEmployee').classList.toggle('active', tab === 'employee');
+  document.getElementById('adminView').style.display = tab === 'admin' ? 'block' : 'none';
+  document.getElementById('empView').style.display = tab === 'employee' ? 'block' : 'none';
+  if (tab === 'employee') renderEmpView();
+}
 
-            // Sort by date (newest first)
-            const sortedGroups = Object.values(groupedTasks).sort((a, b) => 
-                new Date(b.date) - new Date(a.date)
-            );
+// ─── EMPLOYEES ─────────────────────────────────────────────────────────────
+function addEmployee() {
+  const val = document.getElementById('empInput').value.trim();
+  if (!val) return;
+  if (state.employees.includes(val)) { showToast('Employee already exists'); return; }
+  state.employees.push(val);
+  saveData();
+  document.getElementById('empInput').value = '';
+  renderAll();
+  showToast(`✓ Added employee: ${val}`);
+}
 
-            tasksList.innerHTML = sortedGroups.map(group => `
-                <div class="task-card">
-                    <div class="task-header">
-                        <div style="flex: 1;">
-                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
-                                <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                    <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
-                                </svg>
-                                <span style="font-weight: 600; font-size: 16px;">${employeeNames[group.employee]}</span>
-                                <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                    <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>
-                                </svg>
-                                <span style="color: #666;">${formatDate(group.date)}</span>
-                            </div>
-                            <div style="display: flex; flex-wrap: wrap; gap: 8px;">
-                                ${group.tasks.map(task => `
-                                    <div style="display: flex; align-items: center; gap: 8px;">
-                                        <span class="type-badge type-${task.type.toLowerCase()}">${task.type}</span>
-                                        <button class="btn btn-danger" onclick="deleteTask(${task.id})" style="padding: 4px 8px; font-size: 12px;">✕</button>
-                                    </div>
-                                `).join('')}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
+function removeEmployee(name) {
+  state.employees = state.employees.filter(e => e !== name);
+  saveData();
+  renderAll();
+}
 
-        // Display tasks for employee
-        function displayEmployeeTasks() {
-            const tasksList = document.getElementById('employeeTasksList');
-            const myTasks = tasks.filter(task => task.assignedTo === currentUser.username);
-            
-            if (myTasks.length === 0) {
-                tasksList.innerHTML = '<div class="no-tasks">No tasks assigned to you yet.</div>';
-                return;
-            }
+// ─── TASKS ─────────────────────────────────────────────────────────────────
+function addTask() {
+  const val = document.getElementById('taskInput').value.trim();
+  if (!val) return;
+  if (state.tasks.includes(val)) { showToast('Task already exists'); return; }
+  state.tasks.push(val);
+  saveData();
+  document.getElementById('taskInput').value = '';
+  renderAll();
+  showToast(`✓ Added task: ${val}`);
+}
 
-            // Group tasks by date
-            const groupedByDate = {};
-            myTasks.forEach(task => {
-                if (!groupedByDate[task.date]) {
-                    groupedByDate[task.date] = [];
-                }
-                groupedByDate[task.date].push(task);
-            });
+function removeTask(name) {
+  state.tasks = state.tasks.filter(t => t !== name);
+  saveData();
+  renderAll();
+}
 
-            // Sort by date (newest first)
-            const sortedDates = Object.keys(groupedByDate).sort((a, b) => 
-                new Date(b) - new Date(a)
-            );
+// ─── ASSIGN ────────────────────────────────────────────────────────────────
+function assignTask() {
+  const task = document.getElementById('assignTask').value;
+  const date = document.getElementById('assignDate').value;
+  if (!task) { showToast('Please select a task'); return; }
+  if (!date) { showToast('Please select a duty date'); return; }
 
-            tasksList.innerHTML = sortedDates.map(date => `
-                <div class="task-card">
-                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
-                        <svg width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
-                            <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>
-                        </svg>
-                        <span style="font-weight: 600; font-size: 17px; color: #333;">${formatDate(date)}</span>
-                    </div>
-                    <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-                        ${groupedByDate[date].map(task => `
-                            <span class="type-badge type-${task.type.toLowerCase()}">${task.type}</span>
-                        `).join('')}
-                    </div>
-                </div>
-            `).join('');
-        }
+  const selected = [...document.querySelectorAll('.emp-checkbox.selected')].map(el => el.dataset.name);
+  if (selected.length === 0) { showToast('Select at least one employee'); return; }
 
-        // Delete task
-        async function deleteTask(taskId) {
-            if (confirm('Are you sure you want to delete this task?')) {
-                const originalTasks = [...tasks];
-                tasks = tasks.filter(task => task.id !== taskId);
-                const saved = await saveTasks();
-                
-                if (saved) {
-                    displayAdminTasks();
-                } else {
-                    // Restore tasks if save failed
-                    tasks = originalTasks;
-                }
-            }
-        }
+  // Find existing assignment for this task+date or create new
+  let existing = state.assignments.find(a => a.task === task && a.dutyDate === date);
+  if (existing) {
+    // Merge employees
+    selected.forEach(emp => {
+      if (!existing.employees.includes(emp)) existing.employees.push(emp);
+    });
+  } else {
+    state.assignments.push({
+      id: Date.now(),
+      task,
+      dutyDate: date,
+      dateAssigned: new Date().toISOString().split('T')[0],
+      employees: selected
+    });
+  }
 
-        // Format date
-        function formatDate(dateString) {
-            const date = new Date(dateString);
-            return date.toLocaleDateString('en-US', { 
-                year: 'numeric', 
-                month: 'short', 
-                day: 'numeric' 
-            });
-        }
+  saveData();
+  renderAll();
+  // Clear selection
+  document.querySelectorAll('.emp-checkbox.selected').forEach(el => el.classList.remove('selected'));
+  showToast(`✓ Task assigned to ${selected.length} employee(s)`);
+}
 
-        // Set minimum date to today
-        document.addEventListener('DOMContentLoaded', function() {
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('taskDate').setAttribute('min', today);
-        });
-    </script>
+// ─── RENDER ────────────────────────────────────────────────────────────────
+function renderAll() {
+  renderEmpList();
+  renderTaskList();
+  renderTaskDropdown();
+  renderEmpCheckboxes();
+  renderAssignTable();
+  if (currentTab === 'employee') renderEmpView();
+}
+
+function renderEmpList() {
+  const el = document.getElementById('empList');
+  el.innerHTML = state.employees.map(e => `
+    <span class="tag">
+      ${e}
+      <span class="remove" onclick="removeEmployee('${e}')">×</span>
+    </span>`).join('');
+}
+
+function renderTaskList() {
+  const el = document.getElementById('taskList');
+  el.innerHTML = state.tasks.map(t => `
+    <span class="tag" style="background:rgba(232,197,71,0.08);border-color:rgba(232,197,71,0.25);">
+      ${t}
+      <span class="remove" onclick="removeTask('${t}')">×</span>
+    </span>`).join('');
+}
+
+function renderTaskDropdown() {
+  const sel = document.getElementById('assignTask');
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">— Choose task —</option>' +
+    state.tasks.map(t => `<option value="${t}" ${t===cur?'selected':''}>${t}</option>`).join('');
+}
+
+function renderEmpCheckboxes() {
+  const el = document.getElementById('empCheckboxes');
+  if (state.employees.length === 0) {
+    el.innerHTML = '<span style="color:var(--muted);font-size:13px;">No employees added yet.</span>';
+    return;
+  }
+  el.innerHTML = state.employees.map(e => {
+    const task = document.getElementById('assignTask').value;
+    const date = document.getElementById('assignDate').value;
+    // Disable if already assigned this task on this date
+    let disabled = false;
+    if (task && date) {
+      const existing = state.assignments.find(a => a.task === task && a.dutyDate === date);
+      if (existing && existing.employees.includes(e)) disabled = true;
+    }
+    return `<div class="emp-checkbox ${disabled?'disabled':''}" data-name="${e}" onclick="toggleEmp(this)">
+      <div class="check-icon">✓</div>
+      <span>${e}</span>
+      ${disabled ? '<span style="font-size:10px;color:var(--muted)">(assigned)</span>' : ''}
+    </div>`;
+  }).join('');
+}
+
+function toggleEmp(el) {
+  if (el.classList.contains('disabled')) return;
+  el.classList.toggle('selected');
+}
+
+// Re-render checkboxes when task or date changes
+document.getElementById('assignTask').addEventListener('change', renderEmpCheckboxes);
+document.getElementById('assignDate').addEventListener('change', renderEmpCheckboxes);
+
+function renderAssignTable() {
+  const tbody = document.getElementById('assignTableBody');
+  if (state.assignments.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:40px;">No assignments yet.</td></tr>';
+    return;
+  }
+  // Sort by duty date
+  const sorted = [...state.assignments].sort((a,b) => a.dutyDate.localeCompare(b.dutyDate));
+  tbody.innerHTML = sorted.map(a => {
+    const today = new Date().toISOString().split('T')[0];
+    const isFuture = a.dutyDate > today;
+    return `<tr>
+      <td><strong>${a.task}</strong></td>
+      <td>
+        <span class="date-badge">${formatDate(a.dutyDate)}</span>
+        ${isFuture ? '<span class="future-badge">Advance</span>' : ''}
+      </td>
+      <td><span class="date-badge">${formatDate(a.dateAssigned)}</span></td>
+      <td><div class="emp-pills">${a.employees.map(e=>`<span class="emp-pill">${e}</span>`).join('')}</div></td>
+    </tr>`;
+  }).join('');
+}
+
+function renderEmpView() {
+  const el = document.getElementById('empTaskCards');
+  const greeting = document.getElementById('empGreeting');
+  if (currentUser) greeting.textContent = `Hello, ${currentUser}! 👋`;
+
+  if (state.assignments.length === 0) {
+    el.innerHTML = `<div class="empty-state"><div class="icon">📋</div><h3>No assignments yet</h3><p>Check back later for your task assignments.</p></div>`;
+    return;
+  }
+
+  // Group by task name (show all tasks)
+  const taskMap = {};
+  state.assignments.forEach(a => {
+    if (!taskMap[a.task]) taskMap[a.task] = [];
+    taskMap[a.task].push(a);
+  });
+
+  el.innerHTML = Object.entries(taskMap).map(([task, assignments]) => {
+    // Sort assignments by duty date
+    const sorted = [...assignments].sort((a,b) => a.dutyDate.localeCompare(b.dutyDate));
+    const today = new Date().toISOString().split('T')[0];
+
+    return sorted.map(a => {
+      const isFuture = a.dutyDate > today;
+      const isMyTask = a.employees.includes(currentUser);
+      return `<div class="task-card" style="${isMyTask ? 'border-color:rgba(232,197,71,0.4);' : ''}">
+        <div class="task-card-header">
+          <div>
+            <div class="task-card-name">${task}</div>
+            <div class="task-card-date">
+              Duty: ${formatDate(a.dutyDate)} ${isFuture ? '<span class="future-badge">Advance</span>' : ''}
+            </div>
+            <div class="task-card-date" style="margin-top:3px;">Assigned: ${formatDate(a.dateAssigned)}</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
+            <span class="task-type-badge">${task}</span>
+            ${isMyTask ? '<span style="font-size:11px;background:rgba(232,197,71,0.15);border:1px solid rgba(232,197,71,0.4);color:var(--accent);padding:3px 8px;border-radius:100px;">Your Task</span>' : ''}
+          </div>
+        </div>
+        <div class="task-card-body">
+          <div class="assigned-label">Assigned Team</div>
+          <div class="assigned-grid">
+            ${a.employees.map(emp => `
+              <div class="assigned-name ${emp === currentUser ? 'is-me' : ''}">
+                ${emp === currentUser ? '<div class="me-dot"></div>' : ''}
+                ${emp}
+              </div>`).join('')}
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  }).join('');
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return '—';
+  const d = new Date(dateStr + 'T00:00:00');
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+
+// ─── INIT ──────────────────────────────────────────────────────────────────
+// Set default date
+document.getElementById('assignDate').value = new Date().toISOString().split('T')[0];
+</script>
 </body>
 </html>
