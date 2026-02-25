@@ -166,9 +166,7 @@
   .acct-avatar.e{ background:rgba(79,209,197,.12); color:var(--accent2); border:1px solid rgba(79,209,197,.3); }
   .acct-name{ font-size:13px; font-weight:500; }
   .acct-you{ font-size:10px; color:var(--muted); font-family:'DM Mono',monospace; margin-left:4px; }
-  .acct-del{ background:rgba(248,113,113,.1); border:1px solid rgba(248,113,113,.25); color:var(--red); border-radius:8px; padding:4px 10px; font-size:11px; font-weight:600; cursor:pointer; transition:all .15s; font-family:'DM Sans',sans-serif; }
-  .acct-del:hover{ background:rgba(248,113,113,.2); }
-  .acct-del:disabled{ opacity:.3; cursor:not-allowed; }
+
 
   /* assign */
   .assign-card{ background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:28px; margin-bottom:24px; }
@@ -277,8 +275,8 @@
 <div id="configScreen" style="display:none;">
   <div class="config-box">
     <div class="config-logo">Task Management</div>
-  <!--  <div class="config-sub">Connect your Supabase project to get started. This only needs to be done once.</div>
-
+    <div class="config-sub">Connect your Supabase project to get started. This only needs to be done once.</div>
+<!--
     <div class="config-step">
       <strong>Step 1</strong> — Go to your <strong>Supabase Dashboard</strong> → <strong>SQL Editor</strong> and run the <code>schema.sql</code> file provided.
     </div>
@@ -290,11 +288,11 @@
     </div>
 -->
     <div class="form-group" style="margin-top:24px;">
-      <label>Supabase Project URL</label>
+      <label>Database Project URL</label>
       <input type="text" id="cfgUrl" placeholder="Ask the Administrator">
     </div>
     <div class="form-group">
-      <label>Supabase Anon Key</label>
+      <label>Database Anon Key</label>
       <input type="text" id="cfgKey" placeholder="Ask the Administrator">
       <div class="error-msg" id="cfgError">Could not connect. Check your URL and key.</div>
     </div>
@@ -308,7 +306,7 @@
     <div class="login-logo">Task Management</div>
     <div class="login-sub">Sign in to view or manage tasks</div>
     <div class="form-group">
-      <label>Your Name</label>
+      <label>Your First name</label>
       <input type="text" id="loginName" placeholder="Enter your name…" autocomplete="off">
       <div class="error-msg" id="loginError">Name not found. Check spelling or contact your admin.</div>
     </div>
@@ -744,7 +742,6 @@ function renderAdminList(){
         <span class="acct-name">${a}</span>
         ${isMe?'<span class="acct-you">(you)</span>':''}
       </div>
-      <button class="acct-del" onclick="removeAdmin(${JSON.stringify(a)})" ${isMe?'disabled':''}>Delete</button>
     </div>`;
   }).join('');
 }
@@ -757,7 +754,6 @@ function renderEmpList(){
         <div class="acct-avatar e">${e.charAt(0).toUpperCase()}</div>
         <span class="acct-name">${e}</span>
       </div>
-      <button class="acct-del" onclick="removeEmployee(${JSON.stringify(e)})">Delete</button>
     </div>`).join('');
 }
 function renderTaskList(){
@@ -919,7 +915,25 @@ function showToast(msg,err=false){
   setTimeout(()=>t.remove(),3500);
 }
 
-// ─── BOOT ─────────────────────────────────────────────────────────────────
+// ─── MIDNIGHT DATE RESET ─────────────────────────────────────────────────
+// At 00:00 every day, reset the duty date pickers to today's date
+function scheduleMidnightReset(){
+  const now = new Date();
+  const msUntilMidnight =
+    new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0) - now;
+  setTimeout(()=>{
+    const today = td();
+    const df = document.getElementById('dutyFrom');
+    const dt = document.getElementById('dutyTo');
+    if(df) df.value = today;
+    if(dt) dt.value = today;
+    renderEmpCbs();
+    scheduleMidnightReset(); // reschedule for the next midnight
+  }, msUntilMidnight);
+}
+scheduleMidnightReset();
+
+
 (async function boot(){
   const cfg=loadConfig();
   if(cfg && cfg.url && cfg.key){
