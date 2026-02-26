@@ -253,36 +253,42 @@
 
   /* ── SCHEDULE TABLE ── */
   #scheduleView{ display:none; }
+  #leaveView{ display:none; }
   .sched-nav{ display:flex; align-items:center; gap:12px; margin-bottom:24px; flex-wrap:wrap; }
   .sched-nav h2{ font-family:'DM Serif Display',serif; font-size:24px; flex:1; }
-  .week-picker{ display:flex; align-items:center; gap:8px; }
-  .week-picker input[type=date]{ width:160px; padding:8px 12px; font-size:13px; }
+  .month-picker{ display:flex; align-items:center; gap:8px; }
+  .month-picker input[type=month]{ background:var(--bg); border:1px solid var(--border); border-radius:var(--radius); color:var(--text); padding:8px 14px; font-family:'DM Sans',sans-serif; font-size:13px; outline:none; transition:border-color .2s; }
+  .month-picker input[type=month]:focus{ border-color:var(--accent); }
   .sched-outer{ overflow-x:auto; border-radius:16px; border:1px solid var(--border); margin-bottom:32px; }
-  .sched-table{ width:100%; border-collapse:collapse; min-width:900px; }
-  .sched-table th{ background:var(--surface2); padding:10px 14px; font-size:11px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.8px; border-bottom:1px solid var(--border); border-right:1px solid var(--border); text-align:center; white-space:nowrap; }
+  .sched-table{ border-collapse:collapse; }
+  .sched-table th{ background:var(--surface2); padding:8px 10px; font-size:10px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.6px; border-bottom:1px solid var(--border); border-right:1px solid var(--border); text-align:center; white-space:nowrap; min-width:80px; }
   .sched-table th.sun{ color:var(--red); }
-  .sched-table th.today-col{ background:rgba(232,197,71,.08); color:var(--accent); }
-  .sched-table th:first-child{ text-align:left; min-width:160px; }
-  .sched-table td{ padding:8px 12px; font-size:13px; border-bottom:1px solid var(--border); border-right:1px solid var(--border); vertical-align:top; min-width:120px; }
-  .sched-table td:first-child{ font-weight:600; font-size:12px; white-space:nowrap; color:var(--text); background:var(--surface2); }
+  .sched-table th.sat{ color:#60a5fa; }
+  .sched-table th.today-col{ background:rgba(232,197,71,.1); color:var(--accent); }
+  .sched-table th:first-child{ text-align:left; min-width:180px; position:sticky; left:0; z-index:2; background:var(--surface2); }
+  .sched-table td{ padding:6px 8px; font-size:12px; border-bottom:1px solid var(--border); border-right:1px solid var(--border); vertical-align:top; min-width:80px; max-width:120px; }
+  .sched-table td:first-child{ font-weight:600; font-size:12px; white-space:nowrap; color:var(--text); background:var(--surface2); position:sticky; left:0; z-index:1; border-right:2px solid var(--border); }
   .sched-table td.today-col{ background:rgba(232,197,71,.04); }
   .sched-table tr:last-child td{ border-bottom:none; }
   .sched-table tr.row-dayoff td:first-child{ color:#f9a8d4; }
-  .sched-table tr.row-leave td:first-child{ color:#c084fc; }
-  .sched-table tr.row-ot td:first-child{ color:var(--orange,#fb923c); }
-  .sched-table tr.row-dayoff td{ background:rgba(249,168,212,.05); }
-  .sched-table tr.row-leave td{ background:rgba(192,132,252,.05); }
-  .sched-table tr.row-ot td{ background:rgba(251,146,60,.05); }
-  .sched-name-pill{ display:inline-block; background:var(--surface2); border:1px solid var(--border); border-radius:100px; padding:2px 8px; font-size:11px; margin:2px 2px; white-space:nowrap; cursor:default; }
+  .sched-table tr.row-dayoff td{ background:rgba(249,168,212,.04); }
+  .sched-name-pill{ display:block; background:var(--surface2); border:1px solid var(--border); border-radius:6px; padding:2px 6px; font-size:10px; margin:2px 0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:default; }
   .sched-name-pill.mine{ background:rgba(232,197,71,.15); border-color:rgba(232,197,71,.4); color:var(--accent); }
   .sched-name-pill.editable{ cursor:pointer; }
-  .sched-name-pill.editable:hover{ border-color:var(--red); color:var(--red); }
-  .sched-add-btn{ display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius:50%; background:var(--surface2); border:1px dashed var(--border); color:var(--muted); font-size:14px; cursor:pointer; transition:all .15s; vertical-align:middle; margin:2px; }
+  .sched-name-pill.editable:hover{ border-color:var(--red); color:var(--red); background:rgba(248,113,113,.08); }
+  .sched-add-btn{ display:inline-flex; align-items:center; justify-content:center; width:18px; height:18px; border-radius:4px; background:var(--surface2); border:1px dashed var(--border); color:var(--muted); font-size:13px; cursor:pointer; transition:all .15s; margin-top:2px; }
   .sched-add-btn:hover{ border-color:var(--accent); color:var(--accent); background:rgba(232,197,71,.1); }
-  .sched-section-title{ font-size:13px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin:24px 0 12px; display:flex; align-items:center; gap:8px; }
+
+  /* pre-approved leaves view */
+  .leave-table-wrap{ overflow-x:auto; border-radius:16px; border:1px solid var(--border); }
+  .leave-card{ background:var(--surface); border:1px solid rgba(167,139,250,.3); border-radius:16px; padding:20px; display:flex; justify-content:space-between; align-items:flex-start; gap:16px; }
+  .leave-name{ font-weight:600; font-size:15px; margin-bottom:4px; }
+  .leave-dates{ font-family:'DM Mono',monospace; font-size:12px; color:var(--muted); }
+  .leave-badge{ background:rgba(167,139,250,.15); border:1px solid rgba(167,139,250,.4); color:var(--purple); border-radius:100px; padding:3px 10px; font-size:11px; font-family:'DM Mono',monospace; white-space:nowrap; }
+  .leaves-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px; }
 
   /* assign modal for schedule */
-  .emp-check-grid{ display:flex; flex-wrap:wrap; gap:8px; max-height:240px; overflow-y:auto; padding:4px 0; }
+  .emp-check-grid{ display:flex; flex-wrap:wrap; gap:8px; max-height:260px; overflow-y:auto; padding:4px 0; }
   .ecc{ display:flex; align-items:center; gap:8px; background:var(--surface2); border:1px solid var(--border); border-radius:var(--radius); padding:7px 12px; cursor:pointer; transition:all .15s; user-select:none; font-size:13px; }
   .ecc:hover{ border-color:var(--accent); }
   .ecc.on{ background:rgba(232,197,71,.1); border-color:var(--accent); color:var(--accent); font-weight:500; }
@@ -377,6 +383,7 @@
     <button class="tab" id="tabAdmin" onclick="switchTab('admin')">⚙ Admin</button>
     <button class="tab active" id="tabEmp" onclick="switchTab('employee')">👥 Team View</button>
     <button class="tab" id="tabSched" onclick="switchTab('schedule')">📆 Schedule</button>
+    <button class="tab" id="tabLeave" onclick="switchTab('leave')">🌴 Pre-Approved Leaves</button>
   </div>
 
   <!-- ADMIN -->
@@ -482,45 +489,39 @@
   </div>
 </div>
 
-  <!-- SCHEDULE VIEW -->
+  <!-- SCHEDULE VIEW — monthly grid -->
   <div id="scheduleView" class="main" style="display:none;">
     <div class="sched-nav">
-      <h2>📆 Weekly Schedule</h2>
-      <div class="week-picker">
-        <button class="btn btn-ghost" onclick="shiftWeek(-1)">← Prev</button>
-        <input type="date" id="weekAnchor" onchange="renderSchedule()">
-        <button class="btn btn-ghost" onclick="shiftWeek(1)">Next →</button>
-        <button class="btn btn-ghost af" onclick="goToThisWeek()">This Week</button>
+      <h2>📆 Monthly Schedule</h2>
+      <div class="month-picker">
+        <button class="btn btn-ghost" onclick="shiftMonth(-1)">← Prev</button>
+        <input type="month" id="monthAnchor" onchange="renderSchedule()">
+        <button class="btn btn-ghost" onclick="shiftMonth(1)">Next →</button>
+        <button class="btn btn-ghost af" onclick="goToThisMonth()">This Month</button>
       </div>
-      <div id="weekLabel" style="font-size:13px;color:var(--muted);"></div>
+      <div id="monthLabel" style="font-size:13px;color:var(--muted);font-family:'DM Mono',monospace;"></div>
     </div>
-
-    <!-- SHIFTS TABLE -->
-    <div class="sched-section-title">🕐 Shift Schedule</div>
     <div class="sched-outer">
       <table class="sched-table" id="shiftTable">
         <thead id="shiftHead"></thead>
         <tbody id="shiftBody"></tbody>
       </table>
     </div>
+  </div>
 
-    <!-- OVERTIME TABLE -->
-    <div class="sched-section-title">⏰ Extended Overtime</div>
-    <div class="sched-outer">
-      <table class="sched-table" id="otTable">
-        <thead id="otHead"></thead>
-        <tbody id="otBody"></tbody>
-      </table>
+  <!-- PRE-APPROVED LEAVES VIEW -->
+  <div id="leaveView" class="main" style="display:none;">
+    <div class="sched-nav">
+      <h2>🌴 Pre-Approved Leaves</h2>
+      <div class="month-picker">
+        <button class="btn btn-ghost" onclick="shiftLeaveMonth(-1)">← Prev</button>
+        <input type="month" id="leaveMonthAnchor" onchange="renderLeaveView()">
+        <button class="btn btn-ghost" onclick="shiftLeaveMonth(1)">Next →</button>
+        <button class="btn btn-ghost af" onclick="goToThisLeaveMonth()">This Month</button>
+      </div>
+      <div id="leaveMonthLabel" style="font-size:13px;color:var(--muted);font-family:'DM Mono',monospace;"></div>
     </div>
-
-    <!-- LEAVES TABLE -->
-    <div class="sched-section-title">🌴 Leaves &amp; Day-offs</div>
-    <div class="sched-outer">
-      <table class="sched-table" id="lvTable">
-        <thead id="lvHead"></thead>
-        <tbody id="lvBody"></tbody>
-      </table>
-    </div>
+    <div id="leaveViewContent"></div>
   </div>
 </div><!-- /app -->
 
@@ -572,12 +573,12 @@ function resetConfig(){
 
 // ─── SUPABASE INIT ────────────────────────────────────────────────────────
 let sb = null;
-let S = { admins:[], employees:[], tasks:[], assignments:[], shiftTypes:[], scheduleEntries:[], overtimeEntries:[], leaveEntries:[] };
+let S = { admins:[], employees:[], tasks:[], assignments:[], shiftTypes:[], scheduleEntries:[], leaveEntries:[] };
 let curUser=null, isAdmin=false, isGuest=false, appTab='employee', sub='current';
 const hf={from:'',to:'',task:'',emp:''};
 let pendingAction=null;
 // schedule modal context
-let schedCtx = null; // {type:'shift'|'ot'|'leave', date, shiftTypeId, leaveType}
+let schedCtx = null; // {type:'shift'|'leave', date, shiftTypeId, leaveType}
 
 async function initSupabase(url, key){
   showLoading('Connecting to database…');
@@ -603,7 +604,7 @@ async function initSupabase(url, key){
 async function fetchAll(){
   showLoading('Loading data…');
   try {
-    const [adm, emp, tsk, asgn, aemp, sht, se, ot, lv] = await Promise.all([
+    const [adm, emp, tsk, asgn, aemp, sht, se, lv] = await Promise.all([
       sb.from('admins').select('*').order('name'),
       sb.from('employees').select('*').order('name'),
       sb.from('tasks').select('*').order('name'),
@@ -611,7 +612,6 @@ async function fetchAll(){
       sb.from('assignment_employees').select('*'),
       sb.from('shift_types').select('*').order('sort_order'),
       sb.from('schedule_entries').select('*'),
-      sb.from('overtime_entries').select('*'),
       sb.from('leave_entries').select('*')
     ]);
     S.admins    = (adm.data  || []).map(r=>r.name);
@@ -625,7 +625,6 @@ async function fetchAll(){
     }));
     S.shiftTypes      = sht.data || [];
     S.scheduleEntries = se.data  || [];
-    S.overtimeEntries = ot.data  || [];
     S.leaveEntries    = lv.data  || [];
     hideLoading();
     renderAll();
@@ -645,7 +644,6 @@ function subscribeRealtime(){
     .on('postgres_changes',{event:'*',schema:'public',table:'assignment_employees'},fetchAll)
     .on('postgres_changes',{event:'*',schema:'public',table:'shift_types'},fetchAll)
     .on('postgres_changes',{event:'*',schema:'public',table:'schedule_entries'},fetchAll)
-    .on('postgres_changes',{event:'*',schema:'public',table:'overtime_entries'},fetchAll)
     .on('postgres_changes',{event:'*',schema:'public',table:'leave_entries'},fetchAll)
     .subscribe();
 }
@@ -711,9 +709,12 @@ function startApp(){
   else        { ta.disabled=true;  ta.style.opacity='0.3'; ta.style.cursor='not-allowed'; switchTab('schedule'); }
   document.getElementById('dutyFrom').value=td();
   document.getElementById('dutyTo').value=td();
-  // init week anchor to Monday of current week
-  const wa=document.getElementById('weekAnchor');
-  if(wa){ wa.value=weekStart(); }
+  // init month pickers to current month
+  const ym = new Date().toISOString().slice(0,7);
+  const ma = document.getElementById('monthAnchor');
+  const lma = document.getElementById('leaveMonthAnchor');
+  if(ma) ma.value = ym;
+  if(lma) lma.value = ym;
   document.getElementById('guestBanner').style.display=isGuest?'flex':'none';
   renderAll();
 }
@@ -729,15 +730,19 @@ function logout(){
 function switchTab(t){
   if(t==='admin'&&!isAdmin)return;
   appTab=t;
-  ['admin','employee','schedule'].forEach(id=>{
-    const btn=document.getElementById('tab'+id.charAt(0).toUpperCase()+id.slice(1));
-    if(btn) btn.classList.toggle('active', id===t);
+  ['Admin','Emp','Sched','Leave'].forEach(x=>{
+    const btn=document.getElementById('tab'+x);
+    if(btn) btn.classList.remove('active');
   });
-  document.getElementById('adminView').style.display   = t==='admin'    ?'block':'none';
-  document.getElementById('empView').style.display     = t==='employee' ?'block':'none';
-  document.getElementById('scheduleView').style.display= t==='schedule' ?'block':'none';
+  const activeBtn = document.getElementById('tab'+t.charAt(0).toUpperCase()+t.slice(1));
+  if(activeBtn) activeBtn.classList.add('active');
+  document.getElementById('adminView').style.display    = t==='admin'    ?'block':'none';
+  document.getElementById('empView').style.display      = t==='employee' ?'block':'none';
+  document.getElementById('scheduleView').style.display = t==='schedule' ?'block':'none';
+  document.getElementById('leaveView').style.display    = t==='leave'    ?'block':'none';
   if(t==='employee') renderEmpView();
   if(t==='schedule') renderSchedule();
+  if(t==='leave')    renderLeaveView();
 }
 function switchSub(s){
   sub=s;
@@ -839,6 +844,7 @@ function renderAll(){
   renderHistTable();
   if(appTab==='employee') renderEmpView();
   if(appTab==='schedule') renderSchedule();
+  if(appTab==='leave')    renderLeaveView();
 }
 
 function renderAdminList(){
@@ -1016,146 +1022,252 @@ function wireInput(id,obj,key,fn){ const el=document.getElementById(id); if(el)e
 wireInput('hFrom',hf,'from',renderHistTable); wireInput('hTo',hf,'to',renderHistTable);
 wireInput('hTask',hf,'task',renderHistTable); wireInput('hEmp',hf,'emp',renderHistTable);
 
-// ─── SCHEDULE HELPERS ────────────────────────────────────────────────────
-function getWeekDates(){
-  const anchor = document.getElementById('weekAnchor');
-  let base = anchor && anchor.value ? new Date(anchor.value+'T00:00:00') : new Date();
-  // snap to Monday
-  const day = base.getDay(); // 0=Sun
-  const diff = day===0 ? -6 : 1-day;
-  base.setDate(base.getDate()+diff);
-  const dates=[];
-  for(let i=0;i<7;i++){
-    const d=new Date(base); d.setDate(base.getDate()+i);
-    dates.push(d.toISOString().slice(0,10));
-  }
+// ─── SCHEDULE HELPERS (MONTHLY) ──────────────────────────────────────────
+function getSelectedYearMonth(){
+  const el = document.getElementById('monthAnchor');
+  if(el && el.value) return el.value; // "YYYY-MM"
+  return new Date().toISOString().slice(0,7);
+}
+function getMonthDates(ym){
+  const [y,m] = ym.split('-').map(Number);
+  const days = new Date(y,m,0).getDate(); // days in month
+  const dates = [];
+  for(let d=1;d<=days;d++) dates.push(`${ym}-${String(d).padStart(2,'0')}`);
   return dates;
 }
-function shiftWeek(n){
-  const el=document.getElementById('weekAnchor');
-  const cur=el.value?new Date(el.value+'T00:00:00'):new Date();
-  cur.setDate(cur.getDate()+n*7);
-  el.value=cur.toISOString().slice(0,10);
+function shiftMonth(n){
+  const el = document.getElementById('monthAnchor');
+  const cur = el.value ? new Date(el.value+'-01') : new Date();
+  cur.setMonth(cur.getMonth()+n);
+  el.value = cur.toISOString().slice(0,7);
   renderSchedule();
 }
-function goToThisWeek(){ document.getElementById('weekAnchor').value=weekStart(); renderSchedule(); }
-function fmtColDate(s){
-  const d=new Date(s+'T00:00:00');
-  const days=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
-  const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  return `<div style="font-weight:700;font-size:12px;">${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}</div><div style="font-size:11px;margin-top:2px;">${days[d.getDay()===0?6:d.getDay()-1]}</div>`;
+function goToThisMonth(){
+  document.getElementById('monthAnchor').value = new Date().toISOString().slice(0,7);
+  renderSchedule();
 }
+function shiftLeaveMonth(n){
+  const el = document.getElementById('leaveMonthAnchor');
+  const cur = el.value ? new Date(el.value+'-01') : new Date();
+  cur.setMonth(cur.getMonth()+n);
+  el.value = cur.toISOString().slice(0,7);
+  renderLeaveView();
+}
+function goToThisLeaveMonth(){
+  document.getElementById('leaveMonthAnchor').value = new Date().toISOString().slice(0,7);
+  renderLeaveView();
+}
+
+const DAY_NAMES = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
 function isSunday(s){ return new Date(s+'T00:00:00').getDay()===0; }
+function isSaturday(s){ return new Date(s+'T00:00:00').getDay()===6; }
 function isToday(s){ return s===td(); }
 
-function buildDateHeader(dates){
-  const t=td();
+function fmtColDateShort(s){
+  const d = new Date(s+'T00:00:00');
+  return `<div style="font-size:11px;font-weight:700;">${d.getDate()}</div><div style="font-size:9px;margin-top:1px;">${DAY_NAMES[d.getDay()]}</div>`;
+}
+
+function buildMonthHeader(dates){
   return `<tr>
-    <th style="text-align:left;">Shifting</th>
-    ${dates.map(d=>`<th class="${isSunday(d)?'sun':''} ${isToday(d)?'today-col':''}">${fmtColDate(d)}</th>`).join('')}
+    <th style="min-width:185px;text-align:left;padding:10px 14px;">Shifting</th>
+    ${dates.map(d=>`<th class="${isSunday(d)?'sun':''} ${isSaturday(d)?'sat':''} ${isToday(d)?'today-col':''}">${fmtColDateShort(d)}</th>`).join('')}
   </tr>`;
 }
 
-// ─── RENDER SCHEDULE ─────────────────────────────────────────────────────
-function renderSchedule(){
-  const dates = getWeekDates();
-  const label = document.getElementById('weekLabel');
-  if(label) label.textContent = fmtDate(dates[0]) + ' – ' + fmtDate(dates[6]);
-
-  renderShiftTable(dates);
-  renderOtTable(dates);
-  renderLeaveTable(dates);
-}
-
 function getNamesForShift(date, shiftTypeId){
-  return S.scheduleEntries
-    .filter(e=>e.schedule_date===date && e.shift_type_id===shiftTypeId)
-    .map(e=>e.employee_name);
-}
-function getNamesForOt(date){
-  return S.overtimeEntries.filter(e=>e.schedule_date===date).map(e=>e.employee_name);
+  return S.scheduleEntries.filter(e=>e.schedule_date===date&&e.shift_type_id===shiftTypeId).map(e=>e.employee_name);
 }
 function getNamesForLeave(date, leaveType){
-  return S.leaveEntries.filter(e=>e.schedule_date===date && e.leave_type===leaveType).map(e=>e.employee_name);
+  return S.leaveEntries.filter(e=>e.schedule_date===date&&e.leave_type===leaveType).map(e=>e.employee_name);
 }
 
-function renderNamePills(names, date, ctx){
-  const canEdit = isAdmin;
-  return names.map(n=>`<span class="sched-name-pill${(!isGuest&&n===curUser)?' mine':''} ${canEdit?'editable':''}"
-    title="${canEdit?'Click to remove':''}"
-    onclick="${canEdit?`removeSchedName(this,'${n}',${JSON.stringify(ctx)})`:''}">
-    ${n}${canEdit?'<span style="margin-left:3px;opacity:.5;">×</span>':''}
+function renderNamePills(names, ctx){
+  return names.map(n=>`<span class="sched-name-pill${(!isGuest&&n===curUser)?' mine':''} ${isAdmin?'editable':''}"
+    title="${isAdmin?'Click to remove '+n:n}"
+    onclick="${isAdmin?`removeSchedName('${n.replace(/'/g,"\\'")}',${JSON.stringify(ctx)})`:''}">
+    ${n}${isAdmin?'<span style="margin-left:2px;opacity:.4;font-size:9px;">×</span>':''}
   </span>`).join('');
 }
 
 function addBtn(ctx){
   if(!isAdmin) return '';
-  return `<span class="sched-add-btn" title="Add employee" onclick="openSchedModal(${JSON.stringify(ctx)})">+</span>`;
+  return `<span class="sched-add-btn" title="Assign employees" onclick="openSchedModal(${JSON.stringify(ctx)})">+</span>`;
 }
 
-function renderShiftTable(dates){
+// ─── RENDER MONTHLY SCHEDULE ──────────────────────────────────────────────
+function renderSchedule(){
+  const ym = getSelectedYearMonth();
+  const [y,m] = ym.split('-').map(Number);
+  const label = document.getElementById('monthLabel');
+  if(label) label.textContent = MONTH_NAMES[m-1]+' '+y;
+
+  const dates = getMonthDates(ym);
   const head = document.getElementById('shiftHead');
   const body = document.getElementById('shiftBody');
-  head.innerHTML = buildDateHeader(dates);
+
+  head.innerHTML = buildMonthHeader(dates);
+
   if(!S.shiftTypes.length){
-    body.innerHTML=`<tr><td colspan="${dates.length+1}" style="text-align:center;color:var(--muted);padding:30px;">No shift types configured. Add them in the SQL seed.</td></tr>`;
+    body.innerHTML=`<tr><td colspan="${dates.length+1}" style="text-align:center;color:var(--muted);padding:30px;">No shift types found. Run the SQL seed.</td></tr>`;
     return;
   }
-  body.innerHTML = S.shiftTypes.map(st=>{
+
+  // Rows: each shift type + Dayoff row right after PayPro & Batch Upload
+  const rows = [];
+  for(const st of S.shiftTypes){
+    // Shift row
     const cells = dates.map(d=>{
       const names = getNamesForShift(d, st.id);
       const ctx = {type:'shift', date:d, shiftTypeId:st.id, leaveType:null};
-      return `<td class="${isToday(d)?'today-col':''}">${renderNamePills(names,d,ctx)}${addBtn(ctx)}</td>`;
+      return `<td class="${isToday(d)?'today-col':''}">${renderNamePills(names,ctx)}${addBtn(ctx)}</td>`;
     }).join('');
-    return `<tr><td>${st.name}</td>${cells}</tr>`;
-  }).join('');
+    rows.push(`<tr><td>${st.name}</td>${cells}</tr>`);
+
+    // After PayPro & Batch Upload, insert Dayoff row
+    if(st.name === 'PayPro & Batch Upload'){
+      const dayCells = dates.map(d=>{
+        const names = getNamesForLeave(d,'Dayoff');
+        const ctx = {type:'leave', date:d, shiftTypeId:null, leaveType:'Dayoff'};
+        return `<td class="${isToday(d)?'today-col':''}">${renderNamePills(names,ctx)}${addBtn(ctx)}</td>`;
+      }).join('');
+      rows.push(`<tr class="row-dayoff"><td>Dayoff</td>${dayCells}</tr>`);
+    }
+  }
+  body.innerHTML = rows.join('');
 }
 
-function renderOtTable(dates){
-  const head = document.getElementById('otHead');
-  const body = document.getElementById('otBody');
-  head.innerHTML = buildDateHeader(dates);
-  const cells = dates.map(d=>{
-    const names = getNamesForOt(d);
-    const ctx = {type:'ot', date:d, shiftTypeId:null, leaveType:null};
-    return `<td class="${isToday(d)?'today-col':''}">${renderNamePills(names,d,ctx)}${addBtn(ctx)}</td>`;
-  }).join('');
-  body.innerHTML = `<tr class="row-ot"><td>Extended OT</td>${cells}</tr>`;
+// ─── RENDER PRE-APPROVED LEAVES VIEW ─────────────────────────────────────
+function renderLeaveView(){
+  const el = document.getElementById('leaveMonthAnchor');
+  const ym = el && el.value ? el.value : new Date().toISOString().slice(0,7);
+  const [y,m] = ym.split('-').map(Number);
+  const label = document.getElementById('leaveMonthLabel');
+  if(label) label.textContent = MONTH_NAMES[m-1]+' '+y;
+
+  const dates = getMonthDates(ym);
+  const content = document.getElementById('leaveViewContent');
+
+  // Filter leave entries for this month
+  const monthLeaves = S.leaveEntries.filter(e=>e.leave_type==='Pre Approved Leave'&&e.schedule_date.startsWith(ym));
+
+  // Group by employee
+  const byEmp = {};
+  monthLeaves.forEach(e=>{
+    if(!byEmp[e.employee_name]) byEmp[e.employee_name]=[];
+    byEmp[e.employee_name].push(e.schedule_date);
+  });
+
+  // Build table: rows = employees with leave, columns = days of month
+  const empNames = Object.keys(byEmp).sort();
+
+  // Admin add-leave form
+  const adminAdd = isAdmin ? `
+    <div class="card" style="margin-bottom:24px;">
+      <div class="card-title">➕ Add Pre-Approved Leave</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:12px;align-items:end;">
+        <div class="fg"><label>Employee</label>
+          <select id="lvEmpSel" style="margin-top:6px;">
+            <option value="">— Select —</option>
+            ${S.employees.map(e=>`<option value="${e}">${e}</option>`).join('')}
+          </select>
+        </div>
+        <div class="fg"><label>From Date</label><input type="date" id="lvFrom" style="margin-top:6px;" min="${ym}-01"></div>
+        <div class="fg"><label>To Date</label><input type="date" id="lvTo" style="margin-top:6px;" min="${ym}-01"></div>
+        <button class="btn btn-primary" onclick="addLeaveRange()">Add Leave</button>
+      </div>
+    </div>` : '';
+
+  if(!empNames.length && !isAdmin){
+    content.innerHTML = adminAdd + `<div class="empty"><div class="ico">🌴</div><h3>No pre-approved leaves this month</h3><p>Check another month or ask your admin.</p></div>`;
+    return;
+  }
+
+  // Table view
+  let tableHtml = '';
+  if(empNames.length){
+    const headerCells = dates.map(d=>`<th class="${isSunday(d)?'sun':''} ${isSaturday(d)?'sat':''} ${isToday(d)?'today-col':''}">${fmtColDateShort(d)}</th>`).join('');
+    const bodyRows = empNames.map(emp=>{
+      const empDates = byEmp[emp];
+      const cells = dates.map(d=>{
+        const hasLeave = empDates.includes(d);
+        const ctx = {type:'leave', date:d, shiftTypeId:null, leaveType:'Pre Approved Leave'};
+        if(hasLeave){
+          return `<td class="${isToday(d)?'today-col':''}" style="background:rgba(167,139,250,.08);text-align:center;">
+            <span style="font-size:14px;" title="${emp} on leave">🌴</span>
+            ${isAdmin?`<span class="sched-add-btn" style="display:block;width:16px;height:16px;margin:2px auto 0;font-size:10px;" title="Remove" onclick="removeSchedName('${emp.replace(/'/g,"\\'")}',${JSON.stringify(ctx)})">×</span>`:''}
+          </td>`;
+        }
+        return `<td class="${isToday(d)?'today-col':''}">
+          ${isAdmin?`<span class="sched-add-btn" title="Add leave for ${emp}" onclick="addSingleLeave('${emp.replace(/'/g,"\\'")}','${d}')">+</span>`:''}
+        </td>`;
+      }).join('');
+      return `<tr>
+        <td style="font-weight:600;font-size:13px;white-space:nowrap;background:var(--surface2);position:sticky;left:0;z-index:1;border-right:2px solid var(--border);padding:8px 14px;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="width:28px;height:28px;border-radius:50%;background:rgba(167,139,250,.15);border:1px solid rgba(167,139,250,.3);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--purple);flex-shrink:0;">${emp.charAt(0).toUpperCase()}</div>
+            ${emp}
+            <span style="font-size:11px;font-family:'DM Mono',monospace;background:rgba(167,139,250,.1);border:1px solid rgba(167,139,250,.3);color:var(--purple);border-radius:100px;padding:1px 7px;">${empDates.length}d</span>
+          </div>
+        </td>${cells}</tr>`;
+    }).join('');
+    tableHtml = `<div class="sched-outer">
+      <table class="sched-table">
+        <thead><tr><th style="min-width:185px;text-align:left;padding:10px 14px;">Employee</th>${headerCells}</tr></thead>
+        <tbody>${bodyRows}</tbody>
+      </table>
+    </div>`;
+  } else {
+    tableHtml = `<div class="empty"><div class="ico">🌴</div><h3>No pre-approved leaves this month</h3></div>`;
+  }
+
+  content.innerHTML = adminAdd + tableHtml;
 }
 
-function renderLeaveTable(dates){
-  const head = document.getElementById('lvHead');
-  const body = document.getElementById('lvBody');
-  head.innerHTML = buildDateHeader(dates);
-  const leaveTypes = ['Dayoff','Pre Approved Leave'];
-  body.innerHTML = leaveTypes.map(lt=>{
-    const cells = dates.map(d=>{
-      const names = getNamesForLeave(d, lt);
-      const ctx = {type:'leave', date:d, shiftTypeId:null, leaveType:lt};
-      return `<td class="${isToday(d)?'today-col':''}">${renderNamePills(names,d,ctx)}${addBtn(ctx)}</td>`;
-    }).join('');
-    const rowClass = lt==='Dayoff'?'row-dayoff':'row-leave';
-    return `<tr class="${rowClass}"><td>${lt}</td>${cells}</tr>`;
-  }).join('');
+async function addLeaveRange(){
+  const emp  = document.getElementById('lvEmpSel').value;
+  const from = document.getElementById('lvFrom').value;
+  const to   = document.getElementById('lvTo').value;
+  if(!emp){ showToast('Select an employee'); return; }
+  if(!from||!to){ showToast('Select dates'); return; }
+  if(to<from){ showToast('End must be on or after start'); return; }
+  // generate all dates in range
+  const dates = [];
+  let cur = new Date(from+'T00:00:00');
+  const end = new Date(to+'T00:00:00');
+  while(cur<=end){ dates.push(cur.toISOString().slice(0,10)); cur.setDate(cur.getDate()+1); }
+  // filter out already-existing
+  const existing = S.leaveEntries.filter(e=>e.leave_type==='Pre Approved Leave'&&e.employee_name===emp).map(e=>e.schedule_date);
+  const toInsert = dates.filter(d=>!existing.includes(d));
+  if(!toInsert.length){ showToast('All dates already added'); return; }
+  const {error} = await sb.from('leave_entries').insert(toInsert.map(d=>({schedule_date:d,employee_name:emp,leave_type:'Pre Approved Leave'})));
+  if(error){ showToast('Error: '+error.message,true); return; }
+  showToast(`✓ Added ${toInsert.length} leave day(s) for ${emp}`);
+}
+
+async function addSingleLeave(emp, date){
+  const {error} = await sb.from('leave_entries').insert({schedule_date:date,employee_name:emp,leave_type:'Pre Approved Leave'});
+  if(error){ showToast('Error: '+error.message,true); return; }
+  showToast(`✓ Leave added for ${emp}`);
 }
 
 // ─── SCHEDULE MODAL ───────────────────────────────────────────────────────
 function openSchedModal(ctx){
+  if(!isAdmin){ return; }
   schedCtx = ctx;
   const title = ctx.type==='shift'
-    ? S.shiftTypes.find(s=>s.id===ctx.shiftTypeId)?.name || 'Shift'
-    : ctx.type==='ot' ? 'Extended Overtime' : ctx.leaveType;
-  document.getElementById('schedModalTitle').textContent = 'Assign: ' + title;
+    ? (S.shiftTypes.find(s=>s.id===ctx.shiftTypeId)?.name||'Shift')
+    : ctx.leaveType;
+  document.getElementById('schedModalTitle').textContent = title;
   document.getElementById('schedModalSub').textContent   = fmtDate(ctx.date);
 
-  // figure out who's already assigned
   let assigned = [];
   if(ctx.type==='shift') assigned = getNamesForShift(ctx.date, ctx.shiftTypeId);
-  else if(ctx.type==='ot') assigned = getNamesForOt(ctx.date);
   else assigned = getNamesForLeave(ctx.date, ctx.leaveType);
 
-  const grid = document.getElementById('schedEmpGrid');
-  grid.innerHTML = S.employees.map(e=>{
+  document.getElementById('schedEmpGrid').innerHTML = S.employees.map(e=>{
     const on = assigned.includes(e);
     return `<div class="ecc${on?' on':''}" onclick="toggleEcc(this)">
       <div class="ck">${on?'✓':''}</div>${e}
@@ -1173,63 +1285,40 @@ function toggleEcc(el){
 }
 
 async function saveSchedModal(){
-  if(!schedCtx) return;
+  if(!schedCtx||!isAdmin) return;
   const ctx = schedCtx;
   const selected = [...document.querySelectorAll('#schedEmpGrid .ecc.on')].map(el=>el.textContent.replace('✓','').trim());
 
-  // figure out current state
   let current = [];
-  if(ctx.type==='shift')      current = getNamesForShift(ctx.date, ctx.shiftTypeId);
-  else if(ctx.type==='ot')    current = getNamesForOt(ctx.date);
-  else                         current = getNamesForLeave(ctx.date, ctx.leaveType);
+  if(ctx.type==='shift') current = getNamesForShift(ctx.date, ctx.shiftTypeId);
+  else current = getNamesForLeave(ctx.date, ctx.leaveType);
 
   const toAdd    = selected.filter(e=>!current.includes(e));
   const toRemove = current.filter(e=>!selected.includes(e));
 
   try {
     if(ctx.type==='shift'){
-      if(toAdd.length){
-        await sb.from('schedule_entries').insert(toAdd.map(e=>({schedule_date:ctx.date,shift_type_id:ctx.shiftTypeId,employee_name:e})));
-      }
-      for(const e of toRemove){
-        await sb.from('schedule_entries').delete().eq('schedule_date',ctx.date).eq('shift_type_id',ctx.shiftTypeId).eq('employee_name',e);
-      }
-    } else if(ctx.type==='ot'){
-      if(toAdd.length){
-        await sb.from('overtime_entries').insert(toAdd.map(e=>({schedule_date:ctx.date,employee_name:e})));
-      }
-      for(const e of toRemove){
-        await sb.from('overtime_entries').delete().eq('schedule_date',ctx.date).eq('employee_name',e);
-      }
+      if(toAdd.length) await sb.from('schedule_entries').insert(toAdd.map(e=>({schedule_date:ctx.date,shift_type_id:ctx.shiftTypeId,employee_name:e})));
+      for(const e of toRemove) await sb.from('schedule_entries').delete().eq('schedule_date',ctx.date).eq('shift_type_id',ctx.shiftTypeId).eq('employee_name',e);
     } else {
-      if(toAdd.length){
-        await sb.from('leave_entries').insert(toAdd.map(e=>({schedule_date:ctx.date,employee_name:e,leave_type:ctx.leaveType})));
-      }
-      for(const e of toRemove){
-        await sb.from('leave_entries').delete().eq('schedule_date',ctx.date).eq('employee_name',e).eq('leave_type',ctx.leaveType);
-      }
+      if(toAdd.length) await sb.from('leave_entries').insert(toAdd.map(e=>({schedule_date:ctx.date,employee_name:e,leave_type:ctx.leaveType})));
+      for(const e of toRemove) await sb.from('leave_entries').delete().eq('schedule_date',ctx.date).eq('employee_name',e).eq('leave_type',ctx.leaveType);
     }
     showToast('✓ Schedule updated');
-  } catch(err){
-    showToast('Error: '+err.message, true);
-  }
+  } catch(err){ showToast('Error: '+err.message, true); }
   closeSchedModal();
 }
 
-async function removeSchedName(el, name, ctx){
+async function removeSchedName(name, ctx){
   if(!isAdmin) return;
   try {
     if(ctx.type==='shift'){
       await sb.from('schedule_entries').delete().eq('schedule_date',ctx.date).eq('shift_type_id',ctx.shiftTypeId).eq('employee_name',name);
-    } else if(ctx.type==='ot'){
-      await sb.from('overtime_entries').delete().eq('schedule_date',ctx.date).eq('employee_name',name);
     } else {
       await sb.from('leave_entries').delete().eq('schedule_date',ctx.date).eq('employee_name',name).eq('leave_type',ctx.leaveType);
     }
     showToast('Removed: '+name);
-  } catch(err){
-    showToast('Error: '+err.message,true);
-  }
+  } catch(err){ showToast('Error: '+err.message,true); }
 }
 
 // ─── TOAST ────────────────────────────────────────────────────────────────
