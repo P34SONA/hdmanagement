@@ -1167,18 +1167,45 @@ function getNamesForLeave(date, leaveType){
   return S.leaveEntries.filter(e=>e.schedule_date===date&&e.leave_type===leaveType).map(e=>e.employee_name);
 }
 
+// Registry to safely pass rich objects to pill click handlers
+const _pillRegistry = {};
+let _pillId = 0;
+
 function renderNamePills(names, ctx){
   if(!names.length) return isAdmin ? '' : '<span style="color:var(--border);font-size:10px;">—</span>';
-  return names.map(n=>`<span class="sched-name-pill${(!isGuest&&n===curUser)?' mine':''} ${isAdmin?'editable':''}"
-    title="${isAdmin?'Click to remove: '+n:n}"
-    onclick="${isAdmin?`removeSchedName(${JSON.stringify(n)},${JSON.stringify(ctx)})`:''}">
-    ${n}${isAdmin?'<span style="opacity:.35;font-size:9px;"> ×</span>':''}
-  </span>`).join('');
+  return names.map(n=>{
+    if(isAdmin){
+      const pid = '_p'+(++_pillId);
+      _pillRegistry[pid] = {name:n, ctx};
+      return `<span class="sched-name-pill${(!isGuest&&n===curUser)?' mine':''} editable"
+        data-pid="${pid}" title="Click to remove: ${n.replace(/"/g,'&quot;')}"
+        onclick="handlePillRemove(this)">
+        ${n}<span style="opacity:.35;font-size:9px;"> ×</span>
+      </span>`;
+    }
+    return `<span class="sched-name-pill${(!isGuest&&n===curUser)?' mine':''}" title="${n}">${n}</span>`;
+  }).join('');
+}
+
+function handlePillRemove(el){
+  if(!isAdmin) return;
+  const entry = _pillRegistry[el.dataset.pid];
+  if(!entry) return;
+  removeSchedName(entry.name, entry.ctx);
 }
 
 function addBtn(ctx){
   if(!isAdmin) return '';
-  return `<span class="sched-add-btn" title="Add employee" onclick="openSchedModal(${JSON.stringify(ctx)})">+</span>`;
+  const pid = '_p'+(++_pillId);
+  _pillRegistry[pid] = {ctx};
+  return `<span class="sched-add-btn" data-pid="${pid}" title="Add employee" onclick="handleAddBtn(this)">+</span>`;
+}
+
+function handleAddBtn(el){
+  if(!isAdmin) return;
+  const entry = _pillRegistry[el.dataset.pid];
+  if(!entry) return;
+  openSchedModal(entry.ctx);
 }
 
 // ─── RENDER SCHEDULE (WEEK BLOCKS) ────────────────────────────────────────
@@ -1301,9 +1328,12 @@ function renderLeaveView(){
     const chips = dates.map(d=>{
       const displayDate = new Date(d+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'});
       const ctx = {type:'leave', date:d, shiftTypeId:null, leaveType:'Pre Approved Leave'};
-      return isAdmin
-        ? `<span class="leave-date-chip removable" title="Remove ${d}" onclick="removeSchedName(${JSON.stringify(emp)},${JSON.stringify(ctx)})">${displayDate} ×</span>`
-        : `<span class="leave-date-chip">${displayDate}</span>`;
+      if(isAdmin){
+        const pid = '_p'+(++_pillId);
+        _pillRegistry[pid] = {name:emp, ctx};
+        return `<span class="leave-date-chip removable" data-pid="${pid}" title="Remove ${d}" onclick="handlePillRemove(this)">${displayDate} ×</span>`;
+      }
+      return `<span class="leave-date-chip">${displayDate}</span>`;
     }).join('');
 
     return `<tr>
