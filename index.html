@@ -254,38 +254,79 @@
   /* ── SCHEDULE TABLE ── */
   #scheduleView{ display:none; }
   #leaveView{ display:none; }
-  .sched-nav{ display:flex; align-items:center; gap:12px; margin-bottom:24px; flex-wrap:wrap; }
+  .sched-nav{ display:flex; align-items:center; gap:12px; margin-bottom:20px; flex-wrap:wrap; }
   .sched-nav h2{ font-family:'DM Serif Display',serif; font-size:24px; flex:1; }
   .month-picker{ display:flex; align-items:center; gap:8px; }
   .month-picker input[type=month]{ background:var(--bg); border:1px solid var(--border); border-radius:var(--radius); color:var(--text); padding:8px 14px; font-family:'DM Sans',sans-serif; font-size:13px; outline:none; transition:border-color .2s; }
   .month-picker input[type=month]:focus{ border-color:var(--accent); }
-  .sched-outer{ overflow-x:auto; border-radius:16px; border:1px solid var(--border); margin-bottom:32px; }
-  .sched-table{ border-collapse:collapse; }
-  .sched-table th{ background:var(--surface2); padding:8px 10px; font-size:10px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.6px; border-bottom:1px solid var(--border); border-right:1px solid var(--border); text-align:center; white-space:nowrap; min-width:80px; }
-  .sched-table th.sun{ color:var(--red); }
-  .sched-table th.sat{ color:#60a5fa; }
+
+  /* week block wrapper */
+  .week-block{ margin-bottom:28px; }
+  .week-block-label{ font-size:11px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; display:flex; align-items:center; gap:8px; }
+  .week-block-label span{ background:var(--surface2); border:1px solid var(--border); border-radius:6px; padding:2px 8px; }
+  .sched-outer{ overflow-x:auto; border-radius:14px; border:1px solid var(--border); }
+
+  /* schedule table */
+  .sched-table{ border-collapse:collapse; width:100%; }
+  .sched-table th{
+    background:var(--surface2); padding:7px 10px; font-size:10px; font-weight:700;
+    color:var(--muted); text-transform:uppercase; letter-spacing:.5px;
+    border-bottom:1px solid var(--border); border-right:1px solid var(--border);
+    text-align:center; white-space:nowrap; min-width:110px;
+  }
+  .sched-table th.th-label{ text-align:left; min-width:175px; position:sticky; left:0; z-index:2; background:var(--surface2); border-right:2px solid var(--border); }
+  .sched-table th.sun{ color:var(--red); background:rgba(248,113,113,.07); }
+  .sched-table th.sat{ color:#60a5fa; background:rgba(96,165,250,.05); }
   .sched-table th.today-col{ background:rgba(232,197,71,.1); color:var(--accent); }
-  .sched-table th:first-child{ text-align:left; min-width:180px; position:sticky; left:0; z-index:2; background:var(--surface2); }
-  .sched-table td{ padding:6px 8px; font-size:12px; border-bottom:1px solid var(--border); border-right:1px solid var(--border); vertical-align:top; min-width:80px; max-width:120px; }
-  .sched-table td:first-child{ font-weight:600; font-size:12px; white-space:nowrap; color:var(--text); background:var(--surface2); position:sticky; left:0; z-index:1; border-right:2px solid var(--border); }
+  .sched-table th .th-date{ font-size:13px; font-weight:800; }
+  .sched-table th .th-day{ font-size:9px; margin-top:1px; opacity:.75; }
+
+  .sched-table td{
+    padding:5px 8px; font-size:12px; border-bottom:1px solid var(--border);
+    border-right:1px solid var(--border); vertical-align:top; min-width:110px;
+  }
+  .sched-table td.td-label{
+    font-weight:700; font-size:11px; white-space:nowrap; color:var(--text);
+    background:var(--surface2); position:sticky; left:0; z-index:1;
+    border-right:2px solid var(--border); padding:6px 12px;
+  }
   .sched-table td.today-col{ background:rgba(232,197,71,.04); }
   .sched-table tr:last-child td{ border-bottom:none; }
-  .sched-table tr.row-dayoff td:first-child{ color:#f9a8d4; }
+  .sched-table tr.row-dayoff td.td-label{ color:#f9a8d4; }
   .sched-table tr.row-dayoff td{ background:rgba(249,168,212,.04); }
-  .sched-name-pill{ display:block; background:var(--surface2); border:1px solid var(--border); border-radius:6px; padding:2px 6px; font-size:10px; margin:2px 0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:default; }
+  .sched-table tr.row-leave td.td-label{ color:#c084fc; }
+  .sched-table tr.row-leave td{ background:rgba(192,132,252,.04); }
+  .sched-table tr.row-header td{ background:rgba(74,222,128,.06); }
+  .sched-table tr.row-header td.td-label{ color:var(--green); font-size:10px; letter-spacing:.5px; }
+
+  /* name pills inside cells */
+  .sched-name-pill{
+    display:block; background:var(--surface); border:1px solid var(--border);
+    border-radius:5px; padding:2px 6px; font-size:10px; margin:1px 0;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:default;
+    line-height:1.4;
+  }
   .sched-name-pill.mine{ background:rgba(232,197,71,.15); border-color:rgba(232,197,71,.4); color:var(--accent); }
   .sched-name-pill.editable{ cursor:pointer; }
   .sched-name-pill.editable:hover{ border-color:var(--red); color:var(--red); background:rgba(248,113,113,.08); }
-  .sched-add-btn{ display:inline-flex; align-items:center; justify-content:center; width:18px; height:18px; border-radius:4px; background:var(--surface2); border:1px dashed var(--border); color:var(--muted); font-size:13px; cursor:pointer; transition:all .15s; margin-top:2px; }
+  .sched-add-btn{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:16px; height:16px; border-radius:4px; background:var(--surface2);
+    border:1px dashed var(--border); color:var(--muted); font-size:12px;
+    cursor:pointer; transition:all .15s; margin-top:2px; flex-shrink:0;
+  }
   .sched-add-btn:hover{ border-color:var(--accent); color:var(--accent); background:rgba(232,197,71,.1); }
 
-  /* pre-approved leaves view */
-  .leave-table-wrap{ overflow-x:auto; border-radius:16px; border:1px solid var(--border); }
-  .leave-card{ background:var(--surface); border:1px solid rgba(167,139,250,.3); border-radius:16px; padding:20px; display:flex; justify-content:space-between; align-items:flex-start; gap:16px; }
-  .leave-name{ font-weight:600; font-size:15px; margin-bottom:4px; }
-  .leave-dates{ font-family:'DM Mono',monospace; font-size:12px; color:var(--muted); }
-  .leave-badge{ background:rgba(167,139,250,.15); border:1px solid rgba(167,139,250,.4); color:var(--purple); border-radius:100px; padding:3px 10px; font-size:11px; font-family:'DM Mono',monospace; white-space:nowrap; }
-  .leaves-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px; }
+  /* pre-approved leaves — list view */
+  .leave-list-table{ width:100%; border-collapse:collapse; }
+  .leave-list-table th{ background:rgba(167,139,250,.12); color:var(--purple); padding:10px 16px; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.8px; border-bottom:1px solid rgba(167,139,250,.2); text-align:left; }
+  .leave-list-table td{ padding:12px 16px; border-bottom:1px solid var(--border); font-size:13px; vertical-align:middle; }
+  .leave-list-table tr:last-child td{ border-bottom:none; }
+  .leave-list-table tr:hover td{ background:rgba(167,139,250,.04); }
+  .leave-date-chip{ display:inline-block; background:rgba(167,139,250,.12); border:1px solid rgba(167,139,250,.3); color:var(--purple); border-radius:6px; padding:2px 8px; font-size:11px; font-family:'DM Mono',monospace; margin:2px 3px 2px 0; white-space:nowrap; }
+  .leave-date-chip.removable{ cursor:pointer; }
+  .leave-date-chip.removable:hover{ background:rgba(248,113,113,.15); border-color:rgba(248,113,113,.4); color:var(--red); }
+  .leave-emp-avatar{ width:32px; height:32px; border-radius:50%; background:rgba(167,139,250,.15); border:1px solid rgba(167,139,250,.3); display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; color:var(--purple); flex-shrink:0; }
 
   /* assign modal for schedule */
   .emp-check-grid{ display:flex; flex-wrap:wrap; gap:8px; max-height:260px; overflow-y:auto; padding:4px 0; }
@@ -294,6 +335,10 @@
   .ecc.on{ background:rgba(232,197,71,.1); border-color:var(--accent); color:var(--accent); font-weight:500; }
   .ecc .ck{ width:14px; height:14px; border-radius:3px; border:1px solid var(--border); background:var(--bg); display:flex; align-items:center; justify-content:center; font-size:9px; flex-shrink:0; }
   .ecc.on .ck{ background:var(--accent); border-color:var(--accent); color:#0d0f14; }
+
+  /* bulk assign modal extras */
+  .bulk-range-row{ display:grid; grid-template-columns:1fr auto 1fr; gap:10px; align-items:end; margin-bottom:14px; }
+  .bulk-range-row .dr-sep{ text-align:center; color:var(--muted); font-size:13px; padding-bottom:14px; }
 
   @media(max-width:800px){
     .grid-2,.grid-3{ grid-template-columns:1fr }
@@ -489,7 +534,7 @@
   </div>
 </div>
 
-  <!-- SCHEDULE VIEW — monthly grid -->
+  <!-- SCHEDULE VIEW — monthly, split by week -->
   <div id="scheduleView" class="main" style="display:none;">
     <div class="sched-nav">
       <h2>📆 Monthly Schedule</h2>
@@ -500,13 +545,9 @@
         <button class="btn btn-ghost af" onclick="goToThisMonth()">This Month</button>
       </div>
       <div id="monthLabel" style="font-size:13px;color:var(--muted);font-family:'DM Mono',monospace;"></div>
+      <button id="bulkBtn" class="btn btn-primary" onclick="openBulkModal()" style="display:none;padding:9px 18px;font-size:13px;">⚡ Bulk Assign</button>
     </div>
-    <div class="sched-outer">
-      <table class="sched-table" id="shiftTable">
-        <thead id="shiftHead"></thead>
-        <tbody id="shiftBody"></tbody>
-      </table>
-    </div>
+    <div id="schedWeekBlocks"></div>
   </div>
 
   <!-- PRE-APPROVED LEAVES VIEW -->
@@ -524,6 +565,33 @@
     <div id="leaveViewContent"></div>
   </div>
 </div><!-- /app -->
+
+<!-- BULK ASSIGN MODAL -->
+<div class="modal-overlay" id="bulkModal">
+  <div class="modal" style="max-width:560px;">
+    <div class="modal-close" onclick="closeBulkModal()">✕</div>
+    <div class="modal-title">⚡ Bulk Assign Shift</div>
+    <div class="modal-sub">Assign employees to a shift for a date range in one go.</div>
+
+    <div style="margin-bottom:14px;">
+      <label style="margin-bottom:6px;">Shift Type</label>
+      <select id="bulkShiftSel" style="margin-top:6px;">
+        <option value="">— Choose shift —</option>
+      </select>
+    </div>
+    <div class="bulk-range-row">
+      <div class="fg"><label>From Date</label><input type="date" id="bulkFrom" style="margin-top:6px;"></div>
+      <div class="dr-sep">→</div>
+      <div class="fg"><label>To Date</label><input type="date" id="bulkTo" style="margin-top:6px;"></div>
+    </div>
+    <label style="margin-bottom:8px;display:block;">Select Employees</label>
+    <div class="emp-check-grid" id="bulkEmpGrid"></div>
+    <div style="display:flex;gap:10px;margin-top:16px;">
+      <button class="btn btn-secondary" onclick="closeBulkModal()" style="flex:1;justify-content:center;">Cancel</button>
+      <button class="btn btn-primary"   onclick="saveBulkAssign()" style="flex:1;justify-content:center;">Assign</button>
+    </div>
+  </div>
+</div>
 
 <!-- SCHEDULE ASSIGN MODAL -->
 <div class="modal-overlay" id="schedModal">
@@ -1022,18 +1090,30 @@ function wireInput(id,obj,key,fn){ const el=document.getElementById(id); if(el)e
 wireInput('hFrom',hf,'from',renderHistTable); wireInput('hTo',hf,'to',renderHistTable);
 wireInput('hTask',hf,'task',renderHistTable); wireInput('hEmp',hf,'emp',renderHistTable);
 
-// ─── SCHEDULE HELPERS (MONTHLY) ──────────────────────────────────────────
+// ─── SCHEDULE HELPERS (MONTHLY BY WEEK) ──────────────────────────────────
 function getSelectedYearMonth(){
   const el = document.getElementById('monthAnchor');
-  if(el && el.value) return el.value; // "YYYY-MM"
-  return new Date().toISOString().slice(0,7);
+  return (el && el.value) ? el.value : new Date().toISOString().slice(0,7);
 }
 function getMonthDates(ym){
   const [y,m] = ym.split('-').map(Number);
-  const days = new Date(y,m,0).getDate(); // days in month
+  const days = new Date(y,m,0).getDate();
   const dates = [];
   for(let d=1;d<=days;d++) dates.push(`${ym}-${String(d).padStart(2,'0')}`);
   return dates;
+}
+// Split month dates into Sun-Sat weeks
+function splitIntoWeeks(dates){
+  const weeks = [];
+  let week = [];
+  for(const d of dates){
+    week.push(d);
+    if(new Date(d+'T00:00:00').getDay()===6 || d===dates[dates.length-1]){
+      weeks.push(week);
+      week = [];
+    }
+  }
+  return weeks;
 }
 function shiftMonth(n){
   const el = document.getElementById('monthAnchor');
@@ -1058,22 +1138,25 @@ function goToThisLeaveMonth(){
   renderLeaveView();
 }
 
-const DAY_NAMES = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const DAY_NAMES  = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
-function isSunday(s){ return new Date(s+'T00:00:00').getDay()===0; }
+function isSunday(s)  { return new Date(s+'T00:00:00').getDay()===0; }
 function isSaturday(s){ return new Date(s+'T00:00:00').getDay()===6; }
-function isToday(s){ return s===td(); }
+function isToday(s)   { return s===td(); }
 
-function fmtColDateShort(s){
-  const d = new Date(s+'T00:00:00');
-  return `<div style="font-size:11px;font-weight:700;">${d.getDate()}</div><div style="font-size:9px;margin-top:1px;">${DAY_NAMES[d.getDay()]}</div>`;
+function colClass(d){
+  return [isSunday(d)?'sun':'', isSaturday(d)?'sat':'', isToday(d)?'today-col':''].filter(Boolean).join(' ');
 }
 
-function buildMonthHeader(dates){
+function buildWeekHeader(weekDates){
   return `<tr>
-    <th style="min-width:185px;text-align:left;padding:10px 14px;">Shifting</th>
-    ${dates.map(d=>`<th class="${isSunday(d)?'sun':''} ${isSaturday(d)?'sat':''} ${isToday(d)?'today-col':''}">${fmtColDateShort(d)}</th>`).join('')}
+    <th class="th-label">Shifting</th>
+    ${weekDates.map(d=>`
+      <th class="${colClass(d)}">
+        <div class="th-date">${new Date(d+'T00:00:00').getDate()}</div>
+        <div class="th-day">${DAY_NAMES[new Date(d+'T00:00:00').getDay()]}</div>
+      </th>`).join('')}
   </tr>`;
 }
 
@@ -1085,61 +1168,88 @@ function getNamesForLeave(date, leaveType){
 }
 
 function renderNamePills(names, ctx){
+  if(!names.length) return isAdmin ? '' : '<span style="color:var(--border);font-size:10px;">—</span>';
   return names.map(n=>`<span class="sched-name-pill${(!isGuest&&n===curUser)?' mine':''} ${isAdmin?'editable':''}"
-    title="${isAdmin?'Click to remove '+n:n}"
-    onclick="${isAdmin?`removeSchedName('${n.replace(/'/g,"\\'")}',${JSON.stringify(ctx)})`:''}">
-    ${n}${isAdmin?'<span style="margin-left:2px;opacity:.4;font-size:9px;">×</span>':''}
+    title="${isAdmin?'Click to remove: '+n:n}"
+    onclick="${isAdmin?`removeSchedName(${JSON.stringify(n)},${JSON.stringify(ctx)})`:''}">
+    ${n}${isAdmin?'<span style="opacity:.35;font-size:9px;"> ×</span>':''}
   </span>`).join('');
 }
 
 function addBtn(ctx){
   if(!isAdmin) return '';
-  return `<span class="sched-add-btn" title="Assign employees" onclick="openSchedModal(${JSON.stringify(ctx)})">+</span>`;
+  return `<span class="sched-add-btn" title="Add employee" onclick="openSchedModal(${JSON.stringify(ctx)})">+</span>`;
 }
 
-// ─── RENDER MONTHLY SCHEDULE ──────────────────────────────────────────────
+// ─── RENDER SCHEDULE (WEEK BLOCKS) ────────────────────────────────────────
 function renderSchedule(){
   const ym = getSelectedYearMonth();
   const [y,m] = ym.split('-').map(Number);
   const label = document.getElementById('monthLabel');
   if(label) label.textContent = MONTH_NAMES[m-1]+' '+y;
 
-  const dates = getMonthDates(ym);
-  const head = document.getElementById('shiftHead');
-  const body = document.getElementById('shiftBody');
+  // Show bulk button only for admins
+  const bb = document.getElementById('bulkBtn');
+  if(bb) bb.style.display = isAdmin ? 'inline-flex' : 'none';
 
-  head.innerHTML = buildMonthHeader(dates);
+  const allDates = getMonthDates(ym);
+  const weeks    = splitIntoWeeks(allDates);
+  const container = document.getElementById('schedWeekBlocks');
+  if(!container) return;
 
   if(!S.shiftTypes.length){
-    body.innerHTML=`<tr><td colspan="${dates.length+1}" style="text-align:center;color:var(--muted);padding:30px;">No shift types found. Run the SQL seed.</td></tr>`;
+    container.innerHTML = `<div class="empty"><div class="ico">📋</div><h3>No shift types found</h3><p>Run the SQL seed to add default shifts.</p></div>`;
     return;
   }
 
-  // Rows: each shift type + Dayoff row right after PayPro & Batch Upload
-  const rows = [];
-  for(const st of S.shiftTypes){
-    // Shift row
-    const cells = dates.map(d=>{
-      const names = getNamesForShift(d, st.id);
-      const ctx = {type:'shift', date:d, shiftTypeId:st.id, leaveType:null};
-      return `<td class="${isToday(d)?'today-col':''}">${renderNamePills(names,ctx)}${addBtn(ctx)}</td>`;
-    }).join('');
-    rows.push(`<tr><td>${st.name}</td>${cells}</tr>`);
+  container.innerHTML = weeks.map((weekDates, wi)=>{
+    const weekStart = new Date(weekDates[0]+'T00:00:00');
+    const weekEnd   = new Date(weekDates[weekDates.length-1]+'T00:00:00');
+    const fmt = d => d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+    const weekLabel = `Week ${wi+1} &nbsp;·&nbsp; ${fmt(weekStart)} – ${fmt(weekEnd)}`;
 
-    // After PayPro & Batch Upload, insert Dayoff row
-    if(st.name === 'PayPro & Batch Upload'){
-      const dayCells = dates.map(d=>{
-        const names = getNamesForLeave(d,'Dayoff');
-        const ctx = {type:'leave', date:d, shiftTypeId:null, leaveType:'Dayoff'};
+    // Build rows
+    const rows = [];
+    for(const st of S.shiftTypes){
+      const cells = weekDates.map(d=>{
+        const names = getNamesForShift(d, st.id);
+        const ctx = {type:'shift', date:d, shiftTypeId:st.id, leaveType:null};
         return `<td class="${isToday(d)?'today-col':''}">${renderNamePills(names,ctx)}${addBtn(ctx)}</td>`;
       }).join('');
-      rows.push(`<tr class="row-dayoff"><td>Dayoff</td>${dayCells}</tr>`);
+      rows.push(`<tr><td class="td-label">${st.name}</td>${cells}</tr>`);
+
+      // Dayoff row after PayPro & Batch Upload
+      if(st.name==='PayPro & Batch Upload'){
+        const dayCells = weekDates.map(d=>{
+          const names = getNamesForLeave(d,'Dayoff');
+          const ctx = {type:'leave', date:d, shiftTypeId:null, leaveType:'Dayoff'};
+          return `<td class="${isToday(d)?'today-col':''}">${renderNamePills(names,ctx)}${addBtn(ctx)}</td>`;
+        }).join('');
+        rows.push(`<tr class="row-dayoff"><td class="td-label">Dayoff</td>${dayCells}</tr>`);
+      }
     }
-  }
-  body.innerHTML = rows.join('');
+
+    // Pre Approved Leave row at bottom
+    const lvCells = weekDates.map(d=>{
+      const names = getNamesForLeave(d,'Pre Approved Leave');
+      const ctx = {type:'leave', date:d, shiftTypeId:null, leaveType:'Pre Approved Leave'};
+      return `<td class="${isToday(d)?'today-col':''}">${renderNamePills(names,ctx)}${addBtn(ctx)}</td>`;
+    }).join('');
+    rows.push(`<tr class="row-leave"><td class="td-label">Pre Approved Leave</td>${lvCells}</tr>`);
+
+    return `<div class="week-block">
+      <div class="week-block-label"><span>${weekLabel}</span></div>
+      <div class="sched-outer">
+        <table class="sched-table">
+          <thead>${buildWeekHeader(weekDates)}</thead>
+          <tbody>${rows.join('')}</tbody>
+        </table>
+      </div>
+    </div>`;
+  }).join('');
 }
 
-// ─── RENDER PRE-APPROVED LEAVES VIEW ─────────────────────────────────────
+// ─── RENDER PRE-APPROVED LEAVES (LIST VIEW) ───────────────────────────────
 function renderLeaveView(){
   const el = document.getElementById('leaveMonthAnchor');
   const ym = el && el.value ? el.value : new Date().toISOString().slice(0,7);
@@ -1147,81 +1257,76 @@ function renderLeaveView(){
   const label = document.getElementById('leaveMonthLabel');
   if(label) label.textContent = MONTH_NAMES[m-1]+' '+y;
 
-  const dates = getMonthDates(ym);
   const content = document.getElementById('leaveViewContent');
 
-  // Filter leave entries for this month
+  // All leave entries for this month
   const monthLeaves = S.leaveEntries.filter(e=>e.leave_type==='Pre Approved Leave'&&e.schedule_date.startsWith(ym));
 
-  // Group by employee
+  // Group by employee → sorted date list
   const byEmp = {};
   monthLeaves.forEach(e=>{
     if(!byEmp[e.employee_name]) byEmp[e.employee_name]=[];
     byEmp[e.employee_name].push(e.schedule_date);
   });
-
-  // Build table: rows = employees with leave, columns = days of month
+  Object.values(byEmp).forEach(arr=>arr.sort());
   const empNames = Object.keys(byEmp).sort();
 
   // Admin add-leave form
   const adminAdd = isAdmin ? `
-    <div class="card" style="margin-bottom:24px;">
+    <div class="card" style="margin-bottom:20px;">
       <div class="card-title">➕ Add Pre-Approved Leave</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:12px;align-items:end;">
-        <div class="fg"><label>Employee</label>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:12px;align-items:end;flex-wrap:wrap;">
+        <div class="fg">
+          <label>Employee</label>
           <select id="lvEmpSel" style="margin-top:6px;">
             <option value="">— Select —</option>
             ${S.employees.map(e=>`<option value="${e}">${e}</option>`).join('')}
           </select>
         </div>
-        <div class="fg"><label>From Date</label><input type="date" id="lvFrom" style="margin-top:6px;" min="${ym}-01"></div>
-        <div class="fg"><label>To Date</label><input type="date" id="lvTo" style="margin-top:6px;" min="${ym}-01"></div>
-        <button class="btn btn-primary" onclick="addLeaveRange()">Add Leave</button>
+        <div class="fg"><label>From Date</label><input type="date" id="lvFrom" style="margin-top:6px;"></div>
+        <div class="fg"><label>To Date</label><input type="date" id="lvTo" style="margin-top:6px;"></div>
+        <button class="btn btn-primary" onclick="addLeaveRange()" style="white-space:nowrap;">Add Leave</button>
       </div>
     </div>` : '';
 
-  if(!empNames.length && !isAdmin){
-    content.innerHTML = adminAdd + `<div class="empty"><div class="ico">🌴</div><h3>No pre-approved leaves this month</h3><p>Check another month or ask your admin.</p></div>`;
+  if(!empNames.length){
+    content.innerHTML = adminAdd + `<div class="empty" style="grid-column:1/-1;"><div class="ico">🌴</div><h3>No pre-approved leaves this month</h3><p>${isAdmin?'Use the form above to add leaves.':'Check another month or contact your admin.'}</p></div>`;
     return;
   }
 
-  // Table view
-  let tableHtml = '';
-  if(empNames.length){
-    const headerCells = dates.map(d=>`<th class="${isSunday(d)?'sun':''} ${isSaturday(d)?'sat':''} ${isToday(d)?'today-col':''}">${fmtColDateShort(d)}</th>`).join('');
-    const bodyRows = empNames.map(emp=>{
-      const empDates = byEmp[emp];
-      const cells = dates.map(d=>{
-        const hasLeave = empDates.includes(d);
-        const ctx = {type:'leave', date:d, shiftTypeId:null, leaveType:'Pre Approved Leave'};
-        if(hasLeave){
-          return `<td class="${isToday(d)?'today-col':''}" style="background:rgba(167,139,250,.08);text-align:center;">
-            <span style="font-size:14px;" title="${emp} on leave">🌴</span>
-            ${isAdmin?`<span class="sched-add-btn" style="display:block;width:16px;height:16px;margin:2px auto 0;font-size:10px;" title="Remove" onclick="removeSchedName('${emp.replace(/'/g,"\\'")}',${JSON.stringify(ctx)})">×</span>`:''}
-          </td>`;
-        }
-        return `<td class="${isToday(d)?'today-col':''}">
-          ${isAdmin?`<span class="sched-add-btn" title="Add leave for ${emp}" onclick="addSingleLeave('${emp.replace(/'/g,"\\'")}','${d}')">+</span>`:''}
-        </td>`;
-      }).join('');
-      return `<tr>
-        <td style="font-weight:600;font-size:13px;white-space:nowrap;background:var(--surface2);position:sticky;left:0;z-index:1;border-right:2px solid var(--border);padding:8px 14px;">
-          <div style="display:flex;align-items:center;gap:8px;">
-            <div style="width:28px;height:28px;border-radius:50%;background:rgba(167,139,250,.15);border:1px solid rgba(167,139,250,.3);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--purple);flex-shrink:0;">${emp.charAt(0).toUpperCase()}</div>
-            ${emp}
-            <span style="font-size:11px;font-family:'DM Mono',monospace;background:rgba(167,139,250,.1);border:1px solid rgba(167,139,250,.3);color:var(--purple);border-radius:100px;padding:1px 7px;">${empDates.length}d</span>
-          </div>
-        </td>${cells}</tr>`;
+  // One row per employee: name | date chips (all in one row)
+  const rows = empNames.map(emp=>{
+    const dates = byEmp[emp];
+    // Format consecutive ranges for display
+    const chips = dates.map(d=>{
+      const displayDate = new Date(d+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'});
+      const ctx = {type:'leave', date:d, shiftTypeId:null, leaveType:'Pre Approved Leave'};
+      return isAdmin
+        ? `<span class="leave-date-chip removable" title="Remove ${d}" onclick="removeSchedName(${JSON.stringify(emp)},${JSON.stringify(ctx)})">${displayDate} ×</span>`
+        : `<span class="leave-date-chip">${displayDate}</span>`;
     }).join('');
-    tableHtml = `<div class="sched-outer">
-      <table class="sched-table">
-        <thead><tr><th style="min-width:185px;text-align:left;padding:10px 14px;">Employee</th>${headerCells}</tr></thead>
-        <tbody>${bodyRows}</tbody>
+
+    return `<tr>
+      <td style="white-space:nowrap;min-width:160px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div class="leave-emp-avatar">${emp.charAt(0).toUpperCase()}</div>
+          <div>
+            <div style="font-weight:600;font-size:14px;">${emp}</div>
+            <div style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;">${dates.length} day${dates.length!==1?'s':''}</div>
+          </div>
+        </div>
+      </td>
+      <td style="line-height:1.8;">${chips}</td>
+    </tr>`;
+  }).join('');
+
+  const tableHtml = `
+    <div style="overflow-x:auto;border-radius:16px;border:1px solid rgba(167,139,250,.25);">
+      <table class="leave-list-table">
+        <thead><tr><th style="min-width:160px;">Employee</th><th>Leave Dates</th></tr></thead>
+        <tbody>${rows}</tbody>
       </table>
     </div>`;
-  } else {
-    tableHtml = `<div class="empty"><div class="ico">🌴</div><h3>No pre-approved leaves this month</h3></div>`;
-  }
 
   content.innerHTML = adminAdd + tableHtml;
 }
@@ -1231,31 +1336,83 @@ async function addLeaveRange(){
   const from = document.getElementById('lvFrom').value;
   const to   = document.getElementById('lvTo').value;
   if(!emp){ showToast('Select an employee'); return; }
-  if(!from||!to){ showToast('Select dates'); return; }
+  if(!from||!to){ showToast('Select start and end dates'); return; }
   if(to<from){ showToast('End must be on or after start'); return; }
-  // generate all dates in range
   const dates = [];
   let cur = new Date(from+'T00:00:00');
   const end = new Date(to+'T00:00:00');
   while(cur<=end){ dates.push(cur.toISOString().slice(0,10)); cur.setDate(cur.getDate()+1); }
-  // filter out already-existing
   const existing = S.leaveEntries.filter(e=>e.leave_type==='Pre Approved Leave'&&e.employee_name===emp).map(e=>e.schedule_date);
   const toInsert = dates.filter(d=>!existing.includes(d));
   if(!toInsert.length){ showToast('All dates already added'); return; }
   const {error} = await sb.from('leave_entries').insert(toInsert.map(d=>({schedule_date:d,employee_name:emp,leave_type:'Pre Approved Leave'})));
   if(error){ showToast('Error: '+error.message,true); return; }
-  showToast(`✓ Added ${toInsert.length} leave day(s) for ${emp}`);
+  showToast(`✓ ${toInsert.length} leave day(s) added for ${emp}`);
 }
 
-async function addSingleLeave(emp, date){
-  const {error} = await sb.from('leave_entries').insert({schedule_date:date,employee_name:emp,leave_type:'Pre Approved Leave'});
-  if(error){ showToast('Error: '+error.message,true); return; }
-  showToast(`✓ Leave added for ${emp}`);
+// ─── BULK ASSIGN MODAL ────────────────────────────────────────────────────
+function openBulkModal(){
+  if(!isAdmin) return;
+  const ym = getSelectedYearMonth();
+  // populate shift dropdown
+  const sel = document.getElementById('bulkShiftSel');
+  sel.innerHTML = '<option value="">— Choose shift —</option>' +
+    S.shiftTypes.map(st=>`<option value="${st.id}">${st.name}</option>`).join('');
+  // default dates to current month
+  document.getElementById('bulkFrom').value = ym+'-01';
+  const lastDay = new Date(...ym.split('-').map(Number), 0).getDate();
+  document.getElementById('bulkTo').value = `${ym}-${String(lastDay).padStart(2,'0')}`;
+  // populate employees
+  document.getElementById('bulkEmpGrid').innerHTML = S.employees.map(e=>`
+    <div class="ecc" onclick="toggleEcc(this)">
+      <div class="ck"></div>${e}
+    </div>`).join('');
+  document.getElementById('bulkModal').classList.add('open');
+}
+function closeBulkModal(){ document.getElementById('bulkModal').classList.remove('open'); }
+document.getElementById('bulkModal').addEventListener('click',function(e){ if(e.target===this)closeBulkModal(); });
+
+async function saveBulkAssign(){
+  if(!isAdmin) return;
+  const shiftId = parseInt(document.getElementById('bulkShiftSel').value);
+  const from    = document.getElementById('bulkFrom').value;
+  const to      = document.getElementById('bulkTo').value;
+  const selEmps = [...document.querySelectorAll('#bulkEmpGrid .ecc.on')].map(el=>el.textContent.replace('✓','').trim());
+
+  if(!shiftId){ showToast('Choose a shift type'); return; }
+  if(!from||!to){ showToast('Set date range'); return; }
+  if(to<from){ showToast('End must be on or after start'); return; }
+  if(!selEmps.length){ showToast('Select at least one employee'); return; }
+
+  // Build all date-employee combos
+  const dates = [];
+  let cur = new Date(from+'T00:00:00');
+  const end = new Date(to+'T00:00:00');
+  while(cur<=end){ dates.push(cur.toISOString().slice(0,10)); cur.setDate(cur.getDate()+1); }
+
+  // Filter out already-existing entries
+  const rows = [];
+  for(const d of dates){
+    const existing = getNamesForShift(d, shiftId);
+    for(const emp of selEmps){
+      if(!existing.includes(emp)) rows.push({schedule_date:d, shift_type_id:shiftId, employee_name:emp});
+    }
+  }
+  if(!rows.length){ showToast('All entries already exist'); return; }
+
+  showToast('Saving…');
+  // Insert in batches of 500 to avoid payload limits
+  for(let i=0;i<rows.length;i+=500){
+    const {error} = await sb.from('schedule_entries').insert(rows.slice(i,i+500));
+    if(error){ showToast('Error: '+error.message,true); closeBulkModal(); return; }
+  }
+  showToast(`✓ Bulk assigned ${rows.length} slot(s)`);
+  closeBulkModal();
 }
 
-// ─── SCHEDULE MODAL ───────────────────────────────────────────────────────
+// ─── SCHEDULE MODAL (single cell) ─────────────────────────────────────────
 function openSchedModal(ctx){
-  if(!isAdmin){ return; }
+  if(!isAdmin) return;
   schedCtx = ctx;
   const title = ctx.type==='shift'
     ? (S.shiftTypes.find(s=>s.id===ctx.shiftTypeId)?.name||'Shift')
@@ -1263,9 +1420,9 @@ function openSchedModal(ctx){
   document.getElementById('schedModalTitle').textContent = title;
   document.getElementById('schedModalSub').textContent   = fmtDate(ctx.date);
 
-  let assigned = [];
-  if(ctx.type==='shift') assigned = getNamesForShift(ctx.date, ctx.shiftTypeId);
-  else assigned = getNamesForLeave(ctx.date, ctx.leaveType);
+  let assigned = ctx.type==='shift'
+    ? getNamesForShift(ctx.date, ctx.shiftTypeId)
+    : getNamesForLeave(ctx.date, ctx.leaveType);
 
   document.getElementById('schedEmpGrid').innerHTML = S.employees.map(e=>{
     const on = assigned.includes(e);
@@ -1288,14 +1445,9 @@ async function saveSchedModal(){
   if(!schedCtx||!isAdmin) return;
   const ctx = schedCtx;
   const selected = [...document.querySelectorAll('#schedEmpGrid .ecc.on')].map(el=>el.textContent.replace('✓','').trim());
-
-  let current = [];
-  if(ctx.type==='shift') current = getNamesForShift(ctx.date, ctx.shiftTypeId);
-  else current = getNamesForLeave(ctx.date, ctx.leaveType);
-
+  const current  = ctx.type==='shift' ? getNamesForShift(ctx.date,ctx.shiftTypeId) : getNamesForLeave(ctx.date,ctx.leaveType);
   const toAdd    = selected.filter(e=>!current.includes(e));
   const toRemove = current.filter(e=>!selected.includes(e));
-
   try {
     if(ctx.type==='shift'){
       if(toAdd.length) await sb.from('schedule_entries').insert(toAdd.map(e=>({schedule_date:ctx.date,shift_type_id:ctx.shiftTypeId,employee_name:e})));
@@ -1304,8 +1456,8 @@ async function saveSchedModal(){
       if(toAdd.length) await sb.from('leave_entries').insert(toAdd.map(e=>({schedule_date:ctx.date,employee_name:e,leave_type:ctx.leaveType})));
       for(const e of toRemove) await sb.from('leave_entries').delete().eq('schedule_date',ctx.date).eq('employee_name',e).eq('leave_type',ctx.leaveType);
     }
-    showToast('✓ Schedule updated');
-  } catch(err){ showToast('Error: '+err.message, true); }
+    showToast('✓ Updated');
+  } catch(err){ showToast('Error: '+err.message,true); }
   closeSchedModal();
 }
 
