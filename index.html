@@ -693,7 +693,7 @@
           <option value="">— Choose shift —</option>
         </select>
       </div>
-      <label style="margin-bottom:8px;display:block;">Week <span style="font-size:10px;color:var(--muted);font-weight:400;">(tap to select multiple)</span></label>
+      <label style="margin-bottom:8px;display:block;">Period <span style="font-size:10px;color:var(--muted);font-weight:400;">(tap to select multiple)</span></label>
       <div class="bulk-week-tabs" id="bulkWeekTabs"></div>
       <label style="margin-bottom:8px;display:block;">Days in Week <span style="font-size:10px;color:var(--muted);font-weight:400;">(uncheck to exclude)</span></label>
       <div class="bulk-day-checks" id="bulkDayChecks"></div>
@@ -1620,7 +1620,7 @@ function setBulkMode(mode){
   document.getElementById('bulkShiftSection').style.display  = mode==='shift'  ? 'block' : 'none';
   document.getElementById('bulkDayoffSection').style.display = mode==='dayoff' ? 'block' : 'none';
   document.getElementById('bulkModalSub').textContent = mode==='shift'
-    ? 'Assign employees to a shift — select one or more weeks and specific days.'
+    ? 'Assign employees to a shift — select a period and specific days.'
     : 'Mark employees as Day Off — select days of the week (applies to whole month).';
   if(mode==='dayoff') updateDowPreview();
   refreshBulkEmployees();
@@ -1788,21 +1788,28 @@ function refreshBulkEmployees(){
 function openBulkModal(){
   if(!isAdmin) return;
   const ym = getSelectedYearMonth();
+  const [y,m] = ym.split('-').map(Number);
+  const monthName = ['January','February','March','April','May','June','July','August','September','October','November','December'][m-1];
 
   _bulkMonthDates = getMonthDates(ym);
-  _bulkWeeks = splitIntoWeeks(_bulkMonthDates);
-  _bulkSelectedWeeks = new Set([0]); // default first week selected
+  const lastDay = new Date(y,m,0).getDate();
 
-  // Week pills (multi-select)
+  // Build two fixed periods: 1–15 and 16–end
+  _bulkWeeks = [
+    _bulkMonthDates.filter(d=>{ const day=parseInt(d.slice(8)); return day>=1&&day<=15; }),
+    _bulkMonthDates.filter(d=>{ const day=parseInt(d.slice(8)); return day>=16; })
+  ];
+  _bulkSelectedWeeks = new Set([0]); // default first period selected
+
+  // Period pills
   const weekTabsEl = document.getElementById('bulkWeekTabs');
-  weekTabsEl.innerHTML = _bulkWeeks.map((wk, i)=>{
-    const ws = new Date(wk[0]+'T00:00:00');
-    const we = new Date(wk[wk.length-1]+'T00:00:00');
-    const fmt = d=>d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
-    return `<div class="bwt${i===0?' active':''}" onclick="toggleBulkWeek(${i})">
-      Week ${i+1} <span style="font-size:10px;opacity:.7;">${fmt(ws)}–${fmt(we)}</span>
-    </div>`;
-  }).join('');
+  weekTabsEl.innerHTML = [
+    { label: `1st – 15th`, sub: `${monthName} 1–15` },
+    { label: `16th – ${lastDay}${lastDay===31?'st':lastDay===30?'th':lastDay===29?'th':'th'}`, sub: `${monthName} 16–${lastDay}` }
+  ].map((p,i)=>`
+    <div class="bwt${i===0?' active':''}" onclick="toggleBulkWeek(${i})">
+      ${p.label} <span style="font-size:10px;opacity:.7;">${p.sub}</span>
+    </div>`).join('');
 
   // Day checkboxes for shift mode
   buildShiftDayChecks();
@@ -1811,10 +1818,13 @@ function openBulkModal(){
   buildDowPills();
   updateDowPreview();
 
-  // Shift dropdown
+  // Shift dropdown — exclude PayPro & Batch Upload
   const sel = document.getElementById('bulkShiftSel');
   sel.innerHTML = '<option value="">— Choose shift —</option>' +
-    S.shiftTypes.map(st=>`<option value="${st.id}">${st.name}</option>`).join('');
+    S.shiftTypes
+      .filter(st => st.name !== 'PayPro & Batch Upload')
+      .map(st=>`<option value="${st.id}">${st.name}</option>`)
+      .join('');
 
   // Reset to shift mode
   _bulkMode = 'shift';
@@ -1822,7 +1832,7 @@ function openBulkModal(){
   document.getElementById('bulkModeDayoff').classList.remove('active');
   document.getElementById('bulkShiftSection').style.display  = 'block';
   document.getElementById('bulkDayoffSection').style.display = 'none';
-  document.getElementById('bulkModalSub').textContent = 'Assign employees to a shift — select one or more weeks and specific days.';
+  document.getElementById('bulkModalSub').textContent = 'Assign employees to a shift — select a period and specific days.';
 
   refreshBulkEmployees();
   document.getElementById('bulkModal').classList.add('open');
