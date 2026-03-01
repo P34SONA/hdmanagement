@@ -132,20 +132,18 @@
   @keyframes pulse{ 0%,100%{opacity:1} 50%{opacity:.4} }
   .tabs{ display:flex; background:var(--surface); border-bottom:1px solid var(--border); padding:0 32px; overflow-x:auto; }
   .tab{
-    padding:14px 22px; font-size:14px; font-weight:600; color:var(--muted);
+    padding:14px 22px; font-size:14px; font-weight:500; color:var(--muted);
     cursor:pointer; border-bottom:3px solid transparent; transition:all .2s;
     background:none; border-top:none; border-left:none; border-right:none;
     font-family:'DM Sans',sans-serif; white-space:nowrap; position:relative;
+    letter-spacing:.01em;
   }
-  .tab:hover{ color:var(--text); border-bottom-color:rgba(232,197,71,.3); }
+  .tab:hover{ color:var(--text); }
   .tab.active{
     color:var(--accent); border-bottom-color:var(--accent);
-    text-shadow:0 0 20px rgba(232,197,71,.4);
-  }
-  .tab.active::after{
-    content:''; position:absolute; bottom:-1px; left:50%; transform:translateX(-50%);
-    width:60%; height:3px; background:var(--accent);
-    border-radius:3px 3px 0 0; box-shadow:0 0 12px rgba(232,197,71,.6);
+    font-weight:700;
+    text-shadow:0 0 16px rgba(232,197,71,.5), 0 0 32px rgba(232,197,71,.25);
+    box-shadow:inset 0 -3px 0 var(--accent), 0 3px 12px rgba(232,197,71,.35);
   }
   .tab:disabled{ opacity:.3; cursor:not-allowed; }
   /* Schedule & leave views use full viewport width */
@@ -312,19 +310,41 @@
   .sched-table tr.row-header td{ background:rgba(74,222,128,.06); }
   .sched-table tr.row-header td.td-label{ color:var(--green); font-size:10px; letter-spacing:.5px; }
 
-  /* name grid inside cells — 4 across row layout */
-  .cell-names{ display:flex; flex-wrap:wrap; gap:3px; align-items:flex-start; }
-  .sched-name-pill{
-    background:var(--surface); border:1px solid var(--border);
-    border-radius:5px; padding:2px 7px; font-size:10px;
-    white-space:nowrap; cursor:default; line-height:1.5;
-    flex: 0 0 calc(25% - 3px); /* 4 per row */
-    min-width:0; overflow:hidden; text-overflow:ellipsis; text-align:center;
-    box-sizing:border-box;
+  /* date inputs — white calendar icon & text */
+  input[type=date], input[type=month]{
+    color-scheme: dark;
+    color:var(--text);
   }
-  .sched-name-pill.mine{ background:rgba(232,197,71,.15); border-color:rgba(232,197,71,.4); color:var(--accent); }
+  input[type=date]::-webkit-calendar-picker-indicator,
+  input[type=month]::-webkit-calendar-picker-indicator{
+    filter: invert(1) brightness(2);
+    cursor:pointer;
+    opacity:.8;
+  }
+  input[type=date]::-webkit-calendar-picker-indicator:hover,
+  input[type=month]::-webkit-calendar-picker-indicator:hover{ opacity:1; }
+
+  /* name pills in schedule cells — compact tag style like employee accounts */
+  .cell-names{ display:flex; flex-wrap:wrap; gap:4px; align-items:flex-start; padding:2px 0; }
+  .sched-name-pill{
+    display:inline-flex; align-items:center; gap:4px;
+    background:var(--surface2); border:1px solid var(--border);
+    border-radius:100px; padding:3px 10px 3px 10px;
+    font-size:11px; font-family:'DM Mono',monospace;
+    white-space:nowrap; cursor:default; line-height:1.4;
+    transition:all .15s;
+  }
+  .sched-name-pill.mine{
+    background:rgba(232,197,71,.12); border-color:rgba(232,197,71,.35);
+    color:var(--accent);
+  }
   .sched-name-pill.editable{ cursor:pointer; }
-  .sched-name-pill.editable:hover{ border-color:var(--red); color:var(--red); background:rgba(248,113,113,.08); }
+  .sched-name-pill.editable:hover{
+    border-color:rgba(248,113,113,.5); color:var(--red);
+    background:rgba(248,113,113,.08);
+  }
+  .sched-name-pill .px{ font-size:12px; opacity:.4; margin-left:1px; line-height:1; }
+  .sched-name-pill.editable:hover .px{ opacity:.8; }
   .sched-add-btn{
     display:inline-flex; align-items:center; justify-content:center;
     width:16px; height:16px; border-radius:4px; background:var(--surface2);
@@ -1185,16 +1205,14 @@ const _pillRegistry = {};
 let _pillId = 0;
 
 function renderNamePills(names, ctx){
-  if(!names.length) return isAdmin ? '<div class="cell-names"></div>' : '<div class="cell-names"><span style="color:var(--border);font-size:10px;">—</span></div>';
+  if(!names.length) return '<div class="cell-names"></div>';
   const pills = names.map(n=>{
     if(isAdmin){
       const pid = '_p'+(++_pillId);
       _pillRegistry[pid] = {name:n, ctx};
       return `<span class="sched-name-pill${(!isGuest&&n===curUser)?' mine':''} editable"
-        data-pid="${pid}" title="Click to remove: ${n.replace(/"/g,'&quot;')}"
-        onclick="handlePillRemove(this)">
-        ${n}<span style="opacity:.3;font-size:8px;"> ×</span>
-      </span>`;
+        data-pid="${pid}" title="Remove: ${n.replace(/"/g,'&quot;')}"
+        onclick="handlePillRemove(this)">${n}<span class="px">×</span></span>`;
     }
     return `<span class="sched-name-pill${(!isGuest&&n===curUser)?' mine':''}" title="${n}">${n}</span>`;
   }).join('');
@@ -1361,8 +1379,12 @@ function renderLeaveView(){
   const rows = empNames.map(emp=>{
     const dates = byEmp[emp];
     const chips = dates.map(d=>{
-      const dd = new Date(d+'T00:00:00');
-      const displayDate = dd.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+      // Parse date parts directly to avoid UTC timezone offset shift
+      const [dy,dm,dd] = d.split('-').map(Number);
+      const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+      const monNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      const dow = new Date(dy, dm-1, dd).getDay();
+      const displayDate = `${dayNames[dow]}, ${monNames[dm-1]} ${dd}`;
       const ctx = {type:'leave', date:d, shiftTypeId:null, leaveType:'Pre Approved Leave'};
       if(isAdmin){
         const pid = '_p'+(++_pillId);
@@ -1404,16 +1426,34 @@ async function addLeaveRange(){
   if(!emp){ showToast('Select an employee'); return; }
   if(!from||!to){ showToast('Select start and end dates'); return; }
   if(to<from){ showToast('End must be on or after start'); return; }
-  const dates = [];
-  let cur = new Date(from+'T00:00:00');
-  const end = new Date(to+'T00:00:00');
-  while(cur<=end){ dates.push(cur.toISOString().slice(0,10)); cur.setDate(cur.getDate()+1); }
+
+  // Build date strings directly from YYYY-MM-DD input values to avoid UTC timezone shift
+  function dateStrings(fromStr, toStr){
+    const result = [];
+    // Parse parts directly — do NOT use new Date() then toISOString() (causes UTC offset bug)
+    let [y,m,d] = fromStr.split('-').map(Number);
+    const [ey,em,ed] = toStr.split('-').map(Number);
+    while(true){
+      const ds = `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      result.push(ds);
+      if(ds===toStr) break;
+      // advance one day
+      d++;
+      const maxDay = new Date(y,m,0).getDate(); // last day of month m
+      if(d>maxDay){ d=1; m++; }
+      if(m>12){ m=1; y++; }
+      if(result.length>400) break; // safety
+    }
+    return result;
+  }
+
+  const dates = dateStrings(from, to);
   const existing = S.leaveEntries.filter(e=>e.leave_type==='Pre Approved Leave'&&e.employee_name===emp).map(e=>e.schedule_date);
   const toInsert = dates.filter(d=>!existing.includes(d));
   if(!toInsert.length){ showToast('All dates already added'); return; }
   const {error} = await sb.from('leave_entries').insert(toInsert.map(d=>({schedule_date:d,employee_name:emp,leave_type:'Pre Approved Leave'})));
   if(error){ showToast('Error: '+error.message,true); return; }
-  // Auto-navigate to the month of the "from" date so the admin sees the result
+  // Auto-navigate to the month of the "from" date
   const targetYm = from.slice(0,7);
   const anchor = document.getElementById('leaveMonthAnchor');
   if(anchor) anchor.value = targetYm;
@@ -1454,11 +1494,21 @@ async function saveBulkAssign(){
   if(to<from){ showToast('End must be on or after start'); return; }
   if(!selEmps.length){ showToast('Select at least one employee'); return; }
 
-  // Build all date-employee combos
-  const dates = [];
-  let cur = new Date(from+'T00:00:00');
-  const end = new Date(to+'T00:00:00');
-  while(cur<=end){ dates.push(cur.toISOString().slice(0,10)); cur.setDate(cur.getDate()+1); }
+  // Build all date strings safely (no UTC shift)
+  function safeDateRange(fromStr, toStr){
+    const result = [];
+    let [y,m,d] = fromStr.split('-').map(Number);
+    while(true){
+      const ds = `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      result.push(ds);
+      if(ds===toStr) break;
+      d++; const max=new Date(y,m,0).getDate();
+      if(d>max){d=1;m++;} if(m>12){m=1;y++;}
+      if(result.length>400) break;
+    }
+    return result;
+  }
+  const dates = safeDateRange(from, to);
 
   // Filter out already-existing entries
   const rows = [];
