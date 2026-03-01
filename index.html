@@ -130,20 +130,21 @@
   .user-dot{ width:8px; height:8px; border-radius:50%; background:var(--green); }
   .sync-dot{ width:8px; height:8px; border-radius:50%; background:var(--accent2); animation:pulse 2s infinite; }
   @keyframes pulse{ 0%,100%{opacity:1} 50%{opacity:.4} }
-  .tabs{ display:flex; background:var(--surface); border-bottom:1px solid var(--border); padding:0 32px; overflow-x:auto; }
+  .tabs{ display:flex; background:var(--surface); border-bottom:1px solid var(--border); padding:0 28px; overflow-x:auto; gap:0; }
   .tab{
-    padding:14px 22px; font-size:14px; font-weight:500; color:var(--muted);
-    cursor:pointer; border-bottom:3px solid transparent; transition:all .2s;
+    padding:13px 20px; font-size:13px; font-weight:500; color:var(--muted);
+    cursor:pointer; border-bottom:3px solid transparent; transition:color .18s, border-color .18s, background .18s;
     background:none; border-top:none; border-left:none; border-right:none;
     font-family:'DM Sans',sans-serif; white-space:nowrap; position:relative;
-    letter-spacing:.01em;
+    letter-spacing:.01em; outline:none;
   }
   .tab:hover{ color:var(--text); }
   .tab.active{
-    color:var(--accent); border-bottom-color:var(--accent);
+    color:var(--accent);
     font-weight:700;
-    text-shadow:0 0 16px rgba(232,197,71,.5), 0 0 32px rgba(232,197,71,.25);
-    box-shadow:inset 0 -3px 0 var(--accent), 0 3px 12px rgba(232,197,71,.35);
+    border-bottom:3px solid var(--accent);
+    background:rgba(232,197,71,.07);
+    text-shadow:0 0 18px rgba(232,197,71,.55);
   }
   .tab:disabled{ opacity:.3; cursor:not-allowed; }
   /* Schedule & leave views use full viewport width */
@@ -310,29 +311,46 @@
   .sched-table tr.row-header td{ background:rgba(74,222,128,.06); }
   .sched-table tr.row-header td.td-label{ color:var(--green); font-size:10px; letter-spacing:.5px; }
 
-  /* date inputs — white calendar icon & text */
+  /* date inputs — force white text and white calendar icon */
   input[type=date], input[type=month]{
-    color-scheme: dark;
-    color:var(--text);
+    color-scheme: dark !important;
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
   }
+  input[type=date]::-webkit-datetime-edit,
+  input[type=month]::-webkit-datetime-edit{ color:#ffffff !important; }
+  input[type=date]::-webkit-datetime-edit-fields-wrapper,
+  input[type=month]::-webkit-datetime-edit-fields-wrapper{ color:#ffffff !important; }
+  input[type=date]::-webkit-datetime-edit-text,
+  input[type=date]::-webkit-datetime-edit-month-field,
+  input[type=date]::-webkit-datetime-edit-day-field,
+  input[type=date]::-webkit-datetime-edit-year-field,
+  input[type=month]::-webkit-datetime-edit-text,
+  input[type=month]::-webkit-datetime-edit-month-field,
+  input[type=month]::-webkit-datetime-edit-year-field{ color:#ffffff !important; }
   input[type=date]::-webkit-calendar-picker-indicator,
   input[type=month]::-webkit-calendar-picker-indicator{
-    filter: invert(1) brightness(2);
-    cursor:pointer;
-    opacity:.8;
+    filter: brightness(0) invert(1) !important;
+    cursor: pointer;
+    opacity: 0.85;
   }
   input[type=date]::-webkit-calendar-picker-indicator:hover,
   input[type=month]::-webkit-calendar-picker-indicator:hover{ opacity:1; }
 
-  /* name pills in schedule cells — compact tag style like employee accounts */
+  /* name pills in schedule cells — compact tag style, 3 per row */
   .cell-names{ display:flex; flex-wrap:wrap; gap:4px; align-items:flex-start; padding:2px 0; }
   .sched-name-pill{
     display:inline-flex; align-items:center; gap:4px;
     background:var(--surface2); border:1px solid var(--border);
-    border-radius:100px; padding:3px 10px 3px 10px;
-    font-size:11px; font-family:'DM Mono',monospace;
-    white-space:nowrap; cursor:default; line-height:1.4;
+    border-radius:100px; padding:2px 9px;
+    font-size:10px; font-family:'DM Mono',monospace;
+    white-space:nowrap; cursor:default; line-height:1.5;
     transition:all .15s;
+    flex: 0 0 calc(33.333% - 3px);
+    min-width:0; max-width:calc(33.333% - 3px);
+    overflow:hidden; text-overflow:ellipsis;
+    justify-content:center; text-align:center;
+    box-sizing:border-box;
   }
   .sched-name-pill.mine{
     background:rgba(232,197,71,.12); border-color:rgba(232,197,71,.35);
@@ -343,7 +361,7 @@
     border-color:rgba(248,113,113,.5); color:var(--red);
     background:rgba(248,113,113,.08);
   }
-  .sched-name-pill .px{ font-size:12px; opacity:.4; margin-left:1px; line-height:1; }
+  .sched-name-pill .px{ font-size:10px; opacity:.35; margin-left:1px; line-height:1; flex-shrink:0; }
   .sched-name-pill.editable:hover .px{ opacity:.8; }
   .sched-add-btn{
     display:inline-flex; align-items:center; justify-content:center;
@@ -365,10 +383,16 @@
   .leave-emp-avatar{ width:32px; height:32px; border-radius:50%; background:rgba(167,139,250,.15); border:1px solid rgba(167,139,250,.3); display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; color:var(--purple); flex-shrink:0; }
 
   /* assign modal for schedule */
-  .emp-check-grid{ display:flex; flex-wrap:wrap; gap:8px; max-height:260px; overflow-y:auto; padding:4px 0; }
+  .emp-check-grid{ display:flex; flex-wrap:wrap; gap:8px; max-height:300px; overflow-y:auto; padding:4px 0; }
   .ecc{ display:flex; align-items:center; gap:8px; background:var(--surface2); border:1px solid var(--border); border-radius:var(--radius); padding:7px 12px; cursor:pointer; transition:all .15s; user-select:none; font-size:13px; }
   .ecc:hover{ border-color:var(--accent); }
   .ecc.on{ background:rgba(232,197,71,.1); border-color:var(--accent); color:var(--accent); font-weight:500; }
+  .ecc.disabled-shift{
+    opacity:.38; cursor:not-allowed; pointer-events:none;
+    background:rgba(248,113,113,.05); border-color:rgba(248,113,113,.2);
+  }
+  .ecc.disabled-shift .ck{ background:rgba(248,113,113,.1); border-color:rgba(248,113,113,.3); }
+  .shift-label-badge{ font-size:9px; font-family:'DM Mono',monospace; background:rgba(248,113,113,.12); border:1px solid rgba(248,113,113,.25); color:var(--red); border-radius:100px; padding:1px 5px; margin-left:2px; white-space:nowrap; }
   .ecc .ck{ width:14px; height:14px; border-radius:3px; border:1px solid var(--border); background:var(--bg); display:flex; align-items:center; justify-content:center; font-size:9px; flex-shrink:0; }
   .ecc.on .ck{ background:var(--accent); border-color:var(--accent); color:#0d0f14; }
 
@@ -1540,14 +1564,33 @@ function openSchedModal(ctx){
   document.getElementById('schedModalTitle').textContent = title;
   document.getElementById('schedModalSub').textContent   = fmtDate(ctx.date);
 
+  // Who is already in THIS cell
   let assigned = ctx.type==='shift'
     ? getNamesForShift(ctx.date, ctx.shiftTypeId)
     : getNamesForLeave(ctx.date, ctx.leaveType);
 
+  // For shifts: build a map of emp → shift name for OTHER shifts on the same date
+  // so we can disable and label them
+  const takenByOtherShift = {}; // empName → otherShiftName
+  if(ctx.type==='shift'){
+    for(const st of S.shiftTypes){
+      if(st.id === ctx.shiftTypeId) continue; // skip current shift
+      const othersOnDate = getNamesForShift(ctx.date, st.id);
+      othersOnDate.forEach(emp=>{
+        if(!takenByOtherShift[emp]) takenByOtherShift[emp] = st.name;
+      });
+    }
+  }
+
   document.getElementById('schedEmpGrid').innerHTML = S.employees.map(e=>{
     const on = assigned.includes(e);
-    return `<div class="ecc${on?' on':''}" onclick="toggleEcc(this)">
-      <div class="ck">${on?'✓':''}</div>${e}
+    const takenBy = takenByOtherShift[e];
+    // Disable if taken by another shift (but not if already on THIS shift)
+    const disabled = !on && takenBy;
+    const disabledClass = disabled ? ' disabled-shift' : '';
+    const badge = disabled ? `<span class="shift-label-badge" title="Already assigned to: ${takenBy}">in ${takenBy.length>14?takenBy.slice(0,12)+'…':takenBy}</span>` : '';
+    return `<div class="ecc${on?' on':''}${disabledClass}" onclick="${disabled?'':'toggleEcc(this)'}">
+      <div class="ck">${on?'✓':''}</div>${e}${badge}
     </div>`;
   }).join('');
 
