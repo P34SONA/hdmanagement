@@ -289,23 +289,26 @@
 
   /* day-of-week checkboxes for shift mode */
   .bulk-day-checks{ display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px; }
-  .bdc{ display:inline-flex; align-items:center; gap:5px; padding:4px 12px; border-radius:100px; font-size:12px; font-family:'DM Mono',monospace; cursor:pointer; border:1px solid var(--border); background:var(--surface2); color:var(--muted); transition:all .15s; user-select:none; }
-  .bdc:hover{ border-color:var(--accent); color:var(--text); }
+  .bdc{ display:inline-flex; align-items:center; gap:5px; padding:4px 12px; border-radius:100px; font-size:12px; font-family:'DM Mono',monospace; cursor:pointer; border:1px solid var(--border); background:var(--surface2); color:#ffffff; transition:all .15s; user-select:none; }
+  .bdc:hover{ border-color:var(--accent); }
   .bdc.on{ background:rgba(232,197,71,.1); border-color:var(--accent); color:var(--accent); font-weight:600; }
-  .bdc.sun{ border-color:rgba(248,113,113,.3); color:var(--red); background:rgba(248,113,113,.06); }
-  .bdc.sun.on{ background:rgba(248,113,113,.15); border-color:var(--red); }
-  .bdc.sat{ border-color:rgba(96,165,250,.3); color:#60a5fa; background:rgba(96,165,250,.06); }
-  .bdc.sat.on{ background:rgba(96,165,250,.15); border-color:#60a5fa; }
+  .bdc.sun{ border-color:rgba(248,113,113,.25); }
+  .bdc.sun.on{ background:rgba(248,113,113,.15); border-color:var(--red); color:var(--red); }
+  .bdc.sat{ border-color:rgba(96,165,250,.25); }
+  .bdc.sat.on{ background:rgba(96,165,250,.15); border-color:#60a5fa; color:#60a5fa; }
 
   /* day-of-week pills for dayoff mode */
   .bulk-dow-pills{ display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px; }
-  .bdp{ display:inline-flex; align-items:center; gap:5px; padding:6px 16px; border-radius:100px; font-size:13px; font-weight:500; cursor:pointer; border:1px solid var(--border); background:var(--surface2); color:var(--muted); transition:all .15s; user-select:none; font-family:'DM Sans',sans-serif; }
-  .bdp:hover{ border-color:rgba(249,168,212,.5); color:#f9a8d4; }
+  .bdp{ display:inline-flex; align-items:center; gap:5px; padding:6px 16px; border-radius:100px; font-size:13px; font-weight:500; cursor:pointer; border:1px solid var(--border); background:var(--surface2); color:#ffffff; transition:all .15s; user-select:none; font-family:'DM Sans',sans-serif; }
+  .bdp:hover{ border-color:rgba(249,168,212,.5); }
   .bdp.on{ background:rgba(249,168,212,.1); border-color:rgba(249,168,212,.5); color:#f9a8d4; font-weight:600; }
-  .bdp.sun{ border-color:rgba(248,113,113,.3); color:var(--red); }
-  .bdp.sun.on{ background:rgba(248,113,113,.12); border-color:var(--red); }
-  .bdp.sat{ border-color:rgba(96,165,250,.3); color:#60a5fa; }
-  .bdp.sat.on{ background:rgba(96,165,250,.12); border-color:#60a5fa; }
+  .bdp.sun{ border-color:rgba(248,113,113,.25); }
+  .bdp.sun.on{ background:rgba(248,113,113,.12); border-color:var(--red); color:var(--red); }
+  .bdp.sat{ border-color:rgba(96,165,250,.25); }
+  .bdp.sat.on{ background:rgba(96,165,250,.12); border-color:#60a5fa; color:#60a5fa; }
+
+  /* multi-week select — active week pill */
+  .bwt.active{ background:rgba(232,197,71,.1); border-color:var(--accent); color:var(--accent); font-weight:700; }
 
   /* color-coded name pills (admin only) — shift colors */
   .sched-name-pill.shift-c0{ background:rgba(79,209,197,.12); border-color:rgba(79,209,197,.35); color:var(--accent2); }
@@ -690,7 +693,7 @@
           <option value="">— Choose shift —</option>
         </select>
       </div>
-      <label style="margin-bottom:8px;display:block;">Week</label>
+      <label style="margin-bottom:8px;display:block;">Week <span style="font-size:10px;color:var(--muted);font-weight:400;">(tap to select multiple)</span></label>
       <div class="bulk-week-tabs" id="bulkWeekTabs"></div>
       <label style="margin-bottom:8px;display:block;">Days in Week <span style="font-size:10px;color:var(--muted);font-weight:400;">(uncheck to exclude)</span></label>
       <div class="bulk-day-checks" id="bulkDayChecks"></div>
@@ -1244,13 +1247,14 @@ function getMonthDates(ym){
   for(let d=1;d<=days;d++) dates.push(`${ym}-${String(d).padStart(2,'0')}`);
   return dates;
 }
-// Split month dates into Sun-Sat weeks
+// Split month dates into Mon-Sun weeks
 function splitIntoWeeks(dates){
   const weeks = [];
   let week = [];
   for(const d of dates){
     week.push(d);
-    if(new Date(d+'T00:00:00').getDay()===6 || d===dates[dates.length-1]){
+    // End week on Sunday (0) or last date
+    if(new Date(d+'T00:00:00').getDay()===0 || d===dates[dates.length-1]){
       weeks.push(week);
       week = [];
     }
@@ -1280,7 +1284,7 @@ function goToThisLeaveMonth(){
   renderLeaveView();
 }
 
-const DAY_NAMES  = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const DAY_NAMES  = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']; // display order Mon-Sun
 const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
 function isSunday(s)  { return new Date(s+'T00:00:00').getDay()===0; }
@@ -1294,11 +1298,14 @@ function colClass(d){
 function buildWeekHeader(weekDates){
   return `<tr>
     <th class="th-label">Shifting</th>
-    ${weekDates.map(d=>`
-      <th class="${colClass(d)}">
+    ${weekDates.map(d=>{
+      const dow = new Date(d+'T00:00:00').getDay();
+      const dayLabel = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][dow];
+      return `<th class="${colClass(d)}">
         <div class="th-date">${new Date(d+'T00:00:00').getDate()}</div>
-        <div class="th-day">${DAY_NAMES[new Date(d+'T00:00:00').getDay()]}</div>
-      </th>`).join('')}
+        <div class="th-day">${dayLabel}</div>
+      </th>`;
+    }).join('')}
   </tr>`;
 }
 
@@ -1599,10 +1606,11 @@ async function addLeaveRange(){
 // ─── BULK ASSIGN MODAL ────────────────────────────────────────────────────
 let _bulkMode = 'shift';
 let _bulkWeeks = [];
-let _bulkWeekIdx = 0;
-let _bulkMonthDates = []; // all dates in month for dayoff DOW mode
+let _bulkSelectedWeeks = new Set(); // multi-week support
+let _bulkMonthDates = [];
 
-const DOW_FULL = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const DOW_FULL = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+const DOW_FULL_ISO = [1,2,3,4,5,6,0]; // JS .getDay() values for Mon-Sun display order
 const DOW_SHORT = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 
 function setBulkMode(mode){
@@ -1612,16 +1620,23 @@ function setBulkMode(mode){
   document.getElementById('bulkShiftSection').style.display  = mode==='shift'  ? 'block' : 'none';
   document.getElementById('bulkDayoffSection').style.display = mode==='dayoff' ? 'block' : 'none';
   document.getElementById('bulkModalSub').textContent = mode==='shift'
-    ? 'Assign employees to a shift for selected week and days.'
-    : 'Mark employees as Day Off for selected days of the week (whole month).';
+    ? 'Assign employees to a shift — select one or more weeks and specific days.'
+    : 'Mark employees as Day Off — select days of the week (applies to whole month).';
   if(mode==='dayoff') updateDowPreview();
   refreshBulkEmployees();
 }
 
-function selectBulkWeek(idx){
-  _bulkWeekIdx = idx;
-  document.querySelectorAll('.bwt').forEach((el,i)=>el.classList.toggle('active', i===idx));
-  // Rebuild day checkboxes for new week
+// Multi-week toggle — clicking a week pill adds/removes it from selection set
+function toggleBulkWeek(idx){
+  if(_bulkSelectedWeeks.has(idx)){
+    if(_bulkSelectedWeeks.size === 1) return; // must have at least 1
+    _bulkSelectedWeeks.delete(idx);
+  } else {
+    _bulkSelectedWeeks.add(idx);
+  }
+  // Update pill visuals
+  document.querySelectorAll('.bwt').forEach((el,i)=>el.classList.toggle('active', _bulkSelectedWeeks.has(i)));
+  // Rebuild day checkboxes based on combined selected week dates
   buildShiftDayChecks();
   refreshBulkEmployees();
 }
@@ -1638,15 +1653,24 @@ function toggleBdp(el){
 }
 
 function buildShiftDayChecks(){
-  const weekDates = _bulkWeeks[_bulkWeekIdx] || [];
+  // Collect all dates from all selected weeks, deduplicated and sorted
+  const allSelected = [];
+  const seen = new Set();
+  _bulkWeeks.forEach((wk, i)=>{
+    if(!_bulkSelectedWeeks.has(i)) return;
+    wk.forEach(d=>{ if(!seen.has(d)){ seen.add(d); allSelected.push(d); } });
+  });
+  allSelected.sort();
+
   const el = document.getElementById('bulkDayChecks');
   if(!el) return;
-  el.innerHTML = weekDates.map(d=>{
+  el.innerHTML = allSelected.map(d=>{
     const dow = new Date(d+'T00:00:00').getDay();
+    const dayLabel = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][dow];
     const cls = dow===0?'sun':dow===6?'sat':'';
     return `<label class="bdc on ${cls}" title="${d}">
       <input type="checkbox" checked style="display:none;" onchange="toggleBdc(this.parentElement)">
-      ${DOW_SHORT[dow]} ${new Date(d+'T00:00:00').getDate()}
+      ${dayLabel} ${new Date(d+'T00:00:00').getDate()}
     </label>`;
   }).join('');
 }
@@ -1659,11 +1683,11 @@ function getSelectedShiftDates(){
 function buildDowPills(){
   const el = document.getElementById('bulkDowPills');
   if(!el) return;
+  // Display Mon-Sun order; default ALL deselected
   el.innerHTML = DOW_FULL.map((name,i)=>{
-    const cls = i===0?'sun':i===6?'sat':'';
-    // Default: Mon-Fri on, Sat-Sun off
-    const isOn = (i>=1&&i<=5);
-    return `<div class="bdp ${cls}${isOn?' on':''}" data-dow="${i}" onclick="toggleBdp(this)">${name}</div>`;
+    const jsDay = DOW_FULL_ISO[i]; // actual JS .getDay() value
+    const cls = jsDay===0?'sun':jsDay===6?'sat':'';
+    return `<div class="bdp ${cls}" data-dow="${jsDay}" onclick="toggleBdp(this)">${name}</div>`;
   }).join('');
 }
 
@@ -1679,8 +1703,7 @@ function updateDowPreview(){
   const dates = getSelectedDowDates();
   const el = document.getElementById('bulkDowDatePreview');
   if(!el) return;
-  if(!dates.length){ el.textContent='No dates selected'; return; }
-  // Show first few dates
+  if(!dates.length){ el.textContent = 'No days selected'; return; }
   const preview = dates.slice(0,6).map(d=>{
     const [y,m,day]=d.split('-').map(Number);
     return `${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][m-1]} ${day}`;
@@ -1704,8 +1727,8 @@ function refreshBulkEmployees(){
     const isPayPro = shiftObj && shiftObj.name === 'PayPro & Batch Upload';
 
     grid.innerHTML = S.employees.map(emp=>{
-      // For PayPro: skip other-shift conflicts (can overlap). Still check dayoff.
       let takenLabel = null;
+      // Skip other-shift conflicts for PayPro (can overlap), but still check dayoff + pre-approved leave
       if(!isPayPro){
         for(const st of S.shiftTypes){
           if(st.id === shiftId) continue;
@@ -1717,10 +1740,16 @@ function refreshBulkEmployees(){
       if(!takenLabel && dates.some(d => getNamesForLeave(d,'Dayoff').includes(emp))){
         takenLabel = 'Day Off';
       }
+      if(!takenLabel && dates.some(d => getNamesForLeave(d,'Pre Approved Leave').includes(emp))){
+        takenLabel = 'On Leave';
+      }
       const alreadyThisShift = !isNaN(shiftId) && dates.some(d => getNamesForShift(d, shiftId).includes(emp));
       const disabled = !!takenLabel;
+      let badgeStyle = '';
+      if(takenLabel==='Day Off') badgeStyle = 'background:rgba(249,168,212,.12);border-color:rgba(249,168,212,.35);color:#f9a8d4;';
+      else if(takenLabel==='On Leave') badgeStyle = 'background:rgba(192,132,252,.12);border-color:rgba(192,132,252,.35);color:#c084fc;';
       const badge = disabled
-        ? `<span class="shift-label-badge"${takenLabel==='Day Off'?' style="background:rgba(249,168,212,.12);border-color:rgba(249,168,212,.35);color:#f9a8d4;"':''}>${takenLabel.length>14?takenLabel.slice(0,12)+'…':takenLabel}</span>` : '';
+        ? `<span class="shift-label-badge" style="${badgeStyle}">${takenLabel.length>14?takenLabel.slice(0,12)+'…':takenLabel}</span>` : '';
       return `<div class="ecc${alreadyThisShift&&!disabled?' on':''}${disabled?' disabled-shift':''}"
         data-emp="${emp.replace(/"/g,'&quot;')}"
         onclick="${disabled?'':'toggleEcc(this)'}">
@@ -1729,7 +1758,7 @@ function refreshBulkEmployees(){
     }).join('');
 
   } else {
-    // Dayoff mode — disable employees in any shift on those dates OR already have dayoff
+    // Dayoff mode — disable employees in any shift OR pre-approved leave on those dates
     grid.innerHTML = S.employees.map(emp=>{
       let takenLabel = null;
       for(const st of S.shiftTypes){
@@ -1737,10 +1766,15 @@ function refreshBulkEmployees(){
           takenLabel = st.name; break;
         }
       }
+      if(!takenLabel && dates.some(d => getNamesForLeave(d,'Pre Approved Leave').includes(emp))){
+        takenLabel = 'On Leave';
+      }
       const alreadyDayoff = dates.some(d => getNamesForLeave(d,'Dayoff').includes(emp));
       const disabled = !!takenLabel;
+      let badgeStyle = '';
+      if(takenLabel==='On Leave') badgeStyle = 'background:rgba(192,132,252,.12);border-color:rgba(192,132,252,.35);color:#c084fc;';
       const badge = disabled
-        ? `<span class="shift-label-badge">${takenLabel.length>14?takenLabel.slice(0,12)+'…':takenLabel}</span>` : '';
+        ? `<span class="shift-label-badge" style="${badgeStyle}">${takenLabel.length>14?takenLabel.slice(0,12)+'…':takenLabel}</span>` : '';
       const on = alreadyDayoff && !disabled;
       return `<div class="ecc${on?' on':''}${disabled?' disabled-shift':''}"
         data-emp="${emp.replace(/"/g,'&quot;')}"
@@ -1757,15 +1791,15 @@ function openBulkModal(){
 
   _bulkMonthDates = getMonthDates(ym);
   _bulkWeeks = splitIntoWeeks(_bulkMonthDates);
-  _bulkWeekIdx = 0;
+  _bulkSelectedWeeks = new Set([0]); // default first week selected
 
-  // Week pills
+  // Week pills (multi-select)
   const weekTabsEl = document.getElementById('bulkWeekTabs');
   weekTabsEl.innerHTML = _bulkWeeks.map((wk, i)=>{
     const ws = new Date(wk[0]+'T00:00:00');
     const we = new Date(wk[wk.length-1]+'T00:00:00');
     const fmt = d=>d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
-    return `<div class="bwt${i===0?' active':''}" onclick="selectBulkWeek(${i})">
+    return `<div class="bwt${i===0?' active':''}" onclick="toggleBulkWeek(${i})">
       Week ${i+1} <span style="font-size:10px;opacity:.7;">${fmt(ws)}–${fmt(we)}</span>
     </div>`;
   }).join('');
@@ -1773,7 +1807,7 @@ function openBulkModal(){
   // Day checkboxes for shift mode
   buildShiftDayChecks();
 
-  // DOW pills for dayoff mode
+  // DOW pills for dayoff mode — all deselected by default
   buildDowPills();
   updateDowPreview();
 
@@ -1788,7 +1822,7 @@ function openBulkModal(){
   document.getElementById('bulkModeDayoff').classList.remove('active');
   document.getElementById('bulkShiftSection').style.display  = 'block';
   document.getElementById('bulkDayoffSection').style.display = 'none';
-  document.getElementById('bulkModalSub').textContent = 'Assign employees to a shift for selected week and days.';
+  document.getElementById('bulkModalSub').textContent = 'Assign employees to a shift — select one or more weeks and specific days.';
 
   refreshBulkEmployees();
   document.getElementById('bulkModal').classList.add('open');
@@ -1871,20 +1905,27 @@ function openSchedModal(ctx){
     }
   }
 
-  // Always check dayoff conflicts (for all shifts including non-PayPro)
+  // Always check dayoff AND pre-approved leave conflicts (for all shifts)
   if(ctx.type === 'shift'){
     getNamesForLeave(ctx.date, 'Dayoff').forEach(emp => hasDayoff.add(emp));
+    // Also track pre-approved leave as a separate set
+  }
+  const hasPreLeave = new Set();
+  if(ctx.type === 'shift'){
+    getNamesForLeave(ctx.date, 'Pre Approved Leave').forEach(emp => hasPreLeave.add(emp));
   }
 
   document.getElementById('schedEmpGrid').innerHTML = S.employees.map(e=>{
     const on = assigned.includes(e);
     const shiftConflict = !on && takenByShift[e];
     const dayoffConflict = !on && hasDayoff.has(e);
-    const disabled = !!(shiftConflict || dayoffConflict);
+    const leaveConflict  = !on && hasPreLeave.has(e);
+    const disabled = !!(shiftConflict || dayoffConflict || leaveConflict);
 
     let badge = '';
-    if(shiftConflict) badge = `<span class="shift-label-badge" title="In: ${takenByShift[e]}">in ${takenByShift[e].length>14?takenByShift[e].slice(0,12)+'…':takenByShift[e]}</span>`;
+    if(shiftConflict)      badge = `<span class="shift-label-badge" title="In: ${takenByShift[e]}">in ${takenByShift[e].length>14?takenByShift[e].slice(0,12)+'…':takenByShift[e]}</span>`;
     else if(dayoffConflict) badge = `<span class="shift-label-badge" style="background:rgba(249,168,212,.12);border-color:rgba(249,168,212,.35);color:#f9a8d4;" title="Has Day Off">Day Off</span>`;
+    else if(leaveConflict)  badge = `<span class="shift-label-badge" style="background:rgba(192,132,252,.12);border-color:rgba(192,132,252,.35);color:#c084fc;" title="On Pre-Approved Leave">On Leave</span>`;
 
     return `<div class="ecc${on?' on':''}${disabled?' disabled-shift':''}"
       data-emp="${e.replace(/"/g,'&quot;')}"
