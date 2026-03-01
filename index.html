@@ -272,8 +272,21 @@
   .month-picker input[type=month]{ background:var(--bg); border:1px solid var(--border); border-radius:var(--radius); color:var(--text); padding:8px 14px; font-family:'DM Sans',sans-serif; font-size:13px; outline:none; transition:border-color .2s; }
   .month-picker input[type=month]:focus{ border-color:var(--accent); }
 
-  /* week block wrapper */
-  .week-block{ margin-bottom:28px; }
+  /* copy-paste row controls */
+  .td-label-wrap{ display:flex; align-items:center; justify-content:space-between; gap:6px; width:100%; }
+  .td-label-name{ flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .row-cp-btns{ display:flex; gap:3px; flex-shrink:0; }
+  .cp-btn{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:20px; height:20px; border-radius:5px; font-size:11px;
+    cursor:pointer; transition:all .15s; border:1px solid var(--border);
+    background:var(--bg); color:var(--muted); line-height:1;
+  }
+  .cp-btn:hover{ border-color:var(--accent); color:var(--accent); background:rgba(232,197,71,.1); }
+  .cp-btn.paste-ready{ border-color:rgba(79,209,197,.5); color:var(--accent2); background:rgba(79,209,197,.08); animation:cpPulse 1.5s ease infinite; }
+  @keyframes cpPulse{ 0%,100%{opacity:1} 50%{opacity:.6} }
+  .copy-flash{ animation:flashGreen .5s ease; }
+  @keyframes flashGreen{ 0%{background:rgba(74,222,128,.25)} 100%{background:transparent} }
   .week-block-label{ font-size:11px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; display:flex; align-items:center; gap:8px; }
   .week-block-label span{ background:var(--surface2); border:1px solid var(--border); border-radius:6px; padding:2px 8px; }
   .sched-outer{ overflow-x:auto; border-radius:14px; border:1px solid var(--border); }
@@ -858,12 +871,11 @@ function logout(){
 function switchTab(t){
   if(t==='admin'&&!isAdmin)return;
   appTab=t;
-  ['Admin','Emp','Sched','Leave'].forEach(x=>{
-    const btn=document.getElementById('tab'+x);
-    if(btn) btn.classList.remove('active');
-  });
-  const activeBtn = document.getElementById('tab'+t.charAt(0).toUpperCase()+t.slice(1));
-  if(activeBtn) activeBtn.classList.add('active');
+  // Map tab name → element ID (IDs are shortened)
+  const idMap={admin:'tabAdmin',employee:'tabEmp',schedule:'tabSched',leave:'tabLeave'};
+  Object.values(idMap).forEach(id=>{ const el=document.getElementById(id); if(el)el.classList.remove('active'); });
+  const activeEl = document.getElementById(idMap[t]);
+  if(activeEl) activeEl.classList.add('active');
   document.getElementById('adminView').style.display    = t==='admin'    ?'block':'none';
   document.getElementById('empView').style.display      = t==='employee' ?'block':'none';
   document.getElementById('scheduleView').style.display = t==='schedule' ?'block':'none';
@@ -1264,6 +1276,63 @@ function handleAddBtn(el){
   openSchedModal(entry.ctx);
 }
 
+// ─── SHIFT COPY/PASTE ─────────────────────────────────────────────────────
+// clipboard: { shiftTypeId, employees: [{date_offset, name}] }
+// We store by day-of-week offset so paste maps Mon→Mon, Tue→Tue etc.
+let _shiftClipboard = null; // { shiftTypeId, shiftName, byDow: {0:[names],1:[names],...} }
+
+function copyShiftRow(shiftTypeId, weekDates){
+  const shiftName = S.shiftTypes.find(s=>s.id===shiftTypeId)?.name || 'Shift';
+  // Capture assignments keyed by day-of-week (0=Sun…6=Sat)
+  const byDow = {};
+  weekDates.forEach(d=>{
+    const dow = new Date(d+'T00:00:00').getDay();
+    byDow[dow] = getNamesForShift(d, shiftTypeId);
+  });
+  _shiftClipboard = {shiftTypeId, shiftName, byDow};
+  // Visual feedback — highlight all paste buttons for this shift
+  document.querySelectorAll(`[id^="pasteBtn_"]`).forEach(btn=>{
+    if(btn.id.endsWith('_'+shiftTypeId)) btn.classList.add('paste-ready');
+    else btn.classList.remove('paste-ready');
+  });
+  showToast(`⎘ Copied "${shiftName}" — click ⏩ on any week to paste`);
+}
+
+async function pasteShiftRow(shiftTypeId, weekDates, btnEl){
+  if(!_shiftClipboard){ showToast('Nothing copied yet'); return; }
+  if(!isAdmin) return;
+
+  // Warn if pasting onto a different shift type
+  const targetName = S.shiftTypes.find(s=>s.id===shiftTypeId)?.name || 'Shift';
+  if(_shiftClipboard.shiftTypeId !== shiftTypeId){
+    if(!confirm(`Paste "${_shiftClipboard.shiftName}" assignments into "${targetName}"?\n\nThis will merge — existing entries won't be removed.`)) return;
+  }
+
+  // Map by day-of-week to the target week dates
+  const toInsert = [];
+  weekDates.forEach(d=>{
+    const dow = new Date(d+'T00:00:00').getDay();
+    const names = _shiftClipboard.byDow[dow] || [];
+    const existing = getNamesForShift(d, shiftTypeId);
+    names.forEach(emp=>{
+      if(!existing.includes(emp)) toInsert.push({schedule_date:d, shift_type_id:shiftTypeId, employee_name:emp});
+    });
+  });
+
+  if(!toInsert.length){ showToast('All entries already exist in target week'); return; }
+
+  showToast(`Pasting ${toInsert.length} assignment(s)…`);
+  const {error} = await sb.from('schedule_entries').insert(toInsert);
+  if(error){ showToast('Error: '+error.message, true); return; }
+
+  // Flash the button row
+  if(btnEl){ const row=btnEl.closest('tr'); if(row){ row.classList.add('copy-flash'); setTimeout(()=>row.classList.remove('copy-flash'),600); } }
+  showToast(`✓ Pasted ${toInsert.length} assignment(s) into ${targetName}`);
+  // Clear paste-ready state
+  document.querySelectorAll('.cp-btn.paste-ready').forEach(b=>b.classList.remove('paste-ready'));
+  _shiftClipboard = null;
+}
+
 // ─── RENDER SCHEDULE (WEEK BLOCKS) ────────────────────────────────────────
 function renderSchedule(){
   const ym = getSelectedYearMonth();
@@ -1299,7 +1368,22 @@ function renderSchedule(){
         const ctx = {type:'shift', date:d, shiftTypeId:st.id, leaveType:null};
         return `<td class="${isToday(d)?'today-col':''}">${renderNamePills(names,ctx)}${addBtn(ctx)}</td>`;
       }).join('');
-      rows.push(`<tr><td class="td-label">${st.name}</td>${cells}</tr>`);
+
+      // Copy/paste buttons on label (admin only)
+      const cpBtns = isAdmin ? `
+        <div class="row-cp-btns">
+          <span class="cp-btn" title="Copy this shift row (${st.name})" onclick="copyShiftRow(${st.id},${JSON.stringify(weekDates)})">⎘</span>
+          <span class="cp-btn" id="pasteBtn_${wi}_${st.id}" title="Paste copied assignments here" onclick="pasteShiftRow(${st.id},${JSON.stringify(weekDates)}, this)">⏩</span>
+        </div>` : '';
+
+      rows.push(`<tr data-shiftid="${st.id}">
+        <td class="td-label">
+          <div class="td-label-wrap">
+            <span class="td-label-name">${st.name}</span>
+            ${cpBtns}
+          </div>
+        </td>${cells}
+      </tr>`);
 
       // Dayoff row after PayPro & Batch Upload
       if(st.name==='PayPro & Batch Upload'){
@@ -1308,17 +1392,17 @@ function renderSchedule(){
           const ctx = {type:'leave', date:d, shiftTypeId:null, leaveType:'Dayoff'};
           return `<td class="${isToday(d)?'today-col':''}">${renderNamePills(names,ctx)}${addBtn(ctx)}</td>`;
         }).join('');
-        rows.push(`<tr class="row-dayoff"><td class="td-label">Dayoff</td>${dayCells}</tr>`);
+        rows.push(`<tr class="row-dayoff"><td class="td-label"><div class="td-label-wrap"><span class="td-label-name">Dayoff</span></div></td>${dayCells}</tr>`);
       }
     }
 
-    // Pre Approved Leave row at bottom
+    // Pre Approved Leave row at bottom — NO + button (managed from Leaves tab)
     const lvCells = weekDates.map(d=>{
       const names = getNamesForLeave(d,'Pre Approved Leave');
       const ctx = {type:'leave', date:d, shiftTypeId:null, leaveType:'Pre Approved Leave'};
-      return `<td class="${isToday(d)?'today-col':''}">${renderNamePills(names,ctx)}${addBtn(ctx)}</td>`;
+      return `<td class="${isToday(d)?'today-col':''}">${renderNamePills(names,ctx)}</td>`;
     }).join('');
-    rows.push(`<tr class="row-leave"><td class="td-label">Pre Approved Leave</td>${lvCells}</tr>`);
+    rows.push(`<tr class="row-leave"><td class="td-label"><div class="td-label-wrap"><span class="td-label-name">Pre Approved Leave</span></div></td>${lvCells}</tr>`);
 
     return `<div class="week-block">
       <div class="week-block-label"><span>${weekLabel}</span></div>
