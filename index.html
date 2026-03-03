@@ -775,9 +775,9 @@
       </div>
       <div style="font-size:12px;color:var(--muted);" id="skYearLabel"></div>
       <div style="display:flex;gap:8px;align-items:center;">
-        <button class="btn btn-ghost" onclick="skShiftYear(-1)">← Prev Year</button>
+        <button class="btn btn-ghost" onclick="skShiftYear(-1)">←</button>
         <select id="skYearSel" onchange="renderSkillsView()" style="font-size:13px;padding:6px 10px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text);"></select>
-        <button class="btn btn-ghost" onclick="skShiftYear(1)">Next Year →</button>
+        <button class="btn btn-ghost" onclick="skShiftYear(1)">→</button>
       </div>
     </div>
     <div id="skillsViewContent" style="padding:0 0 32px;"></div>
@@ -1389,13 +1389,13 @@ function renderSkillsView(){
         </div>
         <div class="sk-rows">
           <div class="sk-row">
-            <div class="sk-row-lbl">Row 1</div>
+            <div class="sk-row-lbl">Training 1</div>
             <textarea class="sk-textarea" id="${r1id}" placeholder="${isAdmin?'Type or paste notes…':'—'}"
               ${isAdmin?`oninput="skDebounceSave(${year},${mi},1,this.value)"`:'readonly'}
               rows="3">${r1val}</textarea>
           </div>
           <div class="sk-row">
-            <div class="sk-row-lbl">Row 2</div>
+            <div class="sk-row-lbl">Training 2</div>
             <textarea class="sk-textarea" id="${r2id}" placeholder="${isAdmin?'Type or paste notes…':'—'}"
               ${isAdmin?`oninput="skDebounceSave(${year},${mi},2,this.value)"`:'readonly'}
               rows="3">${r2val}</textarea>
