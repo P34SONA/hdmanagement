@@ -617,7 +617,7 @@
     <div class="topbar-logo">System Overview</div>
     <div class="topbar-right">
       <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);">
-        <div class="sync-dot"></div> Live
+<!--        <div class="sync-dot"></div> Live -->
       </div>
       <div class="user-badge">
         <div class="user-dot"></div>
@@ -1958,8 +1958,8 @@ function renderSchedule(){
       html += `<span class="scl-sep"></span>`;
     }
     // Leave-type legend — visible to ALL users
-    html += `<span class="scl-item" style="background:rgba(192,132,252,.1);border-color:rgba(192,132,252,.35);color:#c084fc;">● Pre-Approved Leave</span>`;
-    html += `<span class="scl-item" style="background:rgba(251,146,60,.1);border-color:rgba(251,146,60,.35);color:#fb923c;">● Sick Leave</span>`;
+    html += `<span class="scl-item" style="background:rgba(32, 135, 140,.1);border-color:rgba(10, 197, 207,.35);color:#05e2ed;">● Pre-Approved Leave</span>`;
+    html += `<span class="scl-item" style="background:rgba(184, 48, 24,.1);border-color:rgba(237, 21, 29,.35);color:#e62c17;">● Sick Leave</span>`;
     html += `<span class="scl-item" style="background:rgba(163,230,53,.1);border-color:rgba(163,230,53,.35);color:#a3e635;">● Half Day</span>`;
     legendItems.innerHTML = html;
   }
@@ -2089,7 +2089,7 @@ function renderLeaveView(){
   const adminAdd = isAdmin ? `
     <div class="card" style="margin-bottom:20px;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
-        <div class="card-title" style="margin:0;">➕ Add Leave</div>
+        <div class="card-title" style="margin:0;">Leaves Overview</div>
         <button class="btn btn-ghost" onclick="openYearlyLeaveModal()" style="font-size:12px;padding:7px 14px;border-color:rgba(192,132,252,.4);color:#c084fc;gap:5px;">
           🗓 Yearly Planner
         </button>
@@ -2112,7 +2112,7 @@ function renderLeaveView(){
         </div>
         <div class="fg"><label>From Date</label><input type="date" id="lvFrom" style="margin-top:6px;"></div>
         <div class="fg"><label>To Date</label><input type="date" id="lvTo" style="margin-top:6px;"></div>
-        <button class="btn btn-primary" onclick="addLeaveRange()" style="white-space:nowrap;">Add Leave</button>
+        <button class="btn btn-primary" onclick="addLeaveRange()" style="white-space:nowrap;">Add Record</button>
       </div>
       <p style="font-size:11px;color:var(--muted);margin-top:10px;">💡 Use <strong>Yearly Planner</strong> to set leaves across multiple months and specific days in one go.</p>
     </div>` : '';
