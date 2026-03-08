@@ -102,6 +102,22 @@
   .modal-title{ font-family:'DM Serif Display',serif; font-size:20px; margin-bottom:6px; }
   .modal-sub{ font-size:13px; color:var(--muted); margin-bottom:20px; }
   .modal-close{
+    /* ── EDIT ASSIGNMENT MODAL ── */
+#editAssignModal .ecc{
+  display:flex; align-items:center; gap:8px; padding:8px 12px;
+  border-radius:var(--radius); border:1px solid var(--border);
+  background:var(--surface2); cursor:pointer; font-size:13px;
+  transition:all .15s;
+}
+#editAssignModal .ecc.on{
+  background:rgba(232,197,71,.1); border-color:rgba(232,197,71,.35); color:var(--accent);
+}
+#editAssignModal .ecc .ck{
+  width:16px; height:16px; border-radius:4px; border:1px solid var(--border);
+  display:flex; align-items:center; justify-content:center; font-size:11px; flex-shrink:0;
+}
+#editAssignModal .ecc.on .ck{ background:var(--accent); border-color:var(--accent); color:#0d0f14; }
+#editAssignEmpGrid{ display:grid; grid-template-columns:1fr 1fr; gap:8px; max-height:300px; overflow-y:auto; margin-top:12px; }
     position:absolute; top:16px; right:16px; background:var(--surface2);
     border:1px solid var(--border); border-radius:8px; width:28px; height:28px;
     display:flex; align-items:center; justify-content:center;
@@ -1574,11 +1590,65 @@ function renderHistTable(){
           ${rangeBadge(a)}
         </td>
         <td><span class="db">${fmtDate(a.dateAssigned)}</span></td>
-        <td><div class="pills">${a.employees.map(e=>`<span class="pill ${isPast(a)?'past':''}">${e}</span>`).join('')}</div></td>
+        <td>
+  <div class="pills">${a.employees.map(e=>`<span class="pill ${isPast(a)?'past':''}">${e}</span>`).join('')}</div>
+  ${isAdmin ? `<button class="btn btn-ghost" style="margin-top:8px;font-size:11px;padding:4px 10px;" onclick="openEditAssignModal('${a.id}')">✏ Edit</button>` : ''}
+</td>
       </tr>`).join('')
     : `<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:40px;">No records match the filter.</td></tr>`;
 }
 function renderHistStats(rows){
+  // ─── EDIT ASSIGNMENT EMPLOYEES ────────────────────────────────────────────
+let _editAssignId = null;
+
+function openEditAssignModal(assignmentId){
+  if(!isAdmin) return;
+  _editAssignId = assignmentId;
+  const a = S.assignments.find(x => x.id === assignmentId);
+  if(!a) return;
+  document.getElementById('editAssignSub').textContent =
+    `${a.task} · ${fmtDate(a.dutyFrom)} → ${fmtDate(a.dutyTo)}`;
+  document.getElementById('editAssignEmpGrid').innerHTML = S.employees.map(e => {
+    const on = a.employees.includes(e);
+    return `<div class="ecc${on?' on':''}" data-emp="${e.replace(/"/g,'&quot;')}" onclick="toggleEditEcc(this)">
+      <div class="ck">${on?'✓':''}</div>${e}
+    </div>`;
+  }).join('');
+  document.getElementById('editAssignModal').classList.add('open');
+}
+
+function closeEditAssignModal(){
+  document.getElementById('editAssignModal').classList.remove('open');
+  _editAssignId = null;
+}
+document.getElementById('editAssignModal').addEventListener('click', function(e){
+  if(e.target===this) closeEditAssignModal();
+});
+
+function toggleEditEcc(el){
+  el.classList.toggle('on');
+  el.querySelector('.ck').textContent = el.classList.contains('on') ? '✓' : '';
+}
+
+async function saveEditAssign(){
+  if(!_editAssignId || !isAdmin) return;
+  const a = S.assignments.find(x => x.id === _editAssignId);
+  if(!a) return;
+  const selected = [...document.querySelectorAll('#editAssignEmpGrid .ecc.on')]
+    .map(el => el.dataset.emp).filter(Boolean);
+  if(!selected.length){ showToast('Select at least one employee', true); return; }
+  const toAdd    = selected.filter(e => !a.employees.includes(e));
+  const toRemove = a.employees.filter(e => !selected.includes(e));
+  try {
+    if(toAdd.length)
+      await sb.from('assignment_employees').insert(toAdd.map(e=>({assignment_id:_editAssignId, employee_name:e})));
+    for(const e of toRemove)
+      await sb.from('assignment_employees').delete()
+        .eq('assignment_id', _editAssignId).eq('employee_name', e);
+    showToast('✓ Employees updated');
+  } catch(err){ showToast('Error: '+err.message, true); }
+  closeEditAssignModal();
+}
   const el=document.getElementById('histStats');
   if(!rows.length){el.innerHTML='';return;}
   const total=rows.reduce((s,r)=>s+r.employees.length,0);
@@ -3160,5 +3230,18 @@ scheduleMidnightReset();
 })();
 
 </script>
+  <!-- ── EDIT ASSIGNMENT EMPLOYEES MODAL ── -->
+<div class="modal-overlay" id="editAssignModal">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-close" onclick="closeEditAssignModal()">✕</div>
+    <div class="modal-title">Edit Assigned Employees</div>
+    <div class="modal-sub" id="editAssignSub"></div>
+    <div id="editAssignEmpGrid"></div>
+    <div style="display:flex;gap:10px;margin-top:20px;">
+      <button class="btn btn-primary" onclick="saveEditAssign()">Save Changes</button>
+      <button class="btn btn-secondary" onclick="closeEditAssignModal()">Cancel</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
