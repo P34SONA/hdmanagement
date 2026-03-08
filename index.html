@@ -3172,7 +3172,7 @@ async function saveSchedModal(){
     </div>
   </div>
 </div>
-</script>
+
   const selected = [...document.querySelectorAll('#schedEmpGrid .ecc.on')].map(el=>el.dataset.emp).filter(Boolean);
   const current  = ctx.type==='shift' ? getNamesForShift(ctx.date,ctx.shiftTypeId) : getNamesForLeave(ctx.date,ctx.leaveType);
   const toAdd    = selected.filter(e=>!current.includes(e));
@@ -3242,6 +3242,6 @@ scheduleMidnightReset();
   }
 })();
 
-
+</script>
 </body>
 </html>
