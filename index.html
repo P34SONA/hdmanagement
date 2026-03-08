@@ -3160,6 +3160,19 @@ async function saveSchedModal(){
   if(!schedCtx||!isAdmin) return;
   const ctx = schedCtx;
   // Use data-emp attribute for accurate name extraction (avoids badge text contamination)
+<div class="modal-overlay" id="editAssignModal">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-close" onclick="closeEditAssignModal()">✕</div>
+    <div class="modal-title">Edit Assigned Employees</div>
+    <div class="modal-sub" id="editAssignSub"></div>
+    <div id="editAssignEmpGrid"></div>
+    <div style="display:flex;gap:10px;margin-top:20px;">
+      <button class="btn btn-primary" onclick="saveEditAssign()">Save Changes</button>
+      <button class="btn btn-secondary" onclick="closeEditAssignModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+</script>
   const selected = [...document.querySelectorAll('#schedEmpGrid .ecc.on')].map(el=>el.dataset.emp).filter(Boolean);
   const current  = ctx.type==='shift' ? getNamesForShift(ctx.date,ctx.shiftTypeId) : getNamesForLeave(ctx.date,ctx.leaveType);
   const toAdd    = selected.filter(e=>!current.includes(e));
@@ -3228,20 +3241,7 @@ scheduleMidnightReset();
     document.getElementById('configScreen').style.display='flex';
   }
 })();
-  <!-- ── EDIT ASSIGNMENT EMPLOYEES MODAL ── -->
-<div class="modal-overlay" id="editAssignModal">
-  <div class="modal" style="max-width:480px;">
-    <div class="modal-close" onclick="closeEditAssignModal()">✕</div>
-    <div class="modal-title">Edit Assigned Employees</div>
-    <div class="modal-sub" id="editAssignSub"></div>
-    <div id="editAssignEmpGrid"></div>
-    <div style="display:flex;gap:10px;margin-top:20px;">
-      <button class="btn btn-primary" onclick="saveEditAssign()">Save Changes</button>
-      <button class="btn btn-secondary" onclick="closeEditAssignModal()">Cancel</button>
-    </div>
-  </div>
-</div>
-</script>
+
 
 </body>
 </html>
