@@ -319,7 +319,7 @@
   .sched-name-pill.shift-c5{ background:rgba(96,165,250,.12); border-color:rgba(96,165,250,.35); color:#60a5fa; }
   .sched-name-pill.shift-dayoff{ background:rgba(249,168,212,.1); border-color:rgba(249,168,212,.35); color:#f9a8d4; }
   .sched-name-pill.shift-leave{ background:rgba(192,132,252,.1); border-color:rgba(192,132,252,.35); color:#c084fc; }
-  .sched-name-pill.shift-sick{ background:rgba(184, 48, 24,.1); border-color:rgba(237, 21, 29,.35); color:#ffffff; }
+  .sched-name-pill.shift-sick{ background:rgba(251,146,60,.1); border-color:rgba(251,146,60,.35); color:#fb923c; }
   .sched-name-pill.shift-halfday{ background:rgba(163,230,53,.1); border-color:rgba(163,230,53,.35); color:#a3e635; }
   /* leave type badge on chips */
   .leave-type-tag{ display:inline-block; font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.4px; padding:1px 5px; border-radius:4px; margin-left:4px; vertical-align:middle; }
@@ -414,8 +414,8 @@
     box-sizing:border-box;
   }
   .sched-name-pill.mine{
-    background:rgba(64, 145, 49,.12); border-color:rgba(60, 227, 30,.35);
-    color:#ffffff;
+    background:rgba(232,197,71,.12); border-color:rgba(232,197,71,.35);
+    color:var(--accent);
   }
   .sched-name-pill.editable{ cursor:pointer; }
   .sched-name-pill.editable:hover{
@@ -490,7 +490,66 @@
   .bl-del-btn{ font-size:11px; padding:4px 12px; border-radius:100px; cursor:pointer; border:1px solid rgba(248,113,113,.3); background:rgba(248,113,113,.08); color:var(--red); font-family:'DM Sans',sans-serif; transition:all .15s; white-space:nowrap; }
   .bl-del-btn:hover{ background:rgba(248,113,113,.18); border-color:var(--red); }
 
-  /* ── SOFT SKILLS ── */
+  /* ── NOTES VIEW ── */
+  .notes-panel{ background:var(--surface); border:1px solid var(--border); border-radius:16px; overflow:hidden; display:flex; flex-direction:column; }
+  .notes-panel-hdr{ display:flex; align-items:center; gap:12px; padding:14px 18px; border-bottom:1px solid; flex-shrink:0; }
+  .notes-panel-icon{ font-size:20px; flex-shrink:0; }
+  .notes-panel-title{ font-size:14px; font-weight:700; letter-spacing:.2px; }
+  .notes-panel-sub{ font-size:11px; color:var(--muted); margin-top:2px; }
+  .notes-body{ display:flex; flex-direction:column; }
+  .notes-tbl-wrap{ display:flex; flex-direction:column; }
+  .notes-tbl-hdr{ display:flex; align-items:center; justify-content:space-between; padding:7px 14px; background:var(--surface2); border-bottom:1px solid var(--border); font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.6px; font-family:'DM Mono',monospace; flex-shrink:0; }
+  .notes-tbl-scroll{ overflow-x:auto; scrollbar-width:thin; scrollbar-color:var(--border) transparent; position:relative; }
+  .notes-tbl-scroll::-webkit-scrollbar{ height:4px; }
+  .notes-tbl-scroll::-webkit-scrollbar-track{ background:transparent; }
+  .notes-tbl-scroll::-webkit-scrollbar-thumb{ background:var(--border); border-radius:2px; }
+  .notes-tbl-inner{ min-width:max-content; width:100%; border-collapse:collapse; }
+  .notes-tbl-cols{ display:flex; align-items:stretch; border-bottom:2px solid var(--border); background:rgba(255,255,255,.02); }
+  .notes-col-lbl{ font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.6px; color:var(--muted); padding:6px 0; font-family:'DM Mono',monospace; border-right:1px solid var(--border); text-align:center; white-space:nowrap; }
+  .notes-col-lbl.col-num{ flex:0 0 32px; padding:6px 2px; background:var(--surface2); position:sticky; left:0; z-index:3; }
+  .notes-col-lbl.col-name{ flex:0 0 140px; text-align:left; padding:6px 10px; border-right:2px solid var(--border); background:var(--surface2); position:sticky; left:32px; z-index:3; }
+  .notes-col-lbl.col-data{ flex:0 0 100px; }
+  .notes-col-lbl.col-del{ flex:0 0 32px; border-right:none; }
+  .notes-divider{ border:none; border-top:2px solid var(--border); margin:0; flex-shrink:0; }
+  .notes-rows{ display:flex; flex-direction:column; }
+  .notes-row{ display:flex; align-items:stretch; border-bottom:1px solid var(--border); min-width:max-content; width:100%; transition:background .1s; }
+  .notes-row:nth-child(even){ background:rgba(255,255,255,.008); }
+  .notes-row:nth-child(even) .notes-row-num{ background:color-mix(in srgb, var(--surface2) 90%, white 10%); }
+  .notes-row:nth-child(even) .notes-row-name{ background:color-mix(in srgb, var(--surface) 95%, white 5%); }
+  .notes-row:last-child{ border-bottom:none; }
+  .notes-row:hover{ background:rgba(255,255,255,.03) !important; }
+  .notes-row:hover .notes-row-num{ background:color-mix(in srgb, var(--surface2) 85%, white 15%); }
+  .notes-row:hover .notes-row-name{ background:color-mix(in srgb, var(--surface) 88%, white 12%); }
+  .notes-row:focus-within{ background:rgba(232,197,71,.04) !important; }
+  .notes-row:focus-within .notes-row-name{ background:rgba(232,197,71,.07); }
+  .notes-row-num{ flex:0 0 32px; display:flex; align-items:center; justify-content:center; font-size:10px; color:var(--muted); font-family:'DM Mono',monospace; border-right:1px solid var(--border); background:var(--surface2); flex-shrink:0; user-select:none; position:sticky; left:0; z-index:2; }
+  .notes-row-name{ flex:0 0 140px; background:var(--surface); border:none; border-right:2px solid var(--border); outline:none; font-family:'DM Mono',monospace; font-size:12px; color:var(--text); padding:7px 10px; flex-shrink:0; position:sticky; left:32px; z-index:2; }
+  .notes-cell{ flex:0 0 100px; background:transparent; border:none; border-right:1px solid var(--border); outline:none; font-family:'DM Sans',sans-serif; font-size:12px; color:var(--text); padding:7px 8px; flex-shrink:0; text-align:center; }
+  .notes-cell:focus{ background:rgba(232,197,71,.06); }
+  .notes-row-name:focus{ background:rgba(79,209,197,.04); }
+  .notes-row-name::placeholder,.notes-cell::placeholder{ color:var(--muted); opacity:.3; }
+  .notes-row-del{ flex:0 0 32px; background:none; border:none; border-left:1px solid var(--border); color:transparent; cursor:pointer; font-size:14px; padding:0; transition:all .15s; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .notes-row:hover .notes-row-del{ color:rgba(248,113,113,.4); }
+  .notes-row-del:hover{ color:var(--red) !important; background:rgba(248,113,113,.1); }
+  .notes-clear-btn{ background:rgba(248,113,113,.08); border:1px solid rgba(248,113,113,.25); border-radius:8px; color:var(--red); font-size:13px; padding:5px 9px; cursor:pointer; transition:all .15s; flex-shrink:0; line-height:1; }
+  .notes-clear-btn:hover{ background:rgba(248,113,113,.2); border-color:var(--red); }
+  .notes-add-btn-inline{ background:none; border:1px solid var(--border); border-radius:6px; color:var(--muted); font-size:11px; font-family:'DM Sans',sans-serif; padding:3px 10px; cursor:pointer; transition:all .15s; }
+  .notes-add-btn-inline:hover{ border-color:var(--accent); color:var(--accent); }
+  @media(max-width:900px){ #notesView [style*="grid-template-columns:1fr 1fr"]{ grid-template-columns:1fr !important; } }
+  /* color swatch column */
+  /* cell color picker */
+  .notes-cp{ position:fixed; z-index:9999; background:var(--surface2); border:1px solid var(--border); border-radius:12px; padding:12px; box-shadow:0 8px 32px rgba(0,0,0,.5); width:224px; }
+  .notes-cp-title{ font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.8px; color:var(--muted); margin-bottom:8px; font-family:'DM Mono',monospace; }
+  .notes-cp-grid{ display:grid; grid-template-columns:repeat(10,1fr); gap:3px; margin-bottom:8px; }
+  .notes-cp-swatch{ width:17px; height:17px; border-radius:3px; cursor:pointer; border:1.5px solid transparent; transition:transform .1s,border-color .1s; }
+  .notes-cp-swatch:hover{ transform:scale(1.2); border-color:rgba(255,255,255,.5); }
+  .notes-cp-swatch.active{ border-color:#fff !important; outline:2px solid #fff; transform:scale(1.1); }
+  .notes-cp-row{ display:flex; align-items:center; gap:8px; margin-top:6px; }
+  .notes-cp-reset{ flex:1; background:none; border:1px solid var(--border); border-radius:6px; color:var(--muted); font-size:11px; font-family:'DM Sans',sans-serif; padding:4px 0; cursor:pointer; transition:all .15s; }
+  .notes-cp-reset:hover{ border-color:var(--red); color:var(--red); }
+  .notes-cell{ transition:background .1s; }
+
+  /* ── NOTES VIEW ── */
   .sk-half-tabs{ display:flex; gap:6px; }
   .sk-htab{ padding:7px 18px; border-radius:100px; font-size:12px; font-weight:600; cursor:pointer; border:1px solid var(--border); background:var(--surface2); color:var(--muted); transition:all .15s; font-family:'DM Sans',sans-serif; }
   .sk-htab:hover{ border-color:var(--accent); color:var(--accent); }
@@ -520,10 +579,10 @@
     display:inline-flex; align-items:center; gap:10px;
     padding:12px 22px; border-radius:var(--radius);
     background:rgba(232,197,71,.1); border:1px solid rgba(232,197,71,.35);
-    color:#ffffff; font-size:14px; font-weight:600;
+    color:var(--accent); font-size:14px; font-weight:600;
     text-decoration:none; cursor:pointer; transition:all .2s;
   }
-  .sk-cert-drive-btn:hover{ background:rgba(232,197,71,.18); border-color:#ffffff; transform:translateY(-1px); box-shadow:0 4px 16px rgba(232,197,71,.15); }
+  .sk-cert-drive-btn:hover{ background:linear-gradient(90deg, rgba(248,113,113,.3), rgba(52,211,153,.3), rgba(232,197,71,.3)); border-color:var(--green); transform:translateY(-1px); box-shadow:0 4px 20px rgba(232,197,71,.2); }
   .sk-cert-drive-btn .drive-icon{ font-size:20px; }
 
   /* assign modal for schedule */
@@ -597,7 +656,7 @@
 <div id="loginScreen">
   <div class="login-box">
     <div class="login-logo">Login your account</div>
-    <div class="login-sub">To view or manage tasks</div>
+    <div class="login-sub">Sign in to view or manage tasks</div>
     <div class="form-group">
       <label>Username</label>
       <input type="text" id="loginName" placeholder="Enter your Firstname" autocomplete="off">
@@ -618,7 +677,7 @@
     <div class="topbar-logo">System Overview</div>
     <div class="topbar-right">
       <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);">
-<!--        <div class="sync-dot"></div> Live -->
+        <div class="sync-dot"></div> Live
       </div>
       <div class="user-badge">
         <div class="user-dot"></div>
@@ -634,6 +693,7 @@
     <button class="tab" id="tabSched" onclick="switchTab('schedule')">📆 Schedule</button>
     <button class="tab" id="tabLeave" onclick="switchTab('leave')">🌴 Pre-Approved Leaves</button>
     <button class="tab" id="tabSkills" onclick="switchTab('skills')">🧠 Soft Skills</button>
+    <button class="tab" id="tabNotes" onclick="switchTab('notes')" style="display:none;">📝 Notes</button>
   </div>
 
   <!-- ADMIN -->
@@ -698,10 +758,6 @@
       </div>
       <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
         <span class="count-badge" id="histCount">0 records</span>
-        <button id="deleteActiveTasksBtn" class="btn" onclick="openDeleteActiveTasksModal()"
-          style="display:none;padding:7px 14px;font-size:12px;background:rgba(79,209,197,.1);color:var(--accent2);border:1px solid rgba(79,209,197,.3);">
-          🗑 Delete Active Tasks
-        </button>
         <button id="bulkDeleteTasksBtn" class="btn" onclick="openBulkDeleteTasksModal()"
           style="display:none;padding:7px 14px;font-size:12px;background:rgba(248,113,113,.12);color:var(--red);border:1px solid rgba(248,113,113,.3);">
           🗑 Delete Past Tasks
@@ -726,7 +782,7 @@
     </div>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>Task</th><th>Duty Date Range</th><th></th><th>Date Assigned</th><th>Assigned Employees</th></tr></thead>
+        <thead><tr><th>Task</th><th>Duty Date Range</th><th>Date Assigned</th><th>Assigned Employees</th></tr></thead>
         <tbody id="histTbody"></tbody>
       </table>
     </div>
@@ -789,7 +845,7 @@
   <!-- SOFT SKILLS VIEW -->
   <div id="skillsView" class="main full-width" style="display:none;">
     <div class="sched-nav">
-      <h2>📚 Trainings</h2>
+      <h2>🧠 Soft Skills</h2>
       <div class="sk-half-tabs">
         <button class="sk-htab active" id="skH1" onclick="switchSkillHalf(1)">Quarter 1</button>
         <button class="sk-htab" id="skH2" onclick="switchSkillHalf(2)">Quarter 2</button>
@@ -805,7 +861,7 @@
 
     <!-- ── CERTIFICATES SECTION ── -->
     <div class="sk-cert-section" id="skCertSection">
-      <div class="sk-cert-label">Online Trainings Certificates</div>
+      <div class="sk-cert-label">Certificates</div>
       <div class="sk-cert-title">Upload your certificates once you're done on your training</div>
       <div class="sk-cert-sub">Click the button below to open the shared Google Drive folder and upload your completed training certificates directly.</div>
       <a href="https://drive.google.com/drive/folders/11cRUfe7OvtijJVo5N-YJhJIXpMtNEXHY"
@@ -816,6 +872,157 @@
     </div>
 
   </div><!-- /skillsView -->
+
+  <!-- NOTES VIEW — admin only -->
+  <div id="notesView" class="main full-width" style="display:none;">
+    <div class="sched-nav" style="margin-bottom:24px;">
+      <h2>📝 Admin Notes</h2>
+      <div style="font-size:13px;color:var(--muted);">Internal logs and important reference notes</div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+
+      <!-- Schedule Notes -->
+      <div class="notes-panel">
+        <div class="notes-panel-hdr" style="background:rgba(79,209,197,.1);border-color:rgba(79,209,197,.3);">
+          <div class="notes-panel-icon">📆</div>
+          <div style="flex:1;">
+            <div class="notes-panel-title" style="color:var(--accent2);">Schedule Notes</div>
+            <div class="notes-panel-sub">Graveyard shift logs</div>
+          </div>
+          <button class="notes-clear-btn" onclick="clearNotePanel(['schedGraveyard'])" title="Clear">🗑</button>
+        </div>
+        <div class="notes-body" style="padding:0;overflow-x:auto;">
+          <div class="notes-tbl-scroll"><div class="notes-tbl-inner">
+          <div class="notes-tbl-cols">
+            <div class="notes-col-lbl col-num">#</div>
+            <div class="notes-col-lbl col-name">Name</div>
+            <div class="notes-col-lbl col-data">1</div><div class="notes-col-lbl col-data">2</div><div class="notes-col-lbl col-data">3</div><div class="notes-col-lbl col-data">4</div><div class="notes-col-lbl col-data">5</div><div class="notes-col-lbl col-data">6</div><div class="notes-col-lbl col-data">7</div><div class="notes-col-lbl col-data">8</div><div class="notes-col-lbl col-data">9</div><div class="notes-col-lbl col-data">10</div><div class="notes-col-lbl col-data">11</div><div class="notes-col-lbl col-data">12</div><div class="notes-col-lbl col-data">13</div><div class="notes-col-lbl col-data">14</div>
+            <div class="notes-col-lbl col-del"></div>
+          </div>
+          <div class="notes-rows" id="schedGraveyardRows"></div>
+          </div></div>
+        </div>
+      </div>
+
+      <!-- Schedule Notes -->
+      <div class="notes-panel">
+        <div class="notes-panel-hdr" style="background:rgba(79,209,197,.1);border-color:rgba(79,209,197,.3);">
+          <div class="notes-panel-icon">📆</div>
+          <div style="flex:1;">
+            <div class="notes-panel-title" style="color:var(--accent2);">Schedule Notes</div>
+            <div class="notes-panel-sub">6-3 shift logs</div>
+          </div>
+          <button class="notes-clear-btn" onclick="clearNotePanel(['sched63'])" title="Clear">🗑</button>
+        </div>
+        <div class="notes-body" style="padding:0;overflow-x:auto;">
+          <div class="notes-tbl-scroll"><div class="notes-tbl-inner">
+          <div class="notes-tbl-cols">
+            <div class="notes-col-lbl col-num">#</div>
+            <div class="notes-col-lbl col-name">Name</div>
+            <div class="notes-col-lbl col-data">1</div><div class="notes-col-lbl col-data">2</div><div class="notes-col-lbl col-data">3</div><div class="notes-col-lbl col-data">4</div><div class="notes-col-lbl col-data">5</div><div class="notes-col-lbl col-data">6</div><div class="notes-col-lbl col-data">7</div><div class="notes-col-lbl col-data">8</div><div class="notes-col-lbl col-data">9</div><div class="notes-col-lbl col-data">10</div><div class="notes-col-lbl col-data">11</div><div class="notes-col-lbl col-data">12</div><div class="notes-col-lbl col-data">13</div><div class="notes-col-lbl col-data">14</div>
+            <div class="notes-col-lbl col-del"></div>
+          </div>
+          <div class="notes-rows" id="sched63Rows"></div>
+          </div></div>
+        </div>
+      </div>
+
+      <!-- PayPro & Batch Upload -->
+      <div class="notes-panel">
+        <div class="notes-panel-hdr" style="background:rgba(232,197,71,.1);border-color:rgba(232,197,71,.3);">
+          <div class="notes-panel-icon">⚡</div>
+          <div style="flex:1;">
+            <div class="notes-panel-title" style="color:var(--accent);">PayPro & Batch Upload</div>
+            <div class="notes-panel-sub">Assignment logs & notes</div>
+          </div>
+          <button class="notes-clear-btn" onclick="clearNotePanel(['paypro1'])" title="Clear">🗑</button>
+        </div>
+        <div class="notes-body" style="padding:0;overflow-x:auto;">
+          <div class="notes-tbl-scroll"><div class="notes-tbl-inner">
+          <div class="notes-tbl-cols">
+            <div class="notes-col-lbl col-num">#</div>
+            <div class="notes-col-lbl col-name">Name</div>
+            <div class="notes-col-lbl col-data">1</div><div class="notes-col-lbl col-data">2</div><div class="notes-col-lbl col-data">3</div><div class="notes-col-lbl col-data">4</div><div class="notes-col-lbl col-data">5</div><div class="notes-col-lbl col-data">6</div><div class="notes-col-lbl col-data">7</div><div class="notes-col-lbl col-data">8</div><div class="notes-col-lbl col-data">9</div><div class="notes-col-lbl col-data">10</div><div class="notes-col-lbl col-data">11</div><div class="notes-col-lbl col-data">12</div><div class="notes-col-lbl col-data">13</div><div class="notes-col-lbl col-data">14</div>
+            <div class="notes-col-lbl col-del"></div>
+          </div>
+          <div class="notes-rows" id="paypro1Rows"></div>
+          </div></div>
+        </div>
+      </div>
+
+      <!-- Sunday Off -->
+      <div class="notes-panel">
+        <div class="notes-panel-hdr" style="background:rgba(248,113,113,.1);border-color:rgba(248,113,113,.3);">
+          <div class="notes-panel-icon">🌙</div>
+          <div style="flex:1;">
+            <div class="notes-panel-title" style="color:var(--red);">Sunday Off</div>
+            <div class="notes-panel-sub">Day-off schedule logs</div>
+          </div>
+          <button class="notes-clear-btn" onclick="clearNotePanel(['sundayOff'])" title="Clear">🗑</button>
+        </div>
+        <div class="notes-body" style="padding:0;overflow-x:auto;">
+          <div class="notes-tbl-scroll"><div class="notes-tbl-inner">
+          <div class="notes-tbl-cols">
+            <div class="notes-col-lbl col-num">#</div>
+            <div class="notes-col-lbl col-name">Name</div>
+            <div class="notes-col-lbl col-data">1</div><div class="notes-col-lbl col-data">2</div><div class="notes-col-lbl col-data">3</div><div class="notes-col-lbl col-data">4</div><div class="notes-col-lbl col-data">5</div><div class="notes-col-lbl col-data">6</div><div class="notes-col-lbl col-data">7</div><div class="notes-col-lbl col-data">8</div><div class="notes-col-lbl col-data">9</div><div class="notes-col-lbl col-data">10</div><div class="notes-col-lbl col-data">11</div><div class="notes-col-lbl col-data">12</div><div class="notes-col-lbl col-data">13</div><div class="notes-col-lbl col-data">14</div>
+            <div class="notes-col-lbl col-del"></div>
+          </div>
+          <div class="notes-rows" id="sundayOffRows"></div>
+          </div></div>
+        </div>
+      </div>
+
+      <!-- GCash Notes -->
+      <div class="notes-panel">
+        <div class="notes-panel-hdr" style="background:rgba(52,211,153,.1);border-color:rgba(52,211,153,.3);">
+          <div class="notes-panel-icon">💳</div>
+          <div style="flex:1;">
+            <div class="notes-panel-title" style="color:#34d399;">GCash Notes</div>
+            <div class="notes-panel-sub">Weekly GCash assignments</div>
+          </div>
+          <button class="notes-clear-btn" onclick="clearNotePanel(['gcash'])" title="Clear">🗑</button>
+        </div>
+        <div class="notes-body" style="padding:0;overflow-x:auto;">
+          <div class="notes-tbl-scroll"><div class="notes-tbl-inner">
+          <div class="notes-tbl-cols">
+            <div class="notes-col-lbl col-num">#</div>
+            <div class="notes-col-lbl col-name">Name</div>
+            <div class="notes-col-lbl col-data">1</div><div class="notes-col-lbl col-data">2</div><div class="notes-col-lbl col-data">3</div><div class="notes-col-lbl col-data">4</div><div class="notes-col-lbl col-data">5</div><div class="notes-col-lbl col-data">6</div><div class="notes-col-lbl col-data">7</div><div class="notes-col-lbl col-data">8</div><div class="notes-col-lbl col-data">9</div><div class="notes-col-lbl col-data">10</div><div class="notes-col-lbl col-data">11</div><div class="notes-col-lbl col-data">12</div><div class="notes-col-lbl col-data">13</div><div class="notes-col-lbl col-data">14</div>
+            <div class="notes-col-lbl col-del"></div>
+          </div>
+          <div class="notes-rows" id="gcashRows"></div>
+          </div></div>
+        </div>
+      </div>
+
+      <!-- Changes Notes -->
+      <div class="notes-panel">
+        <div class="notes-panel-hdr" style="background:rgba(167,139,250,.1);border-color:rgba(167,139,250,.3);">
+          <div class="notes-panel-icon">📝</div>
+          <div style="flex:1;">
+            <div class="notes-panel-title" style="color:#a78bfa;">Changes Notes</div>
+            <div class="notes-panel-sub">System & process change logs</div>
+          </div>
+          <button class="notes-clear-btn" onclick="clearChangesText()" title="Clear">🗑</button>
+        </div>
+        <div style="padding:14px;display:flex;flex-direction:column;flex:1;">
+          <textarea id="changesTextarea"
+            placeholder="Type your change notes here..."
+            oninput="changesTextDebounce(this.value)"
+            style="width:100%;min-height:380px;background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;line-height:1.7;padding:12px;resize:vertical;outline:none;box-sizing:border-box;transition:border-color .15s;"
+            onfocus="this.style.borderColor='rgba(167,139,250,.5)'"
+            onblur="this.style.borderColor='var(--border)'"
+          ></textarea>
+          <div style="display:flex;justify-content:flex-end;margin-top:8px;">
+            <span id="changesSavedLbl" style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;opacity:0;transition:opacity .3s;"></span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div><!-- /notesView -->
 </div><!-- /app -->
 
 <!-- ── YEARLY LEAVE PLANNER MODAL ── -->
@@ -909,46 +1116,6 @@
     <div style="display:flex;gap:10px;margin-top:8px;">
       <button class="btn btn-secondary" onclick="closeBulkDeleteLeaveModal()" style="flex:1;justify-content:center;">Cancel</button>
       <button class="btn" onclick="executeBulkDeleteLeave()" style="flex:1;justify-content:center;background:rgba(248,113,113,.15);color:var(--red);border:1px solid rgba(248,113,113,.35);">🗑 Delete Selected</button>
-    </div>
-  </div>
-</div>
-
-<!-- ── EDIT ASSIGNMENT MODAL ── -->
-<div class="modal-overlay" id="editAssignmentModal">
-  <div class="modal" style="max-width:480px;">
-    <div class="modal-close" onclick="closeEditAssignmentModal()">✕</div>
-    <div class="modal-title">✏️ Edit Assignment</div>
-    <div class="modal-sub" id="editAssignmentSub">Update the employees assigned to this active task.</div>
-    <div style="margin-bottom:14px;">
-      <div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">Select Employees</div>
-      <div class="emp-cbs" id="editAssignmentEmpGrid" style="gap:8px;"></div>
-    </div>
-    <div style="display:flex;gap:10px;margin-top:20px;">
-      <button class="btn btn-secondary" onclick="closeEditAssignmentModal()" style="flex:1;justify-content:center;">Cancel</button>
-      <button class="btn btn-primary" onclick="saveEditAssignment()" style="flex:1;justify-content:center;">✓ Save</button>
-    </div>
-  </div>
-</div>
-
-<!-- ── DELETE ACTIVE TASKS MODAL ── -->
-<div class="modal-overlay" id="deleteActiveTasksModal">
-  <div class="modal" style="max-width:520px;max-height:88vh;overflow-y:auto;">
-    <div class="modal-close" onclick="closeDeleteActiveTasksModal()">✕</div>
-    <div class="modal-title">🗑 Delete Active Tasks</div>
-    <div class="modal-sub">Delete task assignment records that are currently active (today falls within duty date range).</div>
-    <div style="margin-bottom:16px;">
-      <div class="fg">
-        <label style="margin-bottom:6px;display:block;">Task</label>
-        <select id="datTask" style="margin-top:4px;" onchange="datRefresh()">
-          <option value="">— All active tasks —</option>
-        </select>
-      </div>
-    </div>
-    <div id="datSummary" style="font-size:13px;color:var(--muted);margin-bottom:14px;font-family:'DM Mono',monospace;min-height:36px;"></div>
-    <div id="datPreviewList" style="max-height:220px;overflow-y:auto;border:1px solid var(--border);border-radius:10px;margin-bottom:14px;display:none;"></div>
-    <div style="display:flex;gap:10px;margin-top:8px;">
-      <button class="btn btn-secondary" onclick="closeDeleteActiveTasksModal()" style="flex:1;justify-content:center;">Cancel</button>
-      <button class="btn" onclick="executeDeleteActiveTasks()" style="flex:1;justify-content:center;background:rgba(79,209,197,.12);color:var(--accent2);border:1px solid rgba(79,209,197,.3);">🗑 Delete</button>
     </div>
   </div>
 </div>
@@ -1269,10 +1436,14 @@ function startApp(){
   if(isAdmin){ ta.disabled=false; ta.style.opacity='1'; ta.style.cursor='pointer'; }
   else        { ta.disabled=true;  ta.style.opacity='0.3'; ta.style.cursor='not-allowed'; }
 
+  // Show Notes tab only for admins
+  const tnotes = document.getElementById('tabNotes');
+  if(tnotes) tnotes.style.display = isAdmin ? '' : 'none';
+
   // Guests: hide all tabs except Schedule
-  ['tabEmp','tabLeave','tabSkills'].forEach(id=>{
+  ['tabEmp','tabLeave','tabSkills','tabNotes'].forEach(id=>{
     const el=document.getElementById(id);
-    if(el){ el.style.display = isGuest ? 'none' : ''; }
+    if(el){ el.style.display = isGuest ? 'none' : (id==='tabNotes' && !isAdmin) ? 'none' : el.style.display; }
   });
 
   // Init skills year selector
@@ -1311,7 +1482,7 @@ function switchTab(t){
   // Guests can only see schedule
   if(isGuest && t!=='schedule') return;
   appTab=t;
-  const idMap={admin:'tabAdmin',employee:'tabEmp',schedule:'tabSched',leave:'tabLeave',skills:'tabSkills'};
+  const idMap={admin:'tabAdmin',employee:'tabEmp',schedule:'tabSched',leave:'tabLeave',skills:'tabSkills',notes:'tabNotes'};
   Object.values(idMap).forEach(id=>{ const el=document.getElementById(id); if(el)el.classList.remove('active'); });
   const activeEl = document.getElementById(idMap[t]);
   if(activeEl) activeEl.classList.add('active');
@@ -1320,12 +1491,12 @@ function switchTab(t){
   document.getElementById('scheduleView').style.display = t==='schedule' ?'block':'none';
   document.getElementById('leaveView').style.display    = t==='leave'    ?'block':'none';
   document.getElementById('skillsView').style.display   = t==='skills'   ?'block':'none';
+  document.getElementById('notesView').style.display    = t==='notes'    ?'block':'none';
   if(t==='employee') renderEmpView();
   if(t==='schedule') renderSchedule();
   if(t==='leave')    renderLeaveView();
-  if(t==='skills'){
-    renderSkillsView();
-  }
+  if(t==='skills')   renderSkillsView();
+  if(t==='notes')    renderNotesView();
 }
 function switchSub(s){
   sub=s;
@@ -1600,8 +1771,6 @@ function toggleEcb(el){ if(!el.classList.contains('dis'))el.classList.toggle('se
 function renderHistTable(){
   const bdtBtn = document.getElementById('bulkDeleteTasksBtn');
   if(bdtBtn) bdtBtn.style.display = isAdmin ? 'inline-flex' : 'none';
-  const datBtn = document.getElementById('deleteActiveTasksBtn');
-  if(datBtn) datBtn.style.display = isAdmin ? 'inline-flex' : 'none';
 
   const tbody=document.getElementById('histTbody');
   let rows=[...S.assignments];
@@ -1611,17 +1780,8 @@ function renderHistTable(){
   rows.sort((a,b)=>b.dutyFrom.localeCompare(a.dutyFrom));
   document.getElementById('histCount').textContent=rows.length+' record'+(rows.length!==1?'s':'');
   renderHistStats(rows);
-  const t = localToday();
   tbody.innerHTML=rows.length
-    ? rows.map(a=>{
-        const isActive = a.dutyFrom <= t && a.dutyTo >= t;
-        const editBtn = isAdmin && isActive
-          ? `<button class="btn btn-ghost" onclick="openEditAssignmentModal('${a.id}')"
-               style="padding:5px 10px;font-size:11px;color:var(--accent2);border-color:rgba(79,209,197,.3);white-space:nowrap;">
-               ✏️ Edit
-             </button>`
-          : '';
-        return `<tr>
+    ? rows.map(a=>`<tr>
         <td><strong>${a.task}</strong></td>
         <td>
           <span class="db">${fmtDate(a.dutyFrom)}</span>
@@ -1629,11 +1789,10 @@ function renderHistTable(){
           <span class="db">${fmtDate(a.dutyTo)}</span>
           ${rangeBadge(a)}
         </td>
-        <td style="white-space:nowrap;">${editBtn}</td>
         <td><span class="db">${fmtDate(a.dateAssigned)}</span></td>
         <td><div class="pills">${a.employees.map(e=>`<span class="pill ${isPast(a)?'past':''}">${e}</span>`).join('')}</div></td>
-      </tr>`;}).join('')
-    : `<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:40px;">No records match the filter.</td></tr>`;
+      </tr>`).join('')
+    : `<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:40px;">No records match the filter.</td></tr>`;
 }
 function renderHistStats(rows){
   const el=document.getElementById('histStats');
@@ -1741,140 +1900,6 @@ async function executeBulkDeleteTasks(){
   closeBulkDeleteTasksModal();
 }
 
-
-// ─── EDIT ASSIGNMENT MODAL ────────────────────────────────────────────────
-let editAssignCtx = null;
-
-function openEditAssignmentModal(assignmentId){
-  if(!isAdmin) return;
-  const a = S.assignments.find(x=>x.id==assignmentId);
-  if(!a) return;
-  editAssignCtx = a;
-  document.getElementById('editAssignmentSub').textContent =
-    `${a.task} · ${fmtDate(a.dutyFrom)} → ${fmtDate(a.dutyTo)}`;
-
-  // Build employee checkboxes
-  document.getElementById('editAssignmentEmpGrid').innerHTML = S.employees.map(e=>{
-    const sel = a.employees.includes(e);
-    return `<div class="ecb${sel?' sel':''}" onclick="toggleEditEcb(this)">
-      <div class="cki">${sel?'✓':''}</div>
-      <span style="font-size:13px;">${e}</span>
-    </div>`;
-  }).join('');
-
-  document.getElementById('editAssignmentModal').classList.add('open');
-}
-function closeEditAssignmentModal(){
-  document.getElementById('editAssignmentModal').classList.remove('open');
-  editAssignCtx = null;
-}
-document.getElementById('editAssignmentModal').addEventListener('click',function(e){ if(e.target===this)closeEditAssignmentModal(); });
-
-function toggleEditEcb(el){
-  el.classList.toggle('sel');
-  el.querySelector('.cki').textContent = el.classList.contains('sel') ? '✓' : '';
-}
-
-async function saveEditAssignment(){
-  if(!editAssignCtx||!isAdmin) return;
-  const a = editAssignCtx;
-  const selected = [...document.querySelectorAll('#editAssignmentEmpGrid .ecb.sel')]
-    .map(el=>el.querySelector('span').textContent.trim());
-  const toAdd    = selected.filter(e=>!a.employees.includes(e));
-  const toRemove = a.employees.filter(e=>!selected.includes(e));
-  try {
-    if(toAdd.length){
-      await sb.from('assignment_employees').insert(toAdd.map(e=>({assignment_id:a.id, employee_name:e})));
-    }
-    for(const e of toRemove){
-      await sb.from('assignment_employees').delete()
-        .eq('assignment_id',a.id).eq('employee_name',e);
-    }
-    showToast('✓ Assignment updated');
-  } catch(err){ showToast('Error: '+err.message, true); }
-  closeEditAssignmentModal();
-}
-
-// ─── DELETE ACTIVE TASKS MODAL ────────────────────────────────────────────
-function isActiveAssignment(a){
-  const t = localToday();
-  return a.dutyFrom <= t && a.dutyTo >= t;
-}
-
-function openDeleteActiveTasksModal(){
-  if(!isAdmin) return;
-  const sel = document.getElementById('datTask');
-  sel.innerHTML = '<option value="">— All active tasks —</option>' +
-    S.tasks.map(t=>`<option value="${t}">${t}</option>`).join('');
-  document.getElementById('datTask').value = '';
-  datRefresh();
-  document.getElementById('deleteActiveTasksModal').classList.add('open');
-}
-function closeDeleteActiveTasksModal(){
-  document.getElementById('deleteActiveTasksModal').classList.remove('open');
-}
-document.getElementById('deleteActiveTasksModal').addEventListener('click',function(e){ if(e.target===this)closeDeleteActiveTasksModal(); });
-
-function datGetMatching(){
-  const taskFilter = document.getElementById('datTask').value;
-  return S.assignments.filter(a=>{
-    if(!isActiveAssignment(a)) return false;
-    if(taskFilter && a.task !== taskFilter) return false;
-    return true;
-  });
-}
-
-function datRefresh(){
-  const matches = datGetMatching();
-  const taskFilter = document.getElementById('datTask').value;
-  const sumEl = document.getElementById('datSummary');
-  const previewEl = document.getElementById('datPreviewList');
-
-  if(!matches.length){
-    sumEl.innerHTML = `<span style="color:var(--muted);">No active tasks found matching the criteria.</span>`;
-    previewEl.style.display = 'none';
-    return;
-  }
-
-  const totalEmps = matches.reduce((s,a)=>s+a.employees.length,0);
-  sumEl.innerHTML =
-    `Found <strong style="color:var(--accent2)">${matches.length}</strong> active assignment(s)` +
-    (taskFilter?` for task <strong style="color:var(--accent)">${taskFilter}</strong>`:'') +
-    ` — <strong style="color:var(--muted)">${totalEmps}</strong> employee-task record(s).` +
-    `<br><span style="font-size:11px;color:var(--accent2);margin-top:4px;display:block;">⚠ This permanently deletes the active assignments and all their employee records.</span>`;
-
-  previewEl.style.display = 'block';
-  previewEl.innerHTML = matches.map(a=>`
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 14px;border-bottom:1px solid var(--border);gap:12px;">
-      <div>
-        <span style="font-weight:700;font-size:13px;color:var(--text);">${a.task}</span>
-        <span style="font-size:11px;color:var(--accent2);margin-left:8px;font-family:'DM Mono',monospace;">${fmtDate(a.dutyFrom)} → ${fmtDate(a.dutyTo)}</span>
-      </div>
-      <div style="display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end;max-width:260px;">
-        ${a.employees.map(e=>`<span class="pill" style="font-size:10px;padding:2px 7px;">${e}</span>`).join('')}
-      </div>
-    </div>`).join('');
-}
-
-async function executeDeleteActiveTasks(){
-  if(!isAdmin) return;
-  const matches = datGetMatching();
-  if(!matches.length){ showToast('No matching active tasks to delete'); return; }
-  showToast('Deleting…');
-  const ids = matches.map(a=>a.id);
-  for(let i=0;i<ids.length;i+=100){
-    const batch = ids.slice(i,i+100);
-    const {error:e1} = await sb.from('assignment_employees').delete().in('assignment_id', batch);
-    if(e1){ showToast('Error: '+e1.message, true); return; }
-  }
-  for(let i=0;i<ids.length;i+=100){
-    const batch = ids.slice(i,i+100);
-    const {error:e2} = await sb.from('assignments').delete().in('id', batch);
-    if(e2){ showToast('Error: '+e2.message, true); return; }
-  }
-  showToast(`✓ Deleted ${ids.length} active assignment(s)`);
-  closeDeleteActiveTasksModal();
-}
 
 function renderEmpView(){
   if(curUser) document.getElementById('empGreet').textContent=isGuest?'Welcome, Guest 👋':`Hello, ${curUser}! 👋`;
@@ -2149,8 +2174,8 @@ function renderSchedule(){
       html += `<span class="scl-sep"></span>`;
     }
     // Leave-type legend — visible to ALL users
-    html += `<span class="scl-item" style="background:rgba(32, 135, 140,.1);border-color:rgba(10, 197, 207,.35);color:#05e2ed;">● Pre-Approved Leave</span>`;
-    html += `<span class="scl-item" style="background:rgba(184, 48, 24,.1);border-color:rgba(237, 21, 29,.35);color:#ffffff;">● Sick Leave</span>`;
+    html += `<span class="scl-item" style="background:rgba(192,132,252,.1);border-color:rgba(192,132,252,.35);color:#c084fc;">● Pre-Approved Leave</span>`;
+    html += `<span class="scl-item" style="background:rgba(251,146,60,.1);border-color:rgba(251,146,60,.35);color:#fb923c;">● Sick Leave</span>`;
     html += `<span class="scl-item" style="background:rgba(163,230,53,.1);border-color:rgba(163,230,53,.35);color:#a3e635;">● Half Day</span>`;
     legendItems.innerHTML = html;
   }
@@ -2280,7 +2305,7 @@ function renderLeaveView(){
   const adminAdd = isAdmin ? `
     <div class="card" style="margin-bottom:20px;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
-        <div class="card-title" style="margin:0;">Leaves Overview</div>
+        <div class="card-title" style="margin:0;">➕ Add Leave</div>
         <button class="btn btn-ghost" onclick="openYearlyLeaveModal()" style="font-size:12px;padding:7px 14px;border-color:rgba(192,132,252,.4);color:#c084fc;gap:5px;">
           🗓 Yearly Planner
         </button>
@@ -2303,7 +2328,7 @@ function renderLeaveView(){
         </div>
         <div class="fg"><label>From Date</label><input type="date" id="lvFrom" style="margin-top:6px;"></div>
         <div class="fg"><label>To Date</label><input type="date" id="lvTo" style="margin-top:6px;"></div>
-        <button class="btn btn-primary" onclick="addLeaveRange()" style="white-space:nowrap;">Add Record</button>
+        <button class="btn btn-primary" onclick="addLeaveRange()" style="white-space:nowrap;">Add Leave</button>
       </div>
       <p style="font-size:11px;color:var(--muted);margin-top:10px;">💡 Use <strong>Yearly Planner</strong> to set leaves across multiple months and specific days in one go.</p>
     </div>` : '';
@@ -3308,6 +3333,296 @@ async function removeSchedName(name, ctx){
     }
     showToast('Removed: '+name);
   } catch(err){ showToast('Error: '+err.message,true); }
+}
+
+// ─── NOTES VIEW ──────────────────────────────────────────────────────────
+const NOTES_SECTIONS = {
+  schedGraveyard: { label:'Schedule Notes – Graveyard', cols:['Name','Date Range / Note'] },
+  sched63:        { label:'Schedule Notes – 6-3',       cols:['Name','Date Range / Note'] },
+  paypro1:        { label:'PayPro – Assignments',       cols:['Period','Names'] },
+  paypro2:        { label:'PayPro – Notes',             cols:['Label','Note'] },
+  sundayOff:      { label:'Sunday Off – Schedule',      cols:['Name','Date Range'] },
+  sundayOff2:     { label:'Sunday Off – Notes',         cols:['Label','Note'] },
+  gcash:          { label:'GCash Notes',                cols:['Week','Names'] },
+};
+
+// In-memory store (persisted to Supabase soft_skills table using a special key prefix)
+const _notesData = {};
+
+async function loadNotesData(){
+  try {
+    const {data} = await sb.from('soft_skills').select('*').like('content','NOTES::%');
+    (data||[]).forEach(r=>{
+      // We store notes in soft_skills rows where year=0, month=section_idx, row_num=row_idx
+      // content = "NOTES::sectionKey::rowJSON"
+      const raw = r.content || '';
+      if(!raw.startsWith('NOTES::')) return;
+      const parts = raw.split('::');
+      if(parts.length < 3) return;
+      const sectionKey = parts[1];
+      try {
+        const rowData = JSON.parse(parts.slice(2).join('::'));
+        if(!_notesData[sectionKey]) _notesData[sectionKey] = [];
+        _notesData[sectionKey][r.month] = rowData;
+      } catch(e){}
+    });
+    // Filter out holes
+    Object.keys(_notesData).forEach(k=>{
+      _notesData[k] = (_notesData[k]||[]).filter(Boolean);
+    });
+  } catch(e){
+    // Fallback to localStorage
+    Object.keys(NOTES_SECTIONS).forEach(k=>{
+      try{ const v=localStorage.getItem('notes_'+k); if(v) _notesData[k]=JSON.parse(v); }catch(e2){}
+    });
+  }
+}
+
+const NOTES_NUM_COLS = 14; // data columns per row (excluding Name column)
+
+async function saveNoteRow(sectionKey, rowIdx, cols){
+  if(!_notesData[sectionKey]) _notesData[sectionKey]=[];
+  _notesData[sectionKey][rowIdx] = cols;
+  try {
+    await sb.from('soft_skills').upsert({
+      year:0, month:rowIdx, row_num: Object.keys(NOTES_SECTIONS).indexOf(sectionKey)+1,
+      content:`NOTES::${sectionKey}::${JSON.stringify(cols)}`
+    },{onConflict:'year,month,row_num'});
+  } catch(e){
+    try{ localStorage.setItem('notes_'+sectionKey, JSON.stringify(_notesData[sectionKey])); }catch(e2){}
+  }
+}
+
+async function deleteNoteRow(sectionKey, rowIdx){
+  if(!_notesData[sectionKey]) return;
+  _notesData[sectionKey].splice(rowIdx,1);
+  renderNoteSection(sectionKey);
+  try {
+    await sb.from('soft_skills').delete()
+      .eq('year',0).eq('month',rowIdx)
+      .eq('row_num', Object.keys(NOTES_SECTIONS).indexOf(sectionKey)+1);
+    const rows = _notesData[sectionKey]||[];
+    for(let i=0;i<rows.length;i++){
+      if(!rows[i]) continue;
+      await sb.from('soft_skills').upsert({
+        year:0, month:i, row_num: Object.keys(NOTES_SECTIONS).indexOf(sectionKey)+1,
+        content:`NOTES::${sectionKey}::${JSON.stringify(rows[i])}`
+      },{onConflict:'year,month,row_num'});
+    }
+  } catch(e){
+    try{ localStorage.setItem('notes_'+sectionKey, JSON.stringify(_notesData[sectionKey])); }catch(e2){}
+  }
+}
+
+function addNoteRow(sectionKey){
+  if(!isAdmin) return;
+  if(!_notesData[sectionKey]) _notesData[sectionKey]=[];
+  _notesData[sectionKey].push({ name:'', cols: Array(NOTES_NUM_COLS).fill('') });
+  renderNoteSection(sectionKey);
+  const el = document.getElementById(sectionKey+'Rows');
+  if(el){
+    const inputs = el.querySelectorAll('.notes-row-name');
+    if(inputs.length) inputs[inputs.length-1].focus();
+  }
+}
+
+function notesEnsureRow(sectionKey, idx){
+  if(!_notesData[sectionKey]) _notesData[sectionKey]=[];
+  while(_notesData[sectionKey].length <= idx)
+    _notesData[sectionKey].push({ name:'', cols: Array(NOTES_NUM_COLS).fill('') });
+  const r = _notesData[sectionKey][idx];
+  if(!r.cols) r.cols = Array(NOTES_NUM_COLS).fill('');
+}
+
+function renderNoteSection(sectionKey){
+  const el = document.getElementById(sectionKey+'Rows');
+  if(!el) return;
+  const rows = _notesData[sectionKey]||[];
+  const meta = NOTES_SECTIONS[sectionKey];
+  const display = [...rows];
+  while(display.length < 15) display.push(null);
+  el.innerHTML = display.map((row,i)=>{
+    const name = row ? (row.name||row.a||'').replace(/"/g,'&quot;') : '';
+    const cellColors = row ? (row.cellColors||{}) : {};
+    const dataCols = Array.from({length:NOTES_NUM_COLS}, (_,c)=>{
+      const v = row ? ((row.cols||[])[c]||'').replace(/"/g,'&quot;') : '';
+      const bg = cellColors[c] ? `style="background:${cellColors[c]}33;color:${cellColors[c]};"` : '';
+      return `<input class="notes-cell" value="${v}" placeholder="" ${bg}
+        data-col="${c}"
+        oninput="notesEnsureRow('${sectionKey}',${i});notesCell('${sectionKey}',${i},${c},this.value)"
+        oncontextmenu="openCellCp(event,'${sectionKey}',${i},${c});return false;"
+      >`;
+    }).join('');
+    return `<div class="notes-row">
+      <div class="notes-row-num">${i+1}</div>
+      <input class="notes-row-name" value="${name}"
+        placeholder="${row ? meta.cols[0] : ''}"
+        oninput="notesEnsureRow('${sectionKey}',${i});notesName('${sectionKey}',${i},this.value)"
+      >${dataCols}
+      <button class="notes-row-del" onclick="deleteNoteRow('${sectionKey}',${i})" title="Remove row">×</button>
+    </div>`;
+  }).join('');
+}
+
+// ── CELL COLOR PICKER (right-click a cell) ───────────────────────────────
+const NOTES_CP_COLORS = [
+  '#f87171','#fb923c','#fbbf24','#a3e635','#34d399','#22d3ee','#60a5fa','#a78bfa','#e879f9','#f472b6',
+  '#ef4444','#f97316','#f59e0b','#84cc16','#10b981','#06b6d4','#3b82f6','#8b5cf6','#d946ef','#ec4899',
+  '#dc2626','#ea580c','#d97706','#65a30d','#059669','#0891b2','#2563eb','#7c3aed','#c026d3','#db2777',
+  '#b91c1c','#c2410c','#b45309','#4d7c0f','#047857','#0e7490','#1d4ed8','#6d28d9','#a21caf','#be185d',
+  '#7f1d1d','#7c2d12','#78350f','#365314','#064e3b','#164e63','#1e3a8a','#4c1d95','#701a75','#831843',
+  '#fca5a5','#fdba74','#fde68a','#d9f99d','#a7f3d0','#a5f3fc','#bfdbfe','#ddd6fe','#f5d0fe','#fbcfe8',
+  '#ffffff','#e5e7eb','#9ca3af','#6b7280','#4b5563','#374151','#1f2937','#111827','#030712','#000000',
+];
+let _cpState = null;
+
+function openCellCp(e, sectionKey, rowIdx, colIdx){
+  e.preventDefault();
+  e.stopPropagation();
+  closeNotesCp();
+  notesEnsureRow(sectionKey, rowIdx);
+  const row = _notesData[sectionKey][rowIdx];
+  const currentColor = (row.cellColors||{})[colIdx]||'';
+  const rect = e.currentTarget.getBoundingClientRect();
+  const cp = document.createElement('div');
+  cp.className = 'notes-cp';
+  cp.id = 'notesCp';
+  cp.innerHTML = `
+    <div class="notes-cp-title">🎨 Cell Color <span style="opacity:.5;font-weight:400;">right-click to open</span></div>
+    <div class="notes-cp-grid">${NOTES_CP_COLORS.map(c=>`
+      <div class="notes-cp-swatch${c===currentColor?' active':''}" style="background:${c}"
+        onclick="applyCellColor('${sectionKey}',${rowIdx},${colIdx},'${c}')"></div>`).join('')}
+    </div>
+    <div class="notes-cp-row">
+      <button class="notes-cp-reset" onclick="applyCellColor('${sectionKey}',${rowIdx},${colIdx},'')">✕ Reset</button>
+    </div>`;
+  let top = rect.bottom + 4, left = rect.left;
+  if(left + 232 > window.innerWidth) left = window.innerWidth - 236;
+  if(top + 300 > window.innerHeight) top = rect.top - 304;
+  cp.style.top = top + 'px';
+  cp.style.left = left + 'px';
+  document.body.appendChild(cp);
+  _cpState = {sectionKey, rowIdx, colIdx};
+}
+
+function closeNotesCp(){
+  const cp = document.getElementById('notesCp');
+  if(cp) cp.remove();
+  _cpState = null;
+}
+
+function applyCellColor(sectionKey, rowIdx, colIdx, color){
+  notesEnsureRow(sectionKey, rowIdx);
+  const row = _notesData[sectionKey][rowIdx];
+  if(!row.cellColors) row.cellColors = {};
+  if(color) row.cellColors[colIdx] = color;
+  else delete row.cellColors[colIdx];
+  _notesFlush(sectionKey, rowIdx);
+  renderNoteSection(sectionKey);
+  closeNotesCp();
+}
+
+document.addEventListener('click', e=>{
+  if(_cpState && !e.target.closest('#notesCp')) closeNotesCp();
+});
+
+const _notesDebounceTimers = {};
+function notesName(sectionKey, rowIdx, val){
+  notesEnsureRow(sectionKey, rowIdx);
+  _notesData[sectionKey][rowIdx].name = val;
+  _notesFlush(sectionKey, rowIdx);
+}
+function notesCell(sectionKey, rowIdx, colIdx, val){
+  notesEnsureRow(sectionKey, rowIdx);
+  if(!_notesData[sectionKey][rowIdx].cols) _notesData[sectionKey][rowIdx].cols = Array(NOTES_NUM_COLS).fill('');
+  _notesData[sectionKey][rowIdx].cols[colIdx] = val;
+  _notesFlush(sectionKey, rowIdx);
+}
+function _notesFlush(sectionKey, rowIdx){
+  const key = sectionKey+'_'+rowIdx;
+  clearTimeout(_notesDebounceTimers[key]);
+  _notesDebounceTimers[key] = setTimeout(()=>{
+    saveNoteRow(sectionKey, rowIdx, _notesData[sectionKey][rowIdx]);
+  }, 700);
+}
+
+async function renderNotesView(){
+  if(!isAdmin) return;
+  if(!_notesData._loaded){
+    await loadNotesData();
+    _notesData._loaded = true;
+  }
+  Object.keys(NOTES_SECTIONS).forEach(k => renderNoteSection(k));
+  // Load changes text
+  loadChangesText();
+}
+
+// ── CHANGES TEXT NOTE ────────────────────────────────────────────────────
+let _changesDebTimer = null;
+async function loadChangesText(){
+  try {
+    const {data} = await sb.from('soft_skills').select('content').eq('year',0).eq('month',999).eq('row_num',999).single();
+    const ta = document.getElementById('changesTextarea');
+    if(ta && data) ta.value = data.content.replace(/^CHANGES::/,'');
+  } catch(e){
+    try {
+      const v = localStorage.getItem('notes_changes_text');
+      const ta = document.getElementById('changesTextarea');
+      if(ta && v) ta.value = v;
+    } catch(e2){}
+  }
+}
+function changesTextDebounce(val){
+  clearTimeout(_changesDebTimer);
+  _changesDebTimer = setTimeout(()=> saveChangesText(val), 700);
+}
+async function saveChangesText(val){
+  try {
+    await sb.from('soft_skills').upsert({
+      year:0, month:999, row_num:999,
+      content:'CHANGES::'+val
+    },{onConflict:'year,month,row_num'});
+    const lbl = document.getElementById('changesSavedLbl');
+    if(lbl){ lbl.textContent='✓ Saved'; lbl.style.opacity='1'; setTimeout(()=>lbl.style.opacity='0',1800); }
+  } catch(e){
+    try{ localStorage.setItem('notes_changes_text', val); }catch(e2){}
+  }
+}
+function clearChangesText(){
+  openModal('🗑 Clear Changes Notes','Delete all text in Changes Notes? This cannot be undone.', async ()=>{
+    const ta = document.getElementById('changesTextarea');
+    if(ta) ta.value = '';
+    await saveChangesText('');
+    showToast('✓ Changes Notes cleared');
+  });
+}
+
+function clearNotePanel(sectionKeys){
+  if(!isAdmin) return;
+  const names = sectionKeys.map(k => NOTES_SECTIONS[k]?.label || k).join(' & ');
+  openModal(
+    '🗑 Clear Panel',
+    `Delete ALL rows in "${names}"? This cannot be undone.`,
+    async () => {
+      for(const sectionKey of sectionKeys){
+        const rows = _notesData[sectionKey] || [];
+        const sectionIdx = Object.keys(NOTES_SECTIONS).indexOf(sectionKey) + 1;
+        _notesData[sectionKey] = [];
+        renderNoteSection(sectionKey);
+        try {
+          await sb.from('soft_skills').delete()
+            .eq('year', 0)
+            .eq('row_num', sectionIdx);
+        } catch(e){
+          try{ localStorage.removeItem('notes_'+sectionKey); }catch(e2){}
+        }
+      }
+      showToast('✓ Panel cleared');
+    }
+  );
+  // Change confirm button label
+  const btn = document.getElementById('modalConfirmBtn');
+  if(btn) btn.textContent = 'Delete All';
 }
 
 // ─── TOAST ────────────────────────────────────────────────────────────────
