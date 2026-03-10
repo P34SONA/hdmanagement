@@ -1699,13 +1699,16 @@ function skStorageKey(year, month, row){
 
 async function skSave(year, month, row, val){
   if(!isAdmin) return;
-  // Upsert into a soft_skills table if available, else use localStorage fallback
+  const lsKey = 'hd_sk_' + skStorageKey(year, month, row);
+  // Always write to localStorage first as an immediate safety net
+  try{ localStorage.setItem(lsKey, val); }catch(e){}
+  // Then persist to Supabase
   try {
     await sb.from('soft_skills').upsert({
       year: year, month: month+1, row_num: row, content: val
     }, {onConflict:'year,month,row_num'});
   } catch(e){
-    // Fallback: store in memory on S object
+    // Supabase unavailable — localStorage already has it saved
   }
   if(!S.softSkills) S.softSkills = {};
   S.softSkills[skStorageKey(year, month, row)] = val;
@@ -1771,17 +1774,43 @@ function skDebounceSave(year, month, row, val){
 
 async function fetchSoftSkills(){
   if(!sb) return;
+  if(!S.softSkills) S.softSkills = {};
+  // Load localStorage-saved values first (instant, no network needed)
+  try{
+    for(let i = 0; i < localStorage.length; i++){
+      const k = localStorage.key(i);
+      if(k && k.startsWith('hd_sk_sk_')){
+        const shortKey = k.slice('hd_sk_'.length); // strip prefix
+        S.softSkills[shortKey] = localStorage.getItem(k) || '';
+      }
+    }
+  }catch(e){}
+  // Then overlay with Supabase data (more authoritative)
   try {
     const {data} = await sb.from('soft_skills').select('*');
-    if(!S.softSkills) S.softSkills = {};
-    (data||[]).forEach(r=>{
-      S.softSkills[skStorageKey(r.year, r.month-1, r.row_num)] = r.content;
+    (data||[]).filter(r=>!String(r.content||'').startsWith('NOTES::')).forEach(r=>{
+      const key = skStorageKey(r.year, r.month-1, r.row_num);
+      S.softSkills[key] = r.content;
+      // Keep localStorage in sync
+      try{ localStorage.setItem('hd_sk_'+key, r.content); }catch(e){}
     });
-  } catch(e){ /* table may not exist yet */ }
+  } catch(e){ /* table may not exist yet — localStorage values will be used */ }
 }
 
+// Flush all pending debounced soft skills saves on page close
+window.addEventListener('beforeunload', ()=>{
+  Object.keys(_skDebounce).forEach(key=>{
+    clearTimeout(_skDebounce[key]);
+  });
+  // Re-save everything currently in memory to localStorage
+  if(isAdmin && S.softSkills){
+    Object.entries(S.softSkills).forEach(([k, v])=>{
+      try{ localStorage.setItem('hd_sk_'+k, v||''); }catch(e){}
+    });
+  }
+});
+
 function renderAll(){
-  renderAdminList(); renderEmpList(); renderTaskList();
   renderAssignDropdown(); renderEmpCbs(); syncFilterDropdowns();
   renderHistTable();
   if(appTab==='employee') renderEmpView();
