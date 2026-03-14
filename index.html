@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -816,7 +817,7 @@
     </div>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>Task</th><th>Duty Date Range</th><th>Date Assigned</th><th>Assigned Employees</th></tr></thead>
+        <thead><tr><th>Task</th><th>Duty Date Range</th><th>Date Assigned</th><th>Assigned Employees</th><th class="admin-only" id="histAddedByTh" style="display:none;">Added By</th></tr></thead>
         <tbody id="histTbody"></tbody>
       </table>
     </div>
@@ -1445,7 +1446,7 @@ async function fetchAll(){
     (aemp.data||[]).forEach(r=>{ if(!aeMap[r.assignment_id])aeMap[r.assignment_id]=[]; aeMap[r.assignment_id].push(r.employee_name); });
     S.assignments = (asgn.data||[]).map(a=>({
       id:a.id, task:a.task_name, dutyFrom:a.duty_from, dutyTo:a.duty_to,
-      dateAssigned:a.date_assigned, employees:aeMap[a.id]||[]
+      dateAssigned:a.date_assigned, employees:aeMap[a.id]||[], addedBy:a.added_by||''
     }));
     S.shiftTypes      = sht.data || [];
     S.scheduleEntries = se.data  || [];
@@ -1620,7 +1621,7 @@ async function addAdmin(){
   const v=document.getElementById('adminInput').value.trim(); if(!v)return;
   if(S.admins.find(a=>a.toLowerCase()===v.toLowerCase())){showToast('Admin already exists');return;}
   if(S.employees.find(e=>e.toLowerCase()===v.toLowerCase())){showToast('Name is already an employee');return;}
-  const {error}=await sb.from('admins').insert({name:v});
+  const {error}=await sb.from('admins').insert({name:v, added_by:curUser});
   if(error){showToast('Error: '+error.message,true);return;}
   document.getElementById('adminInput').value='';
   showToast('✓ Admin added: '+v);
@@ -1637,7 +1638,7 @@ async function addEmployee(){
   const v=document.getElementById('empInput').value.trim(); if(!v)return;
   if(S.employees.find(e=>e.toLowerCase()===v.toLowerCase())){showToast('Employee already exists');return;}
   if(S.admins.find(a=>a.toLowerCase()===v.toLowerCase())){showToast('Name is already an admin');return;}
-  const {error}=await sb.from('employees').insert({name:v});
+  const {error}=await sb.from('employees').insert({name:v, added_by:curUser});
   if(error){showToast('Error: '+error.message,true);return;}
   document.getElementById('empInput').value='';
   showToast('✓ Employee added: '+v);
@@ -1652,7 +1653,7 @@ async function removeEmployee(name){
 async function addTask(){
   const v=document.getElementById('taskInput').value.trim(); if(!v)return;
   if(S.tasks.includes(v)){showToast('Task already exists');return;}
-  const {error}=await sb.from('tasks').insert({name:v});
+  const {error}=await sb.from('tasks').insert({name:v, added_by:curUser});
   if(error){showToast('Error: '+error.message,true);return;}
   document.getElementById('taskInput').value='';
   showToast('✓ Task added: '+v);
@@ -1690,7 +1691,8 @@ async function doAssign(){
       task_name:    task,
       duty_from:    dFrom,
       duty_to:      dTo,
-      date_assigned:td()
+      date_assigned:td(),
+      added_by:     curUser
     }).select('id').single();
     if(error){showToast('Error: '+error.message,true);return;}
     const rows=sel.map(e=>({assignment_id:data.id, employee_name:e}));
@@ -1911,6 +1913,10 @@ function renderHistTable(){
   const bdtBtn = document.getElementById('bulkDeleteTasksBtn');
   if(bdtBtn) bdtBtn.style.display = isAdmin ? 'inline-flex' : 'none';
 
+  // Show/hide Added By column header
+  const addedByTh = document.getElementById('histAddedByTh');
+  if(addedByTh) addedByTh.style.display = isAdmin ? '' : 'none';
+
   const tbody=document.getElementById('histTbody');
   let rows=[...S.assignments];
   if(hf.from||hf.to) rows=rows.filter(a=>rangeOverlaps(a.dutyFrom,a.dutyTo,hf.from,hf.to));
@@ -1939,6 +1945,7 @@ function renderHistTable(){
           </td>
           <td><span class="db">${fmtDate(a.dateAssigned)}</span></td>
           <td>${empCell}</td>
+          ${isAdmin ? `<td><span style="font-size:12px;font-family:'DM Mono',monospace;color:var(--accent);background:rgba(232,197,71,.08);border:1px solid rgba(232,197,71,.2);border-radius:100px;padding:3px 10px;white-space:nowrap;">${a.addedBy || '<span style="color:var(--muted);font-style:italic;">—</span>'}</span></td>` : ''}
         </tr>`;
       }).join('')
     : `<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:40px;">No records match the filter.</td></tr>`;
@@ -1979,7 +1986,7 @@ function openEditEmpModal(assignmentId){
   if(!asgn) return;
   _editEmpAssignmentId = asgn.id;
   document.getElementById('editEmpModalTitle').textContent = 'Edit Employees — '+asgn.task;
-  document.getElementById('editEmpModalSub').textContent = 'Check to assign, uncheck to remove.';
+  document.getElementById('editEmpModalSub').innerHTML = `Check to assign, uncheck to remove.${asgn.addedBy ? ` &nbsp;<span style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;">Added by: <span style="color:var(--accent);">${asgn.addedBy}</span></span>` : ''}`;
   const list = document.getElementById('editEmpList');
   list.innerHTML = S.employees.map(e=>{
     const checked = asgn.employees.includes(e);
@@ -2674,7 +2681,7 @@ async function addLeaveRange(){
     }
   }
 
-  const {error} = await sb.from('leave_entries').insert(toInsert.map(d=>({schedule_date:d,employee_name:emp,leave_type:leaveType})));
+  const {error} = await sb.from('leave_entries').insert(toInsert.map(d=>({schedule_date:d,employee_name:emp,leave_type:leaveType,added_by:curUser})));
   if(error){ showToast('Error: '+error.message,true); return; }
   const anchor = document.getElementById('leaveMonthAnchor');
   if(anchor) anchor.value = from.slice(0,7);
@@ -2920,7 +2927,7 @@ async function saveYearlyLeave(){
     S.leaveEntries.filter(e=>e.leave_type==='Pre Approved Leave'&&e.employee_name===emp).map(e=>e.schedule_date)
   );
   const toInsert = selectedDays.filter(d=>!existing.has(d))
-    .map(d=>({ schedule_date:d, employee_name:emp, leave_type:'Pre Approved Leave' }));
+    .map(d=>({ schedule_date:d, employee_name:emp, leave_type:'Pre Approved Leave', added_by:curUser }));
 
   if(!toInsert.length){ showToast('All selected dates already exist'); return; }
 
@@ -3413,7 +3420,7 @@ async function saveBulkAssign(){
     for(const d of dates){
       const existing = getNamesForShift(d, ppShift.id);
       for(const emp of selEmps){
-        if(!existing.includes(emp)) rows.push({schedule_date:d, shift_type_id:ppShift.id, employee_name:emp});
+        if(!existing.includes(emp)) rows.push({schedule_date:d, shift_type_id:ppShift.id, employee_name:emp, added_by:curUser});
       }
     }
     if(!rows.length){ showToast('All entries already exist'); return; }
@@ -3431,7 +3438,7 @@ async function saveBulkAssign(){
     for(const d of dates){
       const existing = getNamesForShift(d, shiftId);
       for(const emp of selEmps){
-        if(!existing.includes(emp)) rows.push({schedule_date:d, shift_type_id:shiftId, employee_name:emp});
+        if(!existing.includes(emp)) rows.push({schedule_date:d, shift_type_id:shiftId, employee_name:emp, added_by:curUser});
       }
     }
     if(!rows.length){ showToast('All entries already exist'); return; }
@@ -3448,7 +3455,7 @@ async function saveBulkAssign(){
     for(const d of dates){
       const existing = getNamesForLeave(d,'Dayoff');
       for(const emp of selEmps){
-        if(!existing.includes(emp)) rows.push({schedule_date:d, employee_name:emp, leave_type:'Dayoff'});
+        if(!existing.includes(emp)) rows.push({schedule_date:d, employee_name:emp, leave_type:'Dayoff', added_by:curUser});
       }
     }
     if(!rows.length){ showToast('All entries already exist'); return; }
@@ -3544,10 +3551,10 @@ async function saveSchedModal(){
   const toRemove = current.filter(e=>!selected.includes(e));
   try {
     if(ctx.type==='shift'){
-      if(toAdd.length) await sb.from('schedule_entries').insert(toAdd.map(e=>({schedule_date:ctx.date,shift_type_id:ctx.shiftTypeId,employee_name:e})));
+      if(toAdd.length) await sb.from('schedule_entries').insert(toAdd.map(e=>({schedule_date:ctx.date,shift_type_id:ctx.shiftTypeId,employee_name:e,added_by:curUser})));
       for(const e of toRemove) await sb.from('schedule_entries').delete().eq('schedule_date',ctx.date).eq('shift_type_id',ctx.shiftTypeId).eq('employee_name',e);
     } else {
-      if(toAdd.length) await sb.from('leave_entries').insert(toAdd.map(e=>({schedule_date:ctx.date,employee_name:e,leave_type:ctx.leaveType})));
+      if(toAdd.length) await sb.from('leave_entries').insert(toAdd.map(e=>({schedule_date:ctx.date,employee_name:e,leave_type:ctx.leaveType,added_by:curUser})));
       for(const e of toRemove) await sb.from('leave_entries').delete().eq('schedule_date',ctx.date).eq('employee_name',e).eq('leave_type',ctx.leaveType);
     }
     showToast('✓ Updated');
