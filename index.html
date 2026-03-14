@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -473,16 +474,16 @@
   .yl-day-grid{ display:grid; grid-template-columns:repeat(7,1fr); gap:2px; }
   .yl-dow-hdr{ text-align:center; font-size:9px; font-weight:700; text-transform:uppercase; padding:4px 0 6px; letter-spacing:.3px; }
   .yl-dow-hdr.sat{ color:var(--muted); }
-  .yl-dow-hdr.sun{ color:#fff; }
+  .yl-dow-hdr.sun{ color:#f87171; }
   .yl-dow-hdr:not(.sat):not(.sun){ color:var(--muted); }
   .yl-day{ text-align:center; padding:7px 3px; font-size:11px; font-family:'DM Mono',monospace; cursor:pointer; border:1px solid transparent; border-radius:6px; transition:all .12s; color:#fff; user-select:none; line-height:1; }
   .yl-day:hover:not(.empty):not(.existing){ background:rgba(192,132,252,.1); border-color:rgba(192,132,252,.3); }
-  .yl-day.on{ background:rgba(192,132,252,.18); border-color:rgba(192,132,252,.5); color:#fff; font-weight:700; }
+  .yl-day.on{ background:rgba(192,132,252,.18); border-color:rgba(192,132,252,.5); color:#c084fc; font-weight:700; }
   .yl-day.empty{ cursor:default; visibility:hidden; }
-  .yl-day.sun{ color:#fff; }
+  .yl-day.sun{ color:#f87171; }
   .yl-day.sat{ color:#fff; }
-  .yl-day.on.sun{ background:rgba(248,113,113,.18); border-color:rgba(248,113,113,.55); color:#fff; font-weight:700; }
-  .yl-day.on.sat{ background:rgba(192,132,252,.18); border-color:rgba(192,132,252,.5); color:#fff; font-weight:700; }
+  .yl-day.on.sun{ background:rgba(248,113,113,.18); border-color:rgba(248,113,113,.55); color:#f87171; font-weight:700; }
+  .yl-day.on.sat{ background:rgba(192,132,252,.18); border-color:rgba(192,132,252,.5); color:#c084fc; font-weight:700; }
   .yl-day.existing{ opacity:.32; cursor:not-allowed; font-style:italic; }
 
   /* leave quota bar */
@@ -1963,7 +1964,7 @@ function renderHistStats(rows){
     <div class="stat-card"><div class="stat-num">${total}</div><div class="stat-lbl">Employee-Tasks</div></div>
     <div class="stat-card"><div class="stat-num">${uEmps}</div><div class="stat-lbl">Employees Involved</div></div>
     <div class="stat-card"><div class="stat-num">${uTasks}</div><div class="stat-lbl">Unique Tasks</div></div>
- ${top?`<div class="stat-card"><div class="stat-num" style="font-size:20px;padding-top:6px;">${top[0]}</div><div class="stat-lbl">Top Task</div></div>`:''}`; 
+    ${top?`<div class="stat-card"><div class="stat-num" style="font-size:20px;padding-top:6px;">${top[0]}</div><div class="stat-lbl">Top Task</div></div>`:''}`;
 }
 
 // ─── HISTORY EMPLOYEE EDIT ───────────────────────────────────────────────
@@ -3023,7 +3024,7 @@ let _bulkMode = 'shift';
 let _bulkWeeks = [];
 let _bulkSelectedWeeks = new Set(); // multi-week support
 let _bulkMonthDates = [];
-// PayPro period state (mirrors shift logic)
+let _pendingDayoffMap = new Map(); // emp → Set<date> — tracks pending dayoff assignments this session// PayPro period state (mirrors shift logic)
 let _ppWeeks = [];
 let _ppSelectedWeeks = new Set();
 
@@ -3055,7 +3056,7 @@ function setBulkMode(mode){
   if(mode==='paypro'){
     buildPayproDayChecks();
   }
-  if(mode==='dayoff') updateDowPreview();
+  if(mode==='dayoff'){ _pendingDayoffMap = new Map(); updateDowPreview(); }
   refreshBulkEmployees();
 }
 
@@ -3285,23 +3286,67 @@ function refreshBulkEmployees(){
 
   } else {
     // Dayoff mode
+    // Employees already saved in DB with ANY Dayoff across the ENTIRE month
+    const allMonthDayoffByEmp = new Map(); // emp → Set<date> of saved dayoffs this month
+    S.employees.forEach(emp => {
+      const saved = _bulkMonthDates.filter(d => getNamesForLeave(d,'Dayoff').includes(emp));
+      if(saved.length) allMonthDayoffByEmp.set(emp, new Set(saved));
+    });
+
     grid.innerHTML = S.employees.map(emp=>{
+      // Conflict: on a shift on any currently selected date
       let takenLabel = null;
       for(const st of S.shiftTypes){
         if(dates.some(d => getNamesForShift(d, st.id).includes(emp))){
           takenLabel = st.name; break;
         }
       }
+      // Conflict: on leave on any currently selected date
       if(!takenLabel && dates.some(d => ['Pre Approved Leave','Sick Leave','Half Day'].some(lt=>getNamesForLeave(d,lt).includes(emp)))){
         takenLabel = 'On Leave';
       }
-      const alreadyDayoff = dates.some(d => getNamesForLeave(d,'Dayoff').includes(emp));
-      const disabled = !!takenLabel;
-      let badgeStyle = '';
-      if(takenLabel==='On Leave') badgeStyle = 'background:rgba(192,132,252,.12);border-color:rgba(192,132,252,.35);color:#c084fc;';
-      const badge = disabled
-        ? `<span class="shift-label-badge" style="${badgeStyle}">${takenLabel.length>14?takenLabel.slice(0,12)+'…':takenLabel}</span>` : '';
-      const on = alreadyDayoff && !disabled;
+
+      // Already has a saved Dayoff ANYWHERE in the month
+      const savedDayoffDates = allMonthDayoffByEmp.get(emp);
+      const hasSavedDayoff = !!savedDayoffDates;
+      if(!takenLabel && hasSavedDayoff){
+        // Show the date(s) they're already assigned to
+        const fmt = d => { const [,mo,day]=d.split('-').map(Number); return `${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][mo-1]} ${day}`; };
+        const ds = [...savedDayoffDates].sort();
+        takenLabel = ds.slice(0,2).map(fmt).join(', ') + (ds.length>2?` +${ds.length-2}`:'');
+      }
+
+      // Pending: admin assigned this employee to a different DOW this session
+      const pendingDates = _pendingDayoffMap.get(emp);
+      const hasPending = !!pendingDates && pendingDates.size > 0;
+      const pendingForCurrentDates = hasPending && dates.some(d => pendingDates.has(d));
+
+      // Disabled if: shift/leave conflict, already has any saved dayoff in month, OR pending on different day
+      const disabled = !!takenLabel || hasSavedDayoff || (hasPending && !pendingForCurrentDates);
+
+      // Badge styling
+      let badgeStyle = 'background:rgba(249,168,212,.12);border-color:rgba(249,168,212,.35);color:#f9a8d4;';
+      if(takenLabel && !hasSavedDayoff){
+        if(takenLabel==='On Leave') badgeStyle = 'background:rgba(192,132,252,.12);border-color:rgba(192,132,252,.35);color:#c084fc;';
+        else badgeStyle = 'background:rgba(248,113,113,.1);border-color:rgba(248,113,113,.3);color:var(--red);';
+      }
+
+      const pendingLabel = hasPending && !takenLabel && !hasSavedDayoff
+        ? (() => {
+            const ds = [...pendingDates].sort();
+            const fmt = d => { const [,mo,day]=d.split('-').map(Number); return `${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][mo-1]} ${day}`; };
+            return ds.slice(0,2).map(fmt).join(', ') + (ds.length>2?` +${ds.length-2}`:'');
+          })()
+        : null;
+
+      const badgeText = takenLabel || pendingLabel;
+      const badge = badgeText
+        ? `<span class="shift-label-badge" style="${badgeStyle};font-size:10px;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${badgeText}">${badgeText}</span>`
+        : '';
+
+      // Checked if pending for the exact current DOW dates
+      const on = pendingForCurrentDates && !takenLabel && !hasSavedDayoff;
+
       return `<div class="ecc${on?' on':''}${disabled?' disabled-shift':''}"
         data-emp="${emp.replace(/"/g,'&quot;')}"
         onclick="${disabled?'':'toggleEcc(this)'}">
@@ -3387,6 +3432,7 @@ function openBulkModal(){
 
   // Reset to shift mode
   _bulkMode = 'shift';
+  _pendingDayoffMap = new Map();
   document.getElementById('bulkModeShift').classList.add('active');
   document.getElementById('bulkModePaypro').classList.remove('active');
   document.getElementById('bulkModeDayoff').classList.remove('active');
@@ -3400,7 +3446,7 @@ function openBulkModal(){
   document.getElementById('bulkModal').classList.add('open');
 }
 
-function closeBulkModal(){ document.getElementById('bulkModal').classList.remove('open'); }
+function closeBulkModal(){ _pendingDayoffMap = new Map(); document.getElementById('bulkModal').classList.remove('open'); }
 document.getElementById('bulkModal').addEventListener('click',function(e){ if(e.target===this)closeBulkModal(); });
 
 async function saveBulkAssign(){
@@ -3409,7 +3455,7 @@ async function saveBulkAssign(){
   if(!dates.length){ showToast('Select at least one day'); return; }
 
   const selEmps = [...document.querySelectorAll('#bulkEmpGrid .ecc.on')].map(el=>el.dataset.emp).filter(Boolean);
-  if(!selEmps.length){ showToast('Select at least one employee'); return; }
+  if(!selEmps.length && _bulkMode !== 'dayoff'){ showToast('Select at least one employee'); return; }
 
   if(_bulkMode === 'paypro'){
     if(selEmps.length > 2){ showToast('PayPro & Batch Upload allows a maximum of 2 employees'); return; }
@@ -3449,21 +3495,24 @@ async function saveBulkAssign(){
     showToast(`✓ Assigned ${rows.length} slot(s) to ${S.shiftTypes.find(s=>s.id===shiftId)?.name||'Shift'}`);
 
   } else {
-    // Dayoff mode
+    // Dayoff mode — use _pendingDayoffMap to get exact emp→dates mapping
+    if(!_pendingDayoffMap.size){ showToast('Select at least one employee'); return; }
     const rows = [];
-    for(const d of dates){
-      const existing = getNamesForLeave(d,'Dayoff');
-      for(const emp of selEmps){
+    _pendingDayoffMap.forEach((dateSet, emp) => {
+      dateSet.forEach(d => {
+        const existing = getNamesForLeave(d, 'Dayoff');
         if(!existing.includes(emp)) rows.push({schedule_date:d, employee_name:emp, leave_type:'Dayoff', added_by:curUser});
-      }
-    }
+      });
+    });
     if(!rows.length){ showToast('All entries already exist'); return; }
     showToast('Saving…');
     for(let i=0;i<rows.length;i+=500){
       const {error} = await sb.from('leave_entries').insert(rows.slice(i,i+500));
       if(error){ showToast('Error: '+error.message,true); closeBulkModal(); return; }
     }
-    showToast(`✓ Marked ${rows.length} day-off slot(s)`);
+    // Summary: list each employee and their day count
+    const summary = [..._pendingDayoffMap.entries()].map(([emp,ds])=>`${emp} (${ds.size}d)`).join(', ');
+    showToast(`✓ Day Off saved — ${summary}`);
   }
   closeBulkModal();
 }
@@ -3538,6 +3587,22 @@ function toggleEcc(el){
   el.classList.toggle('on');
   el.querySelector('.ck').textContent = el.classList.contains('on') ? '✓' : '';
   if(_bulkMode==='paypro') applyPayproMaxLimit();
+  // Track pending dayoff selections so they persist across DOW changes
+  if(_bulkMode==='dayoff'){
+    const emp = el.dataset.emp;
+    if(emp){
+      const currentDates = getSelectedDowDates();
+      if(el.classList.contains('on')){
+        // Add this employee's current selected dates to the map
+        if(!_pendingDayoffMap.has(emp)) _pendingDayoffMap.set(emp, new Set());
+        currentDates.forEach(d => _pendingDayoffMap.get(emp).add(d));
+      } else {
+        // Remove employee entirely from pending map
+        _pendingDayoffMap.delete(emp);
+      }
+    }
+    refreshBulkEmployees();
+  }
 }
 
 async function saveSchedModal(){
