@@ -1,6 +1,3 @@
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -333,6 +330,7 @@
   .sched-name-pill.shift-c3{ background:rgba(5, 163, 242,.12); border-color:rgba(5, 163, 242,.35); color:#ffffff; }
   .sched-name-pill.shift-c4{ background:rgba(248,113,113,.12); border-color:rgba(248,113,113,.35); color:var(--red); }
   .sched-name-pill.shift-c5{ background:rgba(96,165,250,.12); border-color:rgba(96,165,250,.35); color:#60a5fa; }
+  .sched-name-pill.shift-paypro{ background:rgba(232,197,71,.15); border-color:rgba(232,197,71,.45); color:var(--accent); }
   .sched-name-pill.shift-dayoff{ background:rgba(249,168,212,.1); border-color:rgba(249,168,212,.35); color:#f9a8d4; }
   .sched-name-pill.shift-leave{ background:rgba(192,132,252,.1); border-color:rgba(192,132,252,.35); color:#c084fc; }
   .sched-name-pill.shift-sick{ background:rgba(251,146,60,.1); border-color:rgba(251,146,60,.35); color:#fb923c; }
@@ -2302,7 +2300,9 @@ function renderNamePills(names, ctx, colorClass=''){
   const pills = names.map(n=>{
     // Leave-type colors visible to ALL users; shift colors only to admins
     const isLeaveColor = colorClass && ['shift-leave','shift-sick','shift-halfday'].includes(colorClass);
-    const cc = (isAdmin || isLeaveColor) && colorClass ? ` ${colorClass}` : '';
+ //   const cc = (isAdmin || isLeaveColor) && colorClass ? ` ${colorClass}` : '';
+    const isPayproColor = colorClass === 'shift-paypro';
+const cc = (isAdmin || isLeaveColor || isPayproColor) && colorClass ? ` ${colorClass}` : '';
     if(isAdmin){
       const pid = '_p'+(++_pillId);
       _pillRegistry[pid] = {name:n, ctx};
@@ -2439,7 +2439,8 @@ function renderSchedule(){
 
     const rows = [];
     for(const st of S.shiftTypes){
-      const cc = shiftColorMap[st.id] || '';
+     // const cc = shiftColorMap[st.id] || '';
+      const cc = st.name === 'PayPro & Batch Upload' ? 'shift-paypro' : (shiftColorMap[st.id] || '');
       const cells = weekDates.map(d=>{
         const names = getNamesForShift(d, st.id);
         const ctx = {type:'shift', date:d, shiftTypeId:st.id, leaveType:null};
