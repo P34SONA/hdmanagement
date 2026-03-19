@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -495,6 +496,70 @@
   .yl-quota-fill.sl{ background:linear-gradient(90deg,#fb923c,#ef4444); }
   .yl-quota-fill.over{ background:#ef4444; }
 
+  /* ── MY LEAVE CREDITS (personal big cards) ── */
+  .my-leave-wrap{ display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:24px; }
+  @media(max-width:600px){ .my-leave-wrap{ grid-template-columns:1fr; } }
+  .my-leave-card{
+    border-radius:16px; padding:22px 24px; position:relative; overflow:hidden;
+    display:flex; flex-direction:column; gap:10px;
+  }
+  .my-leave-card.pal{
+    background:linear-gradient(135deg,rgba(192,132,252,.13) 0%,rgba(168,85,247,.05) 100%);
+    border:1px solid rgba(192,132,252,.35);
+  }
+  .my-leave-card.sl{
+    background:linear-gradient(135deg,rgba(251,146,60,.12) 0%,rgba(239,68,68,.05) 100%);
+    border:1px solid rgba(251,146,60,.35);
+  }
+  .my-leave-card.pal.empty-card{ border-color:rgba(192,132,252,.18); opacity:.75; }
+  .my-leave-card.sl.empty-card { border-color:rgba(251,146,60,.18);  opacity:.75; }
+  .mlc-icon{ font-size:22px; }
+  .mlc-title{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1.2px; color:var(--muted); }
+  .mlc-counts{ display:flex; align-items:baseline; gap:6px; }
+  .mlc-used{ font-family:'DM Serif Display',serif; font-size:42px; line-height:1; }
+  .mlc-used.pal{ color:#c084fc; }
+  .mlc-used.sl { color:#fb923c; }
+  .mlc-used.over{ color:var(--red); }
+  .mlc-max{ font-size:18px; color:var(--muted); font-family:'DM Mono',monospace; }
+  .mlc-track{ height:7px; border-radius:4px; background:rgba(255,255,255,.08); overflow:hidden; margin-top:2px; }
+  .mlc-fill{ height:100%; border-radius:4px; transition:width .5s ease; }
+  .mlc-fill.pal{ background:linear-gradient(90deg,#c084fc,#a855f7); }
+  .mlc-fill.sl { background:linear-gradient(90deg,#fb923c,#ef4444); }
+  .mlc-fill.over{ background:#ef4444; }
+  .mlc-remaining{ font-size:13px; font-weight:600; }
+  .mlc-remaining.ok.pal  { color:#c084fc; }
+  .mlc-remaining.ok.sl   { color:#fb923c; }
+  .mlc-remaining.warn { color:var(--accent); }
+  .mlc-remaining.over { color:var(--red); }
+  .mlc-label{ font-size:11px; color:var(--muted); }
+
+  /* ── ALL EMPLOYEES LEAVE CREDITS TABLE ── */
+  .all-credits-wrap{ background:var(--surface); border:1px solid var(--border); border-radius:16px; overflow:hidden; margin-bottom:24px; }
+  .all-credits-hdr{ display:flex; align-items:center; justify-content:space-between; padding:14px 20px; border-bottom:1px solid var(--border); background:var(--surface2); flex-wrap:wrap; gap:8px; }
+  .all-credits-hdr-title{ font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--muted); display:flex; align-items:center; gap:8px; }
+  .all-credits-year-badge{ font-size:10px; font-family:'DM Mono',monospace; background:var(--bg); border:1px solid var(--border); border-radius:100px; padding:2px 9px; color:var(--accent); }
+  .all-credits-legend{ display:flex; align-items:center; gap:12px; font-size:11px; color:var(--muted); font-family:'DM Mono',monospace; }
+  .all-credits-table{ width:100%; border-collapse:collapse; }
+  .all-credits-table th{ background:var(--surface2); padding:10px 16px; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.8px; color:var(--muted); border-bottom:1px solid var(--border); text-align:left; white-space:nowrap; }
+  .all-credits-table td{ padding:11px 16px; border-bottom:1px solid var(--border); font-size:13px; vertical-align:middle; }
+  .all-credits-table tr:last-child td{ border-bottom:none; }
+  .all-credits-table tr:hover td{ background:rgba(255,255,255,.02); }
+  .act-avatar{ width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; flex-shrink:0; background:rgba(79,209,197,.12); border:1px solid rgba(79,209,197,.3); color:var(--accent2); }
+  .act-bar-wrap{ display:flex; align-items:center; gap:10px; min-width:140px; }
+  .act-bar-track{ flex:1; height:5px; border-radius:3px; background:rgba(255,255,255,.07); overflow:hidden; min-width:60px; }
+  .act-bar-fill{ height:100%; border-radius:3px; transition:width .4s; }
+  .act-bar-fill.pal{ background:linear-gradient(90deg,#c084fc,#a855f7); }
+  .act-bar-fill.sl { background:linear-gradient(90deg,#fb923c,#ef4444); }
+  .act-bar-fill.over{ background:#ef4444 !important; }
+  .act-nums{ font-family:'DM Mono',monospace; font-size:12px; font-weight:700; white-space:nowrap; }
+  .act-nums.pal{ color:#c084fc; }
+  .act-nums.sl { color:#fb923c; }
+  .act-nums.over{ color:var(--red); }
+  .act-rem{ font-size:10px; font-family:'DM Mono',monospace; white-space:nowrap; }
+  .act-rem.ok{ color:var(--muted); }
+  .act-rem.warn{ color:var(--accent); }
+  .act-rem.over{ color:var(--red); }
+
   /* bulk delete leave modal */
   .bl-emp-row{ display:flex; align-items:center; justify-content:space-between; padding:10px 14px; border-bottom:1px solid var(--border); gap:12px; }
   .bl-emp-row:last-child{ border-bottom:none; }
@@ -877,8 +942,11 @@
 
   <!-- PRE-APPROVED LEAVES VIEW -->
   <div id="leaveView" class="main full-width" style="display:none;">
-    <div class="sched-nav">
-      <h2>🌴 Pre-Approved Leaves</h2>
+    <div class="sched-nav" style="flex-wrap:wrap;row-gap:10px;">
+      <h2 style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+        🌴 Pre-Approved Leaves
+        <div id="leaveCreditsInline" style="display:inline-flex;gap:10px;flex-wrap:wrap;"></div>
+      </h2>
       <div class="month-picker">
         <button class="btn btn-ghost" onclick="shiftLeaveMonth(-1)">← Prev</button>
         <input type="month" id="leaveMonthAnchor" onchange="renderLeaveView()">
@@ -2494,6 +2562,153 @@ function renderSchedule(){
   }).join('');
 }
 
+// ─── MY LEAVE CREDITS — compact inline chips beside the header ──────────────
+function renderMyLeaveCredits(year){
+  const el = document.getElementById('leaveCreditsInline');
+  if(!el) return;
+  if(isGuest || !curUser){ el.innerHTML = ''; return; }
+
+  const yr = year || new Date().getFullYear();
+
+  const usedPAL = S.leaveEntries.filter(e=>
+    e.leave_type==='Pre Approved Leave' && e.employee_name===curUser && e.schedule_date.startsWith(String(yr))
+  ).length;
+  const usedSL = S.leaveEntries.filter(e=>
+    e.leave_type==='Sick Leave' && e.employee_name===curUser && e.schedule_date.startsWith(String(yr))
+  ).length;
+
+  const remPAL  = MAX_VL - usedPAL;
+  const remSL   = MAX_SL  - usedSL;
+  const palPct  = Math.min(100, Math.round(usedPAL / MAX_VL * 100));
+  const slPct   = Math.min(100, Math.round(usedSL  / MAX_SL  * 100));
+  const palOver = remPAL < 0;
+  const slOver  = remSL  < 0;
+
+  function remColor(rem, over, type){
+    if(over || rem === 0) return 'var(--red)';
+    if(rem <= 3) return 'var(--accent)';
+    return type === 'PAL' ? '#c084fc' : '#fb923c';
+  }
+  function remLabel(rem){
+    if(rem < 0)   return `&#9888; ${Math.abs(rem)} over`;
+    if(rem === 0) return 'None left';
+    if(rem <= 3)  return `&#9889; ${rem} left`;
+    return `${rem} left`;
+  }
+
+  const palAccent  = palOver ? '#ef4444' : '#c084fc';
+  const slAccent   = slOver  ? '#ef4444' : '#fb923c';
+  const palBarBg   = palOver ? '#ef4444' : 'linear-gradient(90deg,#c084fc,#a855f7)';
+  const slBarBg    = slOver  ? '#ef4444' : 'linear-gradient(90deg,#fb923c,#ef4444)';
+  const palBorder  = palOver ? 'rgba(248,113,113,.5)' : 'rgba(192,132,252,.3)';
+  const slBorder   = slOver  ? 'rgba(248,113,113,.5)' : 'rgba(251,146,60,.3)';
+  const palBg      = palOver ? 'rgba(248,113,113,.07)' : 'rgba(192,132,252,.08)';
+  const slBg       = slOver  ? 'rgba(248,113,113,.07)' : 'rgba(251,146,60,.08)';
+
+  el.innerHTML = `
+    <div style="display:flex;align-items:center;gap:8px;background:${palBg};border:1px solid ${palBorder};border-radius:10px;padding:6px 14px;white-space:nowrap;">
+      <span style="font-size:14px;">&#127796;</span>
+      <div style="display:flex;flex-direction:column;gap:3px;">
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);">Leaves</span>
+          <span style="font-size:13px;font-weight:800;font-family:'DM Mono',monospace;color:${palAccent};">${usedPAL} / ${MAX_VL}</span>
+        </div>
+        <div style="width:80px;height:4px;border-radius:2px;background:rgba(255,255,255,.08);overflow:hidden;">
+          <div style="height:100%;width:${palPct}%;border-radius:2px;background:${palBarBg};transition:width .4s;"></div>
+        </div>
+        <span style="font-size:10px;font-weight:600;color:${remColor(remPAL,palOver,'PAL')};">${remLabel(remPAL)}</span>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;background:${slBg};border:1px solid ${slBorder};border-radius:10px;padding:6px 14px;white-space:nowrap;">
+      <span style="font-size:14px;">&#129298;</span>
+      <div style="display:flex;flex-direction:column;gap:3px;">
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);">SL</span>
+          <span style="font-size:13px;font-weight:800;font-family:'DM Mono',monospace;color:${slAccent};">${usedSL} / ${MAX_SL}</span>
+        </div>
+        <div style="width:80px;height:4px;border-radius:2px;background:rgba(255,255,255,.08);overflow:hidden;">
+          <div style="height:100%;width:${slPct}%;border-radius:2px;background:${slBarBg};transition:width .4s;"></div>
+        </div>
+        <span style="font-size:10px;font-weight:600;color:${remColor(remSL,slOver,'SL')};">${remLabel(remSL)}</span>
+      </div>
+    </div>`;
+}
+
+// ─── ALL EMPLOYEES LEAVE CREDITS TABLE ───────────────────────────────────
+function renderAllLeaveCredits(year){
+  const yr = year || new Date().getFullYear();
+  const emps = S.employees;
+  if(!emps.length) return '';
+
+  const rows = emps.map(emp=>{
+    const usedPAL = S.leaveEntries.filter(e=>
+      e.leave_type==='Pre Approved Leave' && e.employee_name===emp && e.schedule_date.startsWith(String(yr))
+    ).length;
+    const usedSL = S.leaveEntries.filter(e=>
+      e.leave_type==='Sick Leave' && e.employee_name===emp && e.schedule_date.startsWith(String(yr))
+    ).length;
+
+    const remPAL  = MAX_VL - usedPAL;
+    const remSL   = MAX_SL  - usedSL;
+    const palPct  = Math.min(100, Math.round(usedPAL / MAX_VL * 100));
+    const slPct   = Math.min(100, Math.round(usedSL  / MAX_SL  * 100));
+    const palOver = remPAL < 0;
+    const slOver  = remSL  < 0;
+
+    const palRemCls = palOver ? 'over' : remPAL <= 3 ? 'warn' : 'ok';
+    const slRemCls  = slOver  ? 'over' : remSL  <= 2 ? 'warn' : 'ok';
+    const palRemTxt = palOver ? `⚠ ${Math.abs(remPAL)} over` : remPAL===0 ? `0 left` : `${remPAL} left`;
+    const slRemTxt  = slOver  ? `⚠ ${Math.abs(remSL)} over`  : remSL===0  ? `0 left` : `${remSL} left`;
+
+    const isMe = !isGuest && emp === curUser;
+    return `<tr${isMe?' style="background:rgba(232,197,71,.04);"':''}>
+      <td>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div class="act-avatar">${emp.charAt(0).toUpperCase()}</div>
+          <span style="font-weight:${isMe?'700':'500'};font-size:13px;color:${isMe?'var(--accent)':'var(--text)'};">${emp}${isMe?' <span style="font-size:10px;font-family:\'DM Mono\',monospace;color:var(--muted);">(you)</span>':''}</span>
+        </div>
+      </td>
+      <td>
+        <div class="act-bar-wrap">
+          <div class="act-bar-track"><div class="act-bar-fill pal${palOver?' over':''}" style="width:${palPct}%"></div></div>
+          <span class="act-nums pal${palOver?' over':''}">${usedPAL} / ${MAX_VL}</span>
+        </div>
+        <div class="act-rem ${palRemCls}" style="margin-top:3px;">${palRemTxt}</div>
+      </td>
+      <td>
+        <div class="act-bar-wrap">
+          <div class="act-bar-track"><div class="act-bar-fill sl${slOver?' over':''}" style="width:${slPct}%"></div></div>
+          <span class="act-nums sl${slOver?' over':''}">${usedSL} / ${MAX_SL}</span>
+        </div>
+        <div class="act-rem ${slRemCls}" style="margin-top:3px;">${slRemTxt}</div>
+      </td>
+    </tr>`;
+  }).join('');
+
+  return `<div class="all-credits-wrap">
+    <div class="all-credits-hdr">
+      <div class="all-credits-hdr-title">
+        📊 All Employees Leave Credits
+        <span class="all-credits-year-badge">${yr}</span>
+      </div>
+      <div class="all-credits-legend">
+        <span>🌴 PAL = ${MAX_VL} days/yr</span>
+        <span>🤒 SL = ${MAX_SL} days/yr</span>
+      </div>
+    </div>
+    <div style="overflow-x:auto;">
+      <table class="all-credits-table">
+        <thead><tr>
+          <th>Employee</th>
+          <th>🌴 Pre-Approved Leave</th>
+          <th>🤒 Sick Leave</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
 // ─── RENDER PRE-APPROVED LEAVES (LIST VIEW) ───────────────────────────────
 function renderLeaveView(){
   const el = document.getElementById('leaveMonthAnchor');
@@ -2579,6 +2794,8 @@ function renderLeaveView(){
       </div>
       <p style="font-size:11px;color:var(--muted);margin-top:10px;">💡 Use <strong>Yearly Planner</strong> to set leaves across multiple months and specific days in one go.</p>
     </div>` : '';
+
+  renderMyLeaveCredits(y);
 
   if(!empNames.length){
     content.innerHTML = adminAdd + monthJumps + `<div class="empty"><div class="ico">🌴</div><h3>No leaves for ${MONTH_NAMES[m-1]} ${y}</h3><p>${isAdmin?'Use the form above to add leaves for any date.':'Check another month or contact your admin.'}</p></div>`;
