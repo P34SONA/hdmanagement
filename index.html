@@ -2566,7 +2566,7 @@ function renderSchedule(){
 function renderMyLeaveCredits(year){
   const el = document.getElementById('leaveCreditsInline');
   if(!el) return;
-  if(isGuest || !curUser){ el.innerHTML = ''; return; }
+  if(isGuest || isAdmin || !curUser){ el.innerHTML = ''; return; }
 
   const yr = year || new Date().getFullYear();
 
@@ -2610,7 +2610,7 @@ function renderMyLeaveCredits(year){
       <span style="font-size:14px;">&#127796;</span>
       <div style="display:flex;flex-direction:column;gap:3px;">
         <div style="display:flex;align-items:center;gap:6px;">
-          <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);">Leaves</span>
+          <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);">PAL</span>
           <span style="font-size:13px;font-weight:800;font-family:'DM Mono',monospace;color:${palAccent};">${usedPAL} / ${MAX_VL}</span>
         </div>
         <div style="width:80px;height:4px;border-radius:2px;background:rgba(255,255,255,.08);overflow:hidden;">
