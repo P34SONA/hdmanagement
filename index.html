@@ -2296,17 +2296,27 @@ let _pillId = 0;
 function renderNamePills(names, ctx, colorClass=''){
   if(!names.length) return '<div class="cell-names"></div>';
   const pills = names.map(n=>{
+    
     // Leave-type colors visible to ALL users; shift colors only to admins
-    const isLeaveColor = colorClass && ['shift-leave','shift-sick','shift-halfday'].includes(colorClass);
-   const cc = (isAdmin || isLeaveColor) && colorClass ? ` ${colorClass}` : '';
+  //  const isLeaveColor = colorClass && ['shift-leave','shift-sick','shift-halfday'].includes(colorClass);
+   //const cc = (isAdmin || isLeaveColor) && colorClass ? ` ${colorClass}` : '';
+    // UPDATED CODE:
+const isLeaveColor = colorClass && ['shift-leave','shift-sick','shift-halfday'].includes(colorClass);
+const cc = (isAdmin || isLeaveColor) && colorClass ? ` ${colorClass}` : '';
+const isMine = (!isGuest && n === curUser) && !isLeaveColor;
+    
     if(isAdmin){
       const pid = '_p'+(++_pillId);
       _pillRegistry[pid] = {name:n, ctx};
-      return `<span class="sched-name-pill${(!isGuest&&n===curUser)?' mine':''}${cc} editable"
+   //   return `<span class="sched-name-pill${(!isGuest&&n===curUser)?' mine':''}${cc} editable"
+      return `<span class="sched-name-pill${isMine?' mine':''}${cc} editable"
+      
         data-pid="${pid}" title="Remove: ${n.replace(/"/g,'&quot;')}"
         onclick="handlePillRemove(this)">${n}<span class="px">×</span></span>`;
     }
-    return `<span class="sched-name-pill${(!isGuest&&n===curUser)?' mine':''}${cc}" title="${n}">${n}</span>`;
+ //   return `<span class="sched-name-pill${(!isGuest&&n===curUser)?' mine':''}${cc}" title="${n}">${n}</span>`;
+    return `<span class="sched-name-pill${isMine?' mine':''}${cc}" title="${n}">${n}</span>`;
+    
   }).join('');
   return `<div class="cell-names">${pills}</div>`;
 }
