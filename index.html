@@ -701,15 +701,160 @@
   .ecc.on .ck{ background:var(--accent); border-color:var(--accent); color:#0d0f14; }
 
   /* bulk assign modal extras */
-  @media(max-width:800px){
-    .grid-2,.grid-3{ grid-template-columns:1fr }
-    .assign-top-row{ grid-template-columns:1fr }
-    .date-range-row{ grid-template-columns:1fr }
-    .date-range-row .dr-sep{ display:none }
-    .main{ padding:16px }
-    .tabs{ padding:0 12px }
-    .topbar{ padding:12px 16px }
-    .fbar input[type=date],.fbar select{ width:100% }
+  /* ═══════════════════════════════════════════════
+     RESPONSIVE — TABLET  ≤ 900px
+  ═══════════════════════════════════════════════ */
+  @media(max-width:900px){
+    .grid-2,.grid-3{ grid-template-columns:1fr; gap:16px; }
+    .assign-top-row{ grid-template-columns:1fr; }
+    .date-range-row{ grid-template-columns:1fr; }
+    .date-range-row .dr-sep{ display:none; }
+    .main{ padding:18px 16px; }
+    .main.full-width{ padding:16px 14px; }
+    .topbar{ padding:12px 16px; }
+    .topbar-logo{ font-size:18px; }
+    .tabs{ padding:0 8px; }
+    .tab{ padding:11px 12px; font-size:12px; }
+    .fbar{ gap:10px; padding:12px 14px; }
+    .fbar input[type=date],.fbar select{ width:100%; }
+    .fpresets{ width:100%; }
+    .sched-nav{ gap:8px; }
+    .sched-nav h2{ font-size:20px; }
+    .month-picker{ flex-wrap:wrap; gap:6px; }
+    .sk-grid{ grid-template-columns:1fr 1fr; }
+    #notesView [style*="grid-template-columns:1fr 1fr"]{ grid-template-columns:1fr !important; }
+    .stats-row{ grid-template-columns:repeat(2,1fr); }
+    .config-box{ padding:28px 20px; }
+    .login-box{ padding:36px 24px; }
+    .modal{ padding:24px 20px; }
+    .assign-card{ padding:20px 16px; }
+    .card{ padding:18px 16px; }
+  }
+
+  /* ═══════════════════════════════════════════════
+     RESPONSIVE — MOBILE  ≤ 600px
+  ═══════════════════════════════════════════════ */
+  @media(max-width:600px){
+    /* topbar */
+    .topbar{ padding:10px 12px; flex-wrap:wrap; gap:8px; }
+    .topbar-logo{ font-size:16px; }
+    .topbar-right{ gap:6px; }
+    .user-badge{ padding:5px 10px; font-size:12px; }
+    .sync-dot,.user-dot{ width:6px; height:6px; }
+    .topbar .btn{ padding:6px 10px; font-size:12px; }
+
+    /* tabs — scrollable, smaller */
+    .tabs{ padding:0 4px; }
+    .tab{ padding:10px 10px; font-size:11px; letter-spacing:0; }
+
+    /* main content */
+    .main{ padding:12px 10px; }
+    .main.full-width{ padding:12px 10px; }
+
+    /* section titles */
+    .section-title{ font-size:18px; }
+    .sched-nav h2{ font-size:17px; flex-wrap:wrap; gap:6px; }
+    #leaveCreditsInline{ gap:6px; }
+
+    /* leave credit chips smaller */
+    #leaveCreditsInline > div{ padding:5px 10px !important; }
+    #leaveCreditsInline [style*="width:80px"]{ width:60px !important; }
+
+    /* grids → single column */
+    .grid-2,.grid-3{ grid-template-columns:1fr; gap:12px; }
+    .cards-grid{ grid-template-columns:1fr; gap:12px; }
+    .stats-row{ grid-template-columns:repeat(2,1fr); gap:8px; }
+    .sk-grid{ grid-template-columns:1fr; }
+
+    /* cards */
+    .card{ padding:14px 12px; border-radius:12px; }
+    .tcard{ border-radius:14px; }
+    .tcard-hd{ padding:14px; }
+    .tcard-bd{ padding:14px; }
+    .assign-card{ padding:14px 12px; border-radius:12px; }
+
+    /* inputs & buttons */
+    input[type=text],input[type=date],select{ padding:10px 12px; font-size:13px; }
+    .btn{ padding:10px 16px; font-size:13px; }
+    .btn-ghost{ padding:7px 10px; font-size:11px; }
+    .fbar{ flex-direction:column; align-items:stretch; padding:12px; gap:8px; }
+    .fbar input[type=date],.fbar select{ width:100%; }
+    .fpresets{ gap:4px; }
+    .fbar-title{ font-size:12px; }
+    .input-row{ flex-direction:column; }
+
+    /* assign form */
+    .assign-top-row{ grid-template-columns:1fr; gap:10px; }
+    .date-range-row{ grid-template-columns:1fr; gap:8px; padding:12px; }
+    .date-range-row .dr-sep{ display:none; }
+    .emp-cbs{ gap:6px; }
+    .ecb{ padding:7px 10px; font-size:12px; }
+
+    /* schedule nav */
+    .sched-nav{ flex-direction:column; align-items:flex-start; gap:10px; }
+    .month-picker{ flex-wrap:wrap; gap:6px; width:100%; }
+    .month-picker input[type=month]{ flex:1; min-width:0; }
+
+    /* leave add form */
+    .card [style*="grid-template-columns:1fr 1fr 1fr 1fr"]{ display:flex !important; flex-direction:column !important; gap:10px !important; }
+
+    /* tables — horizontal scroll */
+    .table-wrap,.all-credits-wrap{ border-radius:10px; }
+    td,th{ padding:10px 12px; font-size:12px; }
+
+    /* modal */
+    .modal{ padding:20px 16px; border-radius:16px; margin:12px; max-width:calc(100vw - 24px); }
+    .modal-title{ font-size:17px; }
+
+    /* login / config */
+    .login-box{ padding:28px 18px; border-radius:16px; margin:16px; }
+    .login-logo{ font-size:24px; }
+    .config-box{ padding:24px 16px; border-radius:16px; margin:16px; }
+    .config-logo{ font-size:22px; }
+
+    /* notes grid */
+    #notesView > div[style*="grid-template-columns"]{ grid-template-columns:1fr !important; }
+
+    /* skill cards */
+    .sk-card{ border-radius:10px; }
+
+    /* history stats */
+    .stat-card{ padding:12px; }
+    .stat-num{ font-size:24px; }
+
+    /* bulk modals */
+    .bulk-week-tabs,.bulk-mode-tabs{ gap:4px; }
+    .bwt,.bulk-mode-tab{ font-size:11px; padding:5px 8px; }
+    .emp-check-grid{ gap:6px; }
+    .ecc{ padding:6px 10px; font-size:12px; }
+
+    /* leave view chips & table */
+    .leave-date-chip{ font-size:10px; padding:2px 6px; }
+    .leave-list-table td,.leave-list-table th{ padding:10px 10px; }
+
+    /* yearly leave modal */
+    .yl-day{ padding:5px 1px; font-size:10px; }
+    .yl-quota-bar{ flex-direction:column; gap:8px; }
+
+    /* notes panels */
+    .notes-panel-hdr{ padding:10px 12px; gap:8px; }
+    .notes-panel-title{ font-size:13px; }
+  }
+
+  /* ═══════════════════════════════════════════════
+     RESPONSIVE — SMALL PHONE  ≤ 380px
+  ═══════════════════════════════════════════════ */
+  @media(max-width:380px){
+    .topbar-logo{ font-size:14px; }
+    .tab{ padding:9px 7px; font-size:10px; }
+    .main,.main.full-width{ padding:10px 8px; }
+    .btn{ padding:9px 12px; font-size:12px; }
+    .login-box{ padding:22px 14px; margin:10px; }
+    .sched-nav h2{ font-size:15px; }
+    td,th{ padding:8px 8px; font-size:11px; }
+    .card{ padding:12px 10px; }
+    .stat-num{ font-size:20px; }
+    .topbar-right .user-badge{ display:none; }
   }
 </style>
 </head>
